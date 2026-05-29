@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    
+    <!-- Firebase SDK via CDN (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chat-container {
+            width: 450px;
+            max-width: 95vw;
+            height: 90vh;
+            background: #1a1a2e;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        /* ═══════════════════════════════════════════════════════ */
+        /* ── TELA DE LOGIN / CADASTRO ── */
+        /* ═══════════════════════════════════════════════════════ */
+        .auth-screen {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            display: flex;
+            flex-direction: column;            align-items: center;
+            justify-content: center;
+            padding: 30px 25px;
+            z-index: 200;
+            border-radius: 20px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .auth-screen.hidden {
+            display: none;
+        }
+
+        .auth-logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .auth-title {
+            color: #fff;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .auth-subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .auth-form {
+            width: 100%;
+            max-width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .auth-input-group {
+            position: relative;
+        }
+        .auth-input {
+            width: 100%;
+            padding: 14px 45px 14px 18px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s, background 0.3s;
+        }
+
+        .auth-input::placeholder {
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        .auth-input:focus {
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .auth-input.error {
+            border-color: #f87171;
+        }
+
+        .auth-toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px;
+            transition: color 0.2s;
+        }
+
+        .auth-toggle-password:hover {
+            color: #fff;
+        }
+
+        .auth-error {
+            color: #f87171;
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+        }
+        .auth-error.visible {
+            display: block;
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+            margin-top: 5px;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .auth-btn:active {
+            transform: translateY(0);
+        }
+
+        .auth-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+        }
+
+        .auth-switch a {
+            color: #667eea;
+            text-decoration: none;            font-weight: 600;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .auth-switch a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 12px;
+        }
+
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .auth-guest {
+            background: none;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+
+        .auth-guest:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Loading no botão de auth */
+        .auth-btn.loading {
+            position: relative;
+            color: transparent;
+        }
+        .auth-btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* ═══════════════════════════════════════════════════════ */
+        /* ── Header do Chat (original) ── */
+        /* ═══════════════════════════════════════════════════════ */
+        .chat-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .header-info {
+            flex: 1;
+        }
+
+        .header-info h2 {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .header-info .status {
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 12px;
+            margin-top: 2px;        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            margin-right: 4px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255,255,255,0.9);
+            font-size: 12px;
+        }
+
+        .btn-logout {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        /* ═══════════════════════════════════════════════════════ */
+        /* ── Mensagens (original) ── */
+        /* ═══════════════════════════════════════════════════════ */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;            scroll-behavior: smooth;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 3px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.5;
+            animation: fadeIn 0.3s ease;
+            position: relative;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.received {
+            align-self: flex-start;
+            background: #2a2a4a;
+            color: #e0e0e0;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message .time {
+            font-size: 10px;
+            opacity: 0.6;
+            margin-top: 6px;
+            text-align: right;
+        }
+
+        .message.received .time {
+            text-align: left;        }
+
+        .message .sender-name {
+            font-size: 11px;
+            opacity: 0.5;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        /* Typing indicator */
+        .typing-indicator {
+            align-self: flex-start;
+            background: #2a2a4a;
+            padding: 12px 16px;
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+            display: none;
+            gap: 5px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            display: inline-block;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-8px); opacity: 1; }
+        }
+
+        /* ═══════════════════════════════════════════════════════ */
+        /* ── Input (original) ── */
+        /* ═══════════════════════════════════════════════════════ */
+        .chat-input {
+            padding: 15px 20px;
+            background: #16213e;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .chat-input input {            flex: 1;
+            padding: 14px 18px;
+            border: none;
+            border-radius: 25px;
+            background: #2a2a4a;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: background 0.3s;
+        }
+
+        .chat-input input::placeholder {
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        .chat-input input:focus {
+            background: #33335a;
+        }
+
+        .btn-send {
+            width: 48px;
+            height: 48px;
+            border: none;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-send:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-send:active {
+            transform: scale(0.95);
+        }
+
+        /* ── Emoji button ── */
+        .btn-emoji {
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            transition: transform 0.2s;        }
+
+        .btn-emoji:hover {
+            transform: scale(1.2);
+        }
+
+        /* ── Emoji Picker ── */
+        .emoji-picker {
+            display: none;
+            position: absolute;
+            bottom: 80px;
+            left: 20px;
+            background: #2a2a4a;
+            border-radius: 12px;
+            padding: 10px;
+            flex-wrap: wrap;
+            width: 280px;
+            gap: 5px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            z-index: 10;
+        }
+
+        .emoji-picker.active {
+            display: flex;
+        }
+
+        .emoji-picker button {
+            font-size: 22px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .emoji-picker button:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-input-wrapper {
+            position: relative;
+        }
+
+        /* ── Welcome message ── */
+        .welcome {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 13px;
+            padding: 10px;            margin-bottom: 10px;
+        }
+
+        /* ── Connection status ── */
+        .connection-status {
+            text-align: center;
+            padding: 8px;
+            font-size: 12px;
+            background: rgba(74, 222, 128, 0.15);
+            color: #4ade80;
+            display: none;
+        }
+        .connection-status.error {
+            background: rgba(248, 113, 113, 0.15);
+            color: #f87171;
+        }
+        .connection-status.visible {
+            display: block;
+        }
+        
+        /* ── Loading overlay (para compatibilidade) ── */
+        .loading-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(26, 26, 46, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            border-radius: 20px;
+        }
+        .loading-overlay.hidden {
+            display: none;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(102, 126, 234, 0.3);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loading-text {
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;        }
+
+        /* ═══════════════════════════════════════════════════════ */
+        /* ── Responsive ── */
+        /* ═══════════════════════════════════════════════════════ */
+        @media (max-width: 480px) {
+            .chat-container {
+                width: 100vw;
+                height: 100vh;
+                border-radius: 0;
+            }
+            .auth-form {
+                max-width: 100%;
+            }
+            .message {
+                max-width: 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- ── TELA DE AUTENTICAÇÃO (NOVA) ── -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <div class="auth-screen" id="authScreen">
+        <div class="auth-logo">💬</div>
+        <h1 class="auth-title">Chat App</h1>
+        <p class="auth-subtitle" id="authSubtitle">Entre para continuar conversando</p>
+        
+        <form class="auth-form" id="authForm">
+            <!-- Email -->
+            <div class="auth-input-group">
+                <input type="email" id="authEmail" class="auth-input" placeholder="Seu e-mail" autocomplete="email" required>
+            </div>
+            <div class="auth-error" id="emailError"></div>
+            
+            <!-- Senha -->
+            <div class="auth-input-group">
+                <input type="password" id="authPassword" class="auth-input" placeholder="Sua senha" autocomplete="current-password" required minlength="6">
+                <button type="button" class="auth-toggle-password" id="togglePassword">👁️</button>
+            </div>
+            <div class="auth-error" id="passwordError"></div>
+            
+            <!-- Confirmar Senha (apenas no cadastro) -->
+            <div class="auth-input-group" id="confirmPasswordGroup" style="display:none;">
+                <input type="password" id="authConfirmPassword" class="auth-input" placeholder="Confirmar senha" autocomplete="new-password" minlength="6">
+                <button type="button" class="auth-toggle-password" id="toggleConfirmPassword">👁️</button>            </div>
+            <div class="auth-error" id="confirmPasswordError"></div>
+            
+            <!-- Esqueci a senha -->
+            <div id="forgotPasswordLink" style="text-align:right;">
+                <a href="#" id="forgotPassword" style="color:#667eea;font-size:12px;text-decoration:none;">Esqueceu a senha?</a>
+            </div>
+            
+            <!-- Botão principal -->
+            <button type="submit" class="auth-btn" id="authBtn">Entrar</button>
+            
+            <!-- Mensagem de erro geral -->
+            <div class="auth-error" id="authGeneralError"></div>
+        </form>
+        
+        <div class="auth-divider">ou</div>
+        
+        <!-- Acesso como convidado -->
+        <button class="auth-guest" id="guestBtn">➡️ Continuar como convidado</button>
+        
+        <!-- Alternar entre login/cadastro -->
+        <p class="auth-switch">
+            <span id="authSwitchText">Não tem conta?</span>
+            <a href="#" id="authSwitchLink">Criar conta</a>
+        </p>
+    </div>
+    
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- ── CONTEÚDO DO CHAT (ORIGINAL + AJUSTES) ── -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    
+    <!-- Connection Status -->
+    <div class="connection-status" id="connectionStatus">🔄 Conectando...</div>
+    
+    <!-- Header -->
+    <div class="chat-header">
+        <div class="avatar">🤖</div>
+        <div class="header-info">
+            <h2>ChatBot</h2>
+            <div class="status"><span class="status-dot"></span>Online</div>
+        </div>
+        <div class="user-info">
+            <span id="currentUserDisplay"></span>
+            <button class="btn-logout" id="btnLogout">Sair</button>
+        </div>
+    </div>
+
+    <!-- Mensagens -->
+    <div class="chat-messages" id="chatMessages">
+        <div class="welcome">— Início da conversa —</div>        <div class="message received">
+            Olá! 👋 Eu sou o ChatBot. Como posso ajudar você hoje?
+            <div class="time" id="botWelcomeTime"></div>
+        </div>
+        <div class="typing-indicator" id="typingIndicator">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+
+    <!-- Input -->
+    <div class="chat-input-wrapper">
+        <div class="emoji-picker" id="emojiPicker"></div>
+        <div class="chat-input">
+            <button class="btn-emoji" id="btnEmoji">😊</button>
+            <input type="text" id="messageInput" placeholder="Digite uma mensagem..." autocomplete="off" disabled>
+            <button class="btn-send" id="btnSend" disabled>➤</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ═══════════════════════════════════════════════════════
+    // ── Firebase Configuration ──
+    // ═══════════════════════════════════════════════════════
+    const firebaseConfig = {
+        apiKey: "AIzaSyADxx5YCpP1g4QBh8yXd2ezI3aM1klIPxs",
+        authDomain: "chat-e46e0.firebaseapp.com",
+        projectId: "chat-e46e0",
+        storageBucket: "chat-e46e0.firebasestorage.app",
+        messagingSenderId: "307980837604",
+        appId: "1:307980837604:web:6ab83688fa68d7913942f1"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+    
+    db.settings({ timestampsInSnapshots: true });
+    
+    // ═══════════════════════════════════════════════════════
+    // ── Variáveis de Estado ──
+    // ═══════════════════════════════════════════════════════
+    let currentUserId = null;
+    let currentUserName = null;
+    let currentEmail = null;
+    let isAuthReady = false;
+    let isLoginMode = true;
+    let unsubscribeMessages = null;
+
+    // ═══════════════════════════════════════════════════════    // ── Elementos DOM ──
+    // ═══════════════════════════════════════════════════════
+    // Auth
+    const authScreen = document.getElementById('authScreen');
+    const authForm = document.getElementById('authForm');
+    const authEmail = document.getElementById('authEmail');
+    const authPassword = document.getElementById('authPassword');
+    const authConfirmPassword = document.getElementById('authConfirmPassword');
+    const authBtn = document.getElementById('authBtn');
+    const authSwitchLink = document.getElementById('authSwitchLink');
+    const authSwitchText = document.getElementById('authSwitchText');
+    const authSubtitle = document.getElementById('authSubtitle');
+    const confirmPasswordGroup = document.getElementById('confirmPasswordGroup');
+    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+    const togglePassword = document.getElementById('togglePassword');
+    const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+    const guestBtn = document.getElementById('guestBtn');
+    
+    // Erros
+    const emailError = document.getElementById('emailError');
+    const passwordError = document.getElementById('passwordError');
+    const confirmPasswordError = document.getElementById('confirmPasswordError');
+    const authGeneralError = document.getElementById('authGeneralError');
+    
+    // Chat (original)
+    const chatMessages = document.getElementById('chatMessages');
+    const messageInput = document.getElementById('messageInput');
+    const btnSend = document.getElementById('btnSend');
+    const typingIndicator = document.getElementById('typingIndicator');
+    const btnEmoji = document.getElementById('btnEmoji');
+    const emojiPicker = document.getElementById('emojiPicker');
+    const connectionStatus = document.getElementById('connectionStatus');
+    const btnLogout = document.getElementById('btnLogout');
+    const currentUserDisplay = document.getElementById('currentUserDisplay');
+
+    // ═══════════════════════════════════════════════════════
+    // ── Inicialização ──
+    // ═══════════════════════════════════════════════════════
+    document.getElementById('botWelcomeTime').textContent = getCurrentTime();
+    setupEmojis();
+    setupAuthEvents();
+    setupChatEvents();
+    
+    // Verifica sessão ao carregar
+    auth.onAuthStateChanged(handleAuthState);
+
+    // ═══════════════════════════════════════════════════════
+    // ── Funções de Autenticação ──
+    // ═══════════════════════════════════════════════════════
+        function handleAuthState(user) {
+        if (user) {
+            // Usuário autenticado
+            currentUserId = user.uid;
+            currentEmail = user.email;
+            currentUserName = user.email ? user.email.split('@')[0] : 'Usuário';
+            isAuthReady = true;
+            
+            // Esconde tela de auth, mostra chat
+            authScreen.classList.add('hidden');
+            currentUserDisplay.textContent = currentUserName;
+            messageInput.disabled = false;
+            btnSend.disabled = false;
+            messageInput.focus();
+            
+            showConnectionStatus('🟢 Online', false);
+            listenToMessages();
+            
+        } else {
+            // Não autenticado - mostra tela de login
+            authScreen.classList.remove('hidden');
+            isAuthReady = false;
+            messageInput.disabled = true;
+            btnSend.disabled = true;
+            
+            // Para listener de mensagens se existir
+            if (unsubscribeMessages) {
+                unsubscribeMessages();
+                unsubscribeMessages = null;
+            }
+        }
+    }
+    
+    function setupAuthEvents() {
+        // Toggle login/cadastro
+        authSwitchLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleAuthMode();
+        });
+        
+        // Toggle visibilidade senha
+        togglePassword.addEventListener('click', () => togglePasswordVisibility(authPassword, togglePassword));
+        toggleConfirmPassword.addEventListener('click', () => togglePasswordVisibility(authConfirmPassword, toggleConfirmPassword));
+        
+        // Acesso como convidado (anonimo)
+        guestBtn.addEventListener('click', async () => {
+            setAuthLoading(true);
+            clearAuthErrors();
+            try {
+                await auth.signInAnonymously();                showConnectionStatus('👤 Acesso como convidado', false);
+            } catch (error) {
+                showAuthError('general', getAuthErrorMessage(error.code));
+            } finally {
+                setAuthLoading(false);
+            }
+        });
+        
+        // Esqueci a senha
+        document.getElementById('forgotPassword').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const email = authEmail.value.trim();
+            
+            if (!email || !isValidEmail(email)) {
+                showAuthError('email', 'Digite um e-mail válido para recuperar a senha');
+                authEmail.classList.add('error');
+                return;
+            }
+            
+            clearAuthErrors();
+            setAuthLoading(true);
+            authBtn.textContent = 'Enviando...';
+            
+            try {
+                await auth.sendPasswordResetEmail(email);
+                showConnectionStatus('✉️ E-mail de recuperação enviado!', false);
+                alert('✅ Verifique sua caixa de entrada para redefinir a senha.');
+            } catch (error) {
+                showAuthError('general', getAuthErrorMessage(error.code));
+            } finally {
+                setAuthLoading(false);
+                authBtn.textContent = isLoginMode ? 'Entrar' : 'Criar conta';
+            }
+        });
+        
+        // Submit do formulário
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await handleAuthSubmit();
+        });
+        
+        // Limpar erros ao digitar
+        authEmail.addEventListener('input', () => {
+            authEmail.classList.remove('error');
+            hideAuthError('email');
+        });
+        authPassword.addEventListener('input', () => {
+            authPassword.classList.remove('error');
+            hideAuthError('password');
+        });        if (authConfirmPassword) {
+            authConfirmPassword.addEventListener('input', () => {
+                authConfirmPassword.classList.remove('error');
+                hideAuthError('confirmPassword');
+            });
+        }
+        
+        // Logout
+        btnLogout.addEventListener('click', async () => {
+            if (confirm('Deseja realmente sair da conta?')) {
+                setAuthLoading(true);
+                try {
+                    await auth.signOut();
+                    // Limpa campos
+                    authEmail.value = '';
+                    authPassword.value = '';
+                    if (authConfirmPassword) authConfirmPassword.value = '';
+                    showConnectionStatus('👋 Até logo!', false);
+                } catch (error) {
+                    console.error('Erro ao sair:', error);
+                } finally {
+                    setAuthLoading(false);
+                }
+            }
+        });
+    }
+    
+    async function handleAuthSubmit() {
+        const email = authEmail.value.trim();
+        const password = authPassword.value;
+        const confirmPassword = authConfirmPassword?.value || '';
+        
+        clearAuthErrors();
+        
+        // Validações
+        let hasError = false;
+        
+        if (!isValidEmail(email)) {
+            showAuthError('email', 'E-mail inválido');
+            authEmail.classList.add('error');
+            hasError = true;
+        }
+        
+        if (password.length < 6) {
+            showAuthError('password', 'Senha deve ter pelo menos 6 caracteres');
+            authPassword.classList.add('error');
+            hasError = true;
+        }
+        
+        if (!isLoginMode && password !== confirmPassword) {            showAuthError('confirmPassword', 'As senhas não conferem');
+            if (authConfirmPassword) authConfirmPassword.classList.add('error');
+            hasError = true;
+        }
+        
+        if (hasError) return;
+        
+        // Processa autenticação
+        setAuthLoading(true);
+        
+        try {
+            if (isLoginMode) {
+                // LOGIN
+                await auth.signInWithEmailAndPassword(email, password);
+                showConnectionStatus('✅ Login realizado!', false);
+            } else {
+                // CADASTRO
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                // Atualiza nome de exibição
+                await userCredential.user.updateProfile({
+                    displayName: email.split('@')[0]
+                });
+                showConnectionStatus('✅ Conta criada com sucesso!', false);
+            }
+        } catch (error) {
+            console.error('Auth error:', error);
+            showAuthError('general', getAuthErrorMessage(error.code));
+        } finally {
+            setAuthLoading(false);
+        }
+    }
+    
+    function toggleAuthMode() {
+        isLoginMode = !isLoginMode;
+        
+        if (isLoginMode) {
+            // Modo Login
+            authSubtitle.textContent = 'Entre para continuar conversando';
+            authBtn.textContent = 'Entrar';
+            authSwitchText.textContent = 'Não tem conta?';
+            authSwitchLink.textContent = 'Criar conta';
+            confirmPasswordGroup.style.display = 'none';
+            forgotPasswordLink.style.display = 'block';
+            authPassword.placeholder = 'Sua senha';
+            authPassword.setAttribute('autocomplete', 'current-password');
+        } else {
+            // Modo Cadastro
+            authSubtitle.textContent = 'Crie sua conta gratuita';
+            authBtn.textContent = 'Criar conta';
+            authSwitchText.textContent = 'Já tem conta?';            authSwitchLink.textContent = 'Fazer login';
+            confirmPasswordGroup.style.display = 'flex';
+            forgotPasswordLink.style.display = 'none';
+            authPassword.placeholder = 'Crie uma senha';
+            authPassword.setAttribute('autocomplete', 'new-password');
+        }
+        
+        clearAuthErrors();
+        authEmail.classList.remove('error');
+        authPassword.classList.remove('error');
+        if (authConfirmPassword) authConfirmPassword.classList.remove('error');
+    }
+    
+    function togglePasswordVisibility(input, toggleBtn) {
+        if (input.type === 'password') {
+            input.type = 'text';
+            toggleBtn.textContent = '🙈';
+        } else {
+            input.type = 'password';
+            toggleBtn.textContent = '👁️';
+        }
+        input.focus();
+    }
+    
+    function setAuthLoading(loading) {
+        authBtn.disabled = loading;
+        authBtn.classList.toggle('loading', loading);
+        if (!loading) {
+            authBtn.textContent = isLoginMode ? 'Entrar' : 'Criar conta';
+        }
+        guestBtn.disabled = loading;
+        authEmail.disabled = loading;
+        authPassword.disabled = loading;
+        if (authConfirmPassword) authConfirmPassword.disabled = loading;
+    }
+    
+    function showAuthError(field, message) {
+        const errorEl = {
+            'email': emailError,
+            'password': passwordError,
+            'confirmPassword': confirmPasswordError,
+            'general': authGeneralError
+        }[field];
+        
+        if (errorEl) {
+            errorEl.textContent = message;
+            errorEl.classList.add('visible');
+        }
+    }
+        function hideAuthError(field) {
+        const errorEl = {
+            'email': emailError,
+            'password': passwordError,
+            'confirmPassword': confirmPasswordError,
+            'general': authGeneralError
+        }[field];
+        
+        if (errorEl) {
+            errorEl.classList.remove('visible');
+        }
+    }
+    
+    function clearAuthErrors() {
+        ['email', 'password', 'confirmPassword', 'general'].forEach(hideAuthError);
+    }
+    
+    function isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+    
+    function getAuthErrorMessage(code) {
+        const messages = {
+            'auth/invalid-email': 'E-mail inválido',
+            'auth/user-disabled': 'Esta conta foi desativada',
+            'auth/user-not-found': 'Nenhuma conta com este e-mail',
+            'auth/wrong-password': 'Senha incorreta',
+            'auth/email-already-in-use': 'Este e-mail já está em uso',
+            'auth/weak-password': 'Senha muito fraca (mínimo 6 caracteres)',
+            'auth/operation-not-allowed': 'Este tipo de login não está habilitado',
+            'auth/too-many-requests': 'Muitas tentativas. Tente mais tarde',
+            'auth/network-request-failed': 'Erro de conexão. Verifique sua internet',
+            'auth/internal-error': 'Erro interno. Tente novamente'
+        };
+        return messages[code] || 'Erro na autenticação. Tente novamente.';
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // ── Funções do Chat (MANTIDAS + AJUSTES) ──
+    // ═══════════════════════════════════════════════════════
+    
+    function setupEmojis() {
+        const emojis = ['😀','😂','🥰','😎','🤔','😢','😡','👍','👎','❤️','🔥','⭐','🎉','💡','✅','❌','👋','🙏','💪','🤖','🚀','💬','📱','☕','🌙','🌈','🎵','📌','💻','🎮'];
+        emojis.forEach(emoji => {
+            const btn = document.createElement('button');
+            btn.textContent = emoji;
+            btn.addEventListener('click', () => {
+                if (isAuthReady) {
+                    messageInput.value += emoji;
+                    messageInput.focus();                }
+            });
+            emojiPicker.appendChild(btn);
+        });
+
+        btnEmoji.addEventListener('click', () => {
+            if (isAuthReady) emojiPicker.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.emoji-picker') && !e.target.closest('.btn-emoji')) {
+                emojiPicker.classList.remove('active');
+            }
+        });
+    }
+
+    function setupChatEvents() {
+        btnSend.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    }
+
+    // ── Respostas do bot (original) ──
+    const responses = {
+        'oi': 'Olá! 😊 Tudo bem com você?',
+        'olá': 'Olá! Como posso ajudar? 😄',
+        'ola': 'Olá! Como posso ajudar? 😄',
+        'tudo bem': 'Tudo ótimo! E com você? 😊',
+        'como vai': 'Estou muito bem, obrigado por perguntar! 🚀',
+        'seu nome': 'Eu sou o ChatBot, seu assistente virtual! 🤖',
+        'ajuda': 'Claro! Posso conversar, responder perguntas ou apenas bater um papo. O que você precisa? 💡',
+        'obrigado': 'De nada! Estou sempre aqui para ajudar! 😊',
+        'obrigada': 'De nada! Estou sempre aqui para ajudar! 😊',
+        'tchau': 'Até mais! Foi ótimo conversar com você! 👋😊',
+        'adeus': 'Até a próxima! Tenha um ótimo dia! 🌟',
+        'sim': 'Entendido! 😊',
+        'não': 'Tudo bem, sem problemas! 👍',
+        'nao': 'Tudo bem, sem problemas! 👍',
+        'horas': `Agora são ${getCurrentTime()} ⏰`,
+        'data': `Hoje é ${new Date().toLocaleDateString('pt-BR')} 📅`,
+        'piada': 'Por que o computador foi ao médico? Porque estava com vírus! 😂💻',
+        'música': 'Se eu pudesse tocar música, tocaria algo bem animado! 🎵🎶',
+        'clima': 'Infelizmente não tenho acesso à previsão do tempo, mas espero que esteja um dia lindo aí! ☀️🌈',
+    };
+
+    const fallbackResponses = [
+        'Interessante! Me conte mais sobre isso. 🤔',
+        'Entendi! Posso ajudar com algo mais? 😊',
+        'Que legal! Continue, estou ouvindo. 👂',        'Hmm, não tenho certeza sobre isso, mas adoro conversar! 💬',
+        'Boa! Vamos continuar conversando. 🚀',
+        'Obrigado por compartilhar isso comigo! 😄',
+        'Que interessante! Me diga mais. 🌟',
+        'Entendo perfeitamente! 💡',
+    ];
+
+    function getBotResponse(message) {
+        const msg = message.toLowerCase().trim();
+        for (const [key, value] of Object.entries(responses)) {
+            if (msg.includes(key)) return value;
+        }
+        return fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
+    }
+
+    // ── Utilidades ──
+    function getCurrentTime() {
+        return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function scrollToBottom() {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // ── Firebase: Enviar mensagem ──
+    async function sendToFirebase(text) {
+        if (!isAuthReady || !currentUserId) {
+            showConnectionStatus('⚠️ Autenticação necessária', true);
+            return;
+        }
+        
+        try {
+            if (!text || text.trim().length === 0 || text.length > 500) {
+                throw new Error('Mensagem inválida');
+            }
+            
+            await db.collection('messages').add({
+                text: text.trim(),
+                userId: currentUserId,
+                userName: currentUserName,
+                userEmail: currentEmail, // Novo campo para identificação
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                isBot: false
+            });
+            showConnectionStatus('✅ Enviado', false);
+        } catch (error) {
+            console.error('Erro ao enviar: ', error);
+            if (error.code === 'permission-denied') {
+                showConnectionStatus('🔐 Permissão negada', true);
+            } else {                showConnectionStatus('❌ Falha ao enviar', true);
+            }
+        }
+    }
+
+    // ── Firebase: Ouvir mensagens ──
+    function listenToMessages() {
+        if (!isAuthReady) return;
+        
+        // Cancela listener anterior se existir
+        if (unsubscribeMessages) {
+            unsubscribeMessages();
+        }
+        
+        unsubscribeMessages = db.collection('messages')
+          .orderBy('timestamp', 'asc')
+          .limit(100)
+          .onSnapshot((snapshot) => {
+              snapshot.docChanges().forEach((change) => {
+                  if (change.type === 'added') {
+                      const data = change.doc.data();
+                      if (data.userId !== currentUserId || data.isBot) {
+                          addMessage(data.text, data.isBot ? 'received' : 'received', data.userName, data.timestamp);
+                      }
+                  }
+              });
+          }, (error) => {
+              console.error('Erro ao ouvir mensagens: ', error);
+              if (error.code === 'permission-denied') {
+                  showConnectionStatus('🔐 Verifique as regras do Firestore', true);
+              } else {
+                  showConnectionStatus('🔴 Erro de conexão', true);
+              }
+          });
+    }
+
+    // ── Status de conexão ──
+    function showConnectionStatus(message, isError) {
+        connectionStatus.textContent = message;
+        connectionStatus.className = 'connection-status visible' + (isError ? ' error' : '');
+        setTimeout(() => {
+            if (!isError) connectionStatus.classList.remove('visible');
+        }, isError ? 5000 : 2000);
+    }
+
+    // ── Enviar mensagem ──
+    function sendMessage() {
+        if (!isAuthReady) {
+            authScreen.classList.remove('hidden');
+            return;        }
+        
+        const text = messageInput.value.trim();
+        if (!text) return;
+        
+        if (text.length > 500) {
+            showConnectionStatus('⚠️ Máximo 500 caracteres', true);
+            return;
+        }
+
+        addMessage(text, 'sent', currentUserName);
+        messageInput.value = '';
+        emojiPicker.classList.remove('active');
+        sendToFirebase(text);
+
+        // Resposta do bot
+        showTyping();
+        const delay = 800 + Math.random() * 1200;
+        setTimeout(() => {
+            hideTyping();
+            const botResponse = getBotResponse(text);
+            db.collection('messages').add({
+                text: botResponse,
+                userId: 'bot',
+                userName: 'ChatBot',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                isBot: true
+            }).catch(err => console.error('Erro bot:', err));
+        }, delay);
+    }
+
+    function addMessage(text, type, sender = 'ChatBot', timestamp = null) {
+        const msgDiv = document.createElement('div');
+        msgDiv.classList.add('message', type);
+        
+        const time = timestamp?.toDate 
+            ? timestamp.toDate().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+            : getCurrentTime();
+        
+        const senderHtml = (type === 'received' && sender && sender !== 'ChatBot') 
+            ? `<div class="sender-name">${escapeHtml(sender)}</div>` 
+            : '';
+        
+        msgDiv.innerHTML = `${senderHtml}${escapeHtml(text)}<div class="time">${time}</div>`;
+        chatMessages.insertBefore(msgDiv, typingIndicator);
+        scrollToBottom();
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function showTyping() {
+        typingIndicator.style.display = 'flex';
+        scrollToBottom();
+    }
+
+    function hideTyping() {
+        typingIndicator.style.display = 'none';
+    }
+
+</script>
+
+</body>
+</html>
