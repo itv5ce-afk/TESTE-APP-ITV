@@ -21,7 +21,7 @@
         .stat-val { font-size: 1.5rem; font-weight: bold; color: #00ff00; }
         .stat-label { font-size: 0.8rem; color: #aaa; text-transform: uppercase; }
 
-        /* Dropdown do botão Renovar */
+        /* Ajuste para o dropdown do botão Renovar */
         .dropdown-menu { background-color: #2c2c2c; border: 1px solid #444; }
         .dropdown-item { color: #fff; }
         .dropdown-item:hover { background-color: #444; color: #fff; }
@@ -129,7 +129,7 @@
                 <input type="text" id="cUser" class="form-control mb-2" placeholder="Usuário">
                 <input type="text" id="cPass" class="form-control mb-2" placeholder="Senha">
                 <label class="small text-secondary">Valor da Mensalidade:</label>
-                <input type="number" id="cValor" class="form-control mb-2" placeholder="Valor">
+                <input type="number" id="cValor" class="form-control mb-2" placeholder="Valor" step="0.01">
                 <label class="small text-secondary">Data de Vencimento:</label>
                 <input type="date" id="cData" class="form-control mb-2">
                 <input type="text" id="cServ" class="form-control mb-2" placeholder="Servidor">
@@ -149,14 +149,36 @@
     let isUnlocked = localStorage.getItem('itv_unlocked') === 'true';
     let currentFilter = 'ativos';
 
+    // Inicializar data do filtro de mês
     document.getElementById('filterMes').value = new Date().toISOString().slice(0, 7);
 
-    function checkLock() { return; }
+    // Função auxiliar para converter data ISO (YYYY-MM-DD) para DD/MM/AAAA
+    function formatDateToBR(isoDate) {
+        if (!isoDate) return '';
+        const parts = isoDate.split('-');
+        if (parts.length !== 3) return isoDate;
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+
+    // Função auxiliar para converter data DD/MM/AAAA para ISO (YYYY-MM-DD) ao salvar
+    function parseDateBRtoISO(brDate) {
+        if (!brDate) return '';
+        const parts = brDate.split('/');
+        if (parts.length !== 3) return brDate;
+        return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+
+    function checkLock() {
+        // Bloqueio desabilitado
+        return;
+    }
+
     function toggleAdminPanel() {
         const panel = document.getElementById('adminPanel');
         panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
         if(panel.style.display === 'block') renderFinanceiro();
     }
+
     function unlockApp() {
         if (document.getElementById('adminPass').value === 'itv2026001') {
             isUnlocked = true;
@@ -164,8 +186,10 @@
             document.getElementById('adminLock').style.display = 'none';
         } else { alert("Senha incorreta!"); }
     }
+
     function openNav() { document.getElementById("mySidenav").style.width = "250px"; }
     function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
+
     function saveSettings() {
         config = {
             msg: document.getElementById('cfgMsg').value,
@@ -176,6 +200,7 @@
         localStorage.setItem('itv_config', JSON.stringify(config));
         closeNav();
     }
+
     function showModalCadastro(index = -1) {
         if(index === -1) {
             document.getElementById('editIndex').value = "";
@@ -184,9 +209,25 @@
             document.getElementById('cPass').value = "";
             document.getElementById('cValor').value = "";
             document.getElementById('cData').value = "";
+            document.getElementById('cServ').value = "";
+            document.getElementById('cUrl').value = "";
+            document.getElementById('cTel').value = "";
+            document.getElementById('cObs').value = "";
+        } else {
+            const c = clientes[index];
+            document.getElementById('cNome').value = c.nome;
+            document.getElementById('cUser').value = c.user;
+            document.getElementById('cPass').value = c.pass;
+            document.getElementById('cValor').value = c.valor;
+            document.getElementById('cData').value = c.data; // mantém ISO internamente
+            document.getElementById('cServ').value = c.serv;
+            document.getElementById('cUrl').value = c.url;
+            document.getElementById('cTel').value = c.tel;
+            document.getElementById('cObs').value = c.obs;
         }
         new bootstrap.Modal(document.getElementById('modalCadastro')).show();
     }
+
     function saveCliente() {
         const index = document.getElementById('editIndex').value;
         const novo = {
@@ -194,76 +235,114 @@
             user: document.getElementById('cUser').value,
             pass: document.getElementById('cPass').value,
             valor: parseFloat(document.getElementById('cValor').value) || 0,
-            data: document.getElementById('cData').value,
+            data: document.getElementById('cData').value, // já ISO
             serv: document.getElementById('cServ').value,
             url: document.getElementById('cUrl').value,
             tel: document.getElementById('cTel').value,
             obs: document.getElementById('cObs').value,
             status: 'ativo'
         };
+
         if(index === "") clientes.push(novo);
-        else { novo.status = clientes[index].status; clientes[index] = novo; }
+        else {
+            novo.status = clientes[index].status;
+            clientes[index] = novo;
+        }
+
         localStorage.setItem('itv_clientes', JSON.stringify(clientes));
         location.reload();
     }
+
     function renderFinanceiro() {
-        const mesSelecionado = document.getElementById('filterMes').value;
-        let recebido = 0, pendente = 0, totalGeral = 0, totalAtivos = 0;
+        const mesSelecionado = document.getElementById('filterMes').value; // YYYY-MM
+        let recebido = 0;
+        let pendente = 0;
+        let totalGeral = 0;
+        let totalAtivos = 0;
+
         clientes.forEach(c => {
             if(c.status !== 'deletado') {
                 const val = parseFloat(c.valor) || 0;
                 totalGeral += val;
                 totalAtivos++;
+                
                 if(c.data.startsWith(mesSelecionado)) {
-                    if(c.status === 'ativo' || c.status === 'vencer' || c.status === 'expirado') recebido += val;
-                    else if(c.status === 'apagar') pendente += val;
+                    if(c.status === 'ativo' || c.status === 'vencer' || c.status === 'expirado') {
+                        recebido += val;
+                    } else if(c.status === 'apagar') {
+                        pendente += val;
+                    }
                 }
             }
         });
+
         document.getElementById('finRecebido').innerText = `R$ ${recebido.toFixed(2)}`;
         document.getElementById('finPendente').innerText = `R$ ${pendente.toFixed(2)}`;
         document.getElementById('finTotalClientes').innerText = totalAtivos;
         document.getElementById('finGeral').innerText = `R$ ${totalGeral.toFixed(2)}`;
     }
+
+    function pagarCliente(i) {
+        const cliente = clientes[i];
+        // Mensagem com a data no formato DD/MM/AAAA
+        const msg = `✅𝕊𝔼𝕌 ℙ𝔸𝔾𝔸𝕄𝔼ℕ𝕋𝕆 𝔽𝕆𝕀 ℂ𝕆ℕ𝔽𝕀ℝ𝕄𝔸𝔻𝕆𝕊!!\n\nNome: ${cliente.nome}\nPlano Familia: R$ ${cliente.valor.toFixed(2)}\nProvedor: ${cliente.serv}\nUsuário: ${cliente.user}\nSenha: ${cliente.pass}\nUrl: ${cliente.url}\nVence: ${formatDateToBR(cliente.data)}\n\nDivirta-se!!`;
+        window.open(`https://wa.me/${cliente.tel.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`);
+        cliente.status = 'ativo';
+        localStorage.setItem('itv_clientes', JSON.stringify(clientes));
+        renderClientes();
+    }
+
     function renderClientes() {
         const lista = document.getElementById('listaClientes');
         const search = document.getElementById('search').value.toLowerCase();
         lista.innerHTML = "";
+        
         let counts = { ativos: 0, vencer: 0, exp: 0, apagar: 0, del: 0 };
         const hoje = new Date();
+        // Zera horas para comparação de dias
+        hoje.setHours(0,0,0,0);
+
         clientes.forEach((c, i) => {
             const dataVenc = new Date(c.data);
+            dataVenc.setHours(0,0,0,0);
             const diffDays = Math.ceil((dataVenc - hoje) / (1000 * 60 * 60 * 24));
+            
             let statusReal = c.status;
             if(c.status !== 'deletado' && c.status !== 'apagar') {
                 if(diffDays < 0) statusReal = 'expirado';
                 else if(diffDays <= 3) statusReal = 'vencer';
                 else statusReal = 'ativo';
             }
+
             if(statusReal === 'ativo') counts.ativos++;
             if(statusReal === 'vencer') counts.vencer++;
             if(statusReal === 'expirado') counts.exp++;
             if(c.status === 'apagar') counts.apagar++;
             if(c.status === 'deletado') counts.del++;
+
             if(currentFilter === 'ativos' && (statusReal === 'deletado' || statusReal === 'expirado' || statusReal === 'apagar')) return;
             if(currentFilter === 'vencer' && statusReal !== 'vencer') return;
             if(currentFilter === 'expirados' && statusReal !== 'expirado') return;
             if(currentFilter === 'apagar' && c.status !== 'apagar') return;
             if(currentFilter === 'deletados' && c.status !== 'deletado') return;
+            
             if(!c.nome.toLowerCase().includes(search)) return;
 
-            // Lógica de exibição dos botões conforme a aba atual
-            let botoes = '';
-            if (currentFilter === 'apagar') {
-                // Na aba A PAGAR, exibe APENAS o botão PAGAR
-                botoes = `
+            const dataFormatada = formatDateToBR(c.data);
+            const valorFormatado = `R$ ${c.valor.toFixed(2)}`;
+
+            // Determina quais botões mostrar
+            let botoesHtml = '';
+            if (c.status === 'apagar') {
+                // Na aba A PAGAR: apenas o botão PAGAR
+                botoesHtml = `
                     <div class="d-flex flex-wrap gap-1">
-                        <button class="btn btn-sm btn-primary" onclick="updateStatus('${i}', 'pago')">PAGAR</button>
+                        <button class="btn btn-sm btn-primary" onclick="pagarCliente(${i})">PAGAR</button>
                     </div>
                 `;
             } else {
-                // Nas demais abas, exibe todos os botões normalmente
-                botoes = `
+                // Botões normais para outras abas
+                botoesHtml = `
                     <div class="d-flex flex-wrap gap-1">
                         <button class="btn btn-sm btn-success" onclick="sendZap('${i}', 'cobranca')">COBRAR</button>
                         <div class="btn-group">
@@ -289,13 +368,14 @@
                 <div class="card-cliente">
                     <div class="d-flex justify-content-between">
                         <h5>${c.nome}</h5>
-                        <span class="badge ${statusReal === 'expirado' ? 'bg-danger' : (statusReal === 'vencer' ? 'bg-warning' : 'bg-success')}">${c.data}</span>
+                        <span class="badge ${statusReal === 'expirado' ? 'bg-danger' : (statusReal === 'vencer' ? 'bg-warning' : 'bg-success')}">${dataFormatada}</span>
                     </div>
-                    <p class="small mb-2">User: ${c.user} | Valor: <strong>R$${c.valor}</strong></p>
-                    ${botoes}
+                    <p class="small mb-2">User: ${c.user} | Valor: <strong>${valorFormatado}</strong></p>
+                    ${botoesHtml}
                 </div>
             `;
         });
+
         document.getElementById('countAtivos').innerText = counts.ativos;
         document.getElementById('countVencer').innerText = counts.vencer;
         document.getElementById('countExp').innerText = counts.exp;
@@ -303,25 +383,31 @@
         document.getElementById('countDel').innerText = counts.del;
         renderFinanceiro();
     }
+
     function sendZap(i, tipo) {
         const c = clientes[i];
         let msg = "";
         const novaData = new Date();
         novaData.setMonth(novaData.getMonth() + 1);
-        const dataFormat = novaData.toLocaleDateString('pt-BR');
+        const dataFormatada = formatDateToBR(c.data);
+        const novaDataFormatada = formatDateToBR(novaData.toISOString().split('T')[0]);
+
         if(tipo === 'cobranca') {
-            msg = `📩 𝕞𝕤𝕘-𝕒𝕦𝕥𝕠𝕞á𝕥𝕚𝕔𝕒📩\n🚨🚨🚨🚨🚨🚨🚨🚨\n\nOla ${c.nome}!!\nSou o assistente virtual da ITVplayer 🤖\n\nSua lista de\nTV, FILMES & SÉRIES\nexpirou ${c.data}\n\nPara renovar Faz um Pix 💠\n💰Plano Familia: R$:${c.valor}\n${config.msg}`;
+            msg = `📩 𝕞𝕤𝕘-𝕒𝕦𝕥𝕠𝕞á𝕥𝕚𝕔𝕒📩\n🚨🚨🚨🚨🚨🚨🚨🚨\n\nOla ${c.nome}!!\nSou o assistente virtual da ITVplayer 🤖\n\nSua lista de\nTV, FILMES & SÉRIES\nexpirou ${dataFormatada}\n\nPara renovar Faz um Pix 💠\n💰Plano Familia: R$:${c.valor.toFixed(2)}\n${config.msg}`;
         } else if(tipo === 'pago') {
-            msg = `✅𝕊𝔼𝕌 ℙ𝔸𝔾𝔸𝕄𝔼ℕ𝕋𝕆 𝔽𝕆𝕀 ℂ𝕆ℕ𝔽𝕀ℝ𝕄𝔸𝔻𝕆𝕊!!\n\nNome: ${c.nome}\nPlano Familia: ${c.valor}\nProvedor: ${c.serv}\nUsuário: ${c.user}\nSenha: ${c.pass}\nUrl: ${c.url}\nVence: ${dataFormat}\n\nDivirta-se!!`;
+            msg = `✅𝕊𝔼𝕌 ℙ𝔸𝔾𝔸𝕄𝔼ℕ𝕋𝕆 𝔽𝕆𝕀 ℂ𝕆ℕ𝔽𝕀ℝ𝕄𝔸𝔻𝕆𝕊!!\n\nNome: ${c.nome}\nPlano Familia: R$ ${c.valor.toFixed(2)}\nProvedor: ${c.serv}\nUsuário: ${c.user}\nSenha: ${c.pass}\nUrl: ${c.url}\nVence: ${novaDataFormatada}\n\nDivirta-se!!`;
         } else {
-            msg = `⛔️𝕊𝔼𝕌 ℙ𝔸𝔾𝔸𝕄𝔼ℕ𝕋𝕆 ℕ𝔸𝕆 𝔽𝕆𝕀 ℂ𝕆ℕ𝔽𝕀ℝ𝕄𝔸𝔻𝕆𝕊!!\n\nNome: ${c.nome}\nPlano Familia: ${c.valor}\nProvedor: ${c.serv}\nUsuário: ${c.user}\nSenha: ${c.pass}\nUrl: ${c.url}\nVence: ${dataFormat}\n\nDivirta-se!!`;
+            msg = `⛔️𝕊𝔼𝕌 ℙ𝔸𝔾𝔸𝕄𝔼ℕ𝕋𝕆 ℕ𝔸𝕆 𝔽𝕆𝕀 ℂ𝕆ℕ𝔽𝕀ℝ𝕄𝔸𝔻𝕆𝕊!!\n\nNome: ${c.nome}\nPlano Familia: R$ ${c.valor.toFixed(2)}\nProvedor: ${c.serv}\nUsuário: ${c.user}\nSenha: ${c.pass}\nUrl: ${c.url}\nVence: ${novaDataFormatada}\n\nDivirta-se!!`;
         }
+        
         window.open(`https://wa.me/${c.tel.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`);
     }
+
     function updateStatus(i, acao) {
         const dataAtual = new Date(clientes[i].data);
         dataAtual.setMonth(dataAtual.getMonth() + 1);
         clientes[i].data = dataAtual.toISOString().split('T')[0];
+        
         if(acao === 'pago') {
             clientes[i].status = 'ativo';
             sendZap(i, 'pago');
@@ -332,14 +418,16 @@
         localStorage.setItem('itv_clientes', JSON.stringify(clientes));
         renderClientes();
     }
+
     function filterData(f) { currentFilter = f; renderClientes(); }
     function softDelete(i) { clientes[i].status = 'deletado'; localStorage.setItem('itv_clientes', JSON.stringify(clientes)); renderClientes(); }
     function restore(i) { clientes[i].status = 'ativo'; localStorage.setItem('itv_clientes', JSON.stringify(clientes)); renderClientes(); }
     function hardDelete(i) { if(confirm("Excluir permanentemente?")) { clientes.splice(i, 1); localStorage.setItem('itv_clientes', JSON.stringify(clientes)); renderClientes(); } }
     function accessPanel(n) { const url = config['p'+n]; if(url) window.open(url); else alert("Cadastre a URL no menu lateral"); }
+
     function editCliente(i) {
-        const c = clientes[i];
         document.getElementById('editIndex').value = i;
+        const c = clientes[i];
         document.getElementById('cNome').value = c.nome;
         document.getElementById('cUser').value = c.user;
         document.getElementById('cPass').value = c.pass;
@@ -351,6 +439,8 @@
         document.getElementById('cObs').value = c.obs;
         new bootstrap.Modal(document.getElementById('modalCadastro')).show();
     }
+
+    // Inicialização
     renderClientes();
     document.getElementById('cfgMsg').value = config.msg;
     document.getElementById('url1').value = config.p1;
