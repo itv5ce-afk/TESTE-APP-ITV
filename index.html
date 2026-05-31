@@ -252,33 +252,38 @@
             if(currentFilter === 'deletados' && c.status !== 'deletado') return;
             if(!c.nome.toLowerCase().includes(search)) return;
 
-            // Montagem dos botões com condição para exibir botão PAGAR se estiver na aba 'apagar'
-            let botoes = `
-                <div class="d-flex flex-wrap gap-1">
-                    <button class="btn btn-sm btn-success" onclick="sendZap('${i}', 'cobranca')">COBRAR</button>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-warning dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                            RENOVAR
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><button class="dropdown-item" onclick="updateStatus('${i}', 'pago')">✅ PAGO</button></li>
-                            <li><button class="dropdown-item" onclick="updateStatus('${i}', 'naopago')">❌ NÃO PAGO</button></li>
-                        </ul>
+            // Lógica de exibição dos botões conforme a aba atual
+            let botoes = '';
+            if (currentFilter === 'apagar') {
+                // Na aba A PAGAR, exibe APENAS o botão PAGAR
+                botoes = `
+                    <div class="d-flex flex-wrap gap-1">
+                        <button class="btn btn-sm btn-primary" onclick="updateStatus('${i}', 'pago')">PAGAR</button>
                     </div>
-            `;
-            // Botão PAGAR exclusivo para clientes com status 'apagar'
-            if(c.status === 'apagar') {
-                botoes += `<button class="btn btn-sm btn-primary" onclick="updateStatus('${i}', 'pago')">PAGAR</button>`;
+                `;
+            } else {
+                // Nas demais abas, exibe todos os botões normalmente
+                botoes = `
+                    <div class="d-flex flex-wrap gap-1">
+                        <button class="btn btn-sm btn-success" onclick="sendZap('${i}', 'cobranca')">COBRAR</button>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-warning dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                RENOVAR
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><button class="dropdown-item" onclick="updateStatus('${i}', 'pago')">✅ PAGO</button></li>
+                                <li><button class="dropdown-item" onclick="updateStatus('${i}', 'naopago')">❌ NÃO PAGO</button></li>
+                            </ul>
+                        </div>
+                        <button class="btn btn-sm bg-lilas" onclick="editCliente(${i})"><i class="bi bi-pencil"></i></button>
+                        ${c.status === 'deletado' ? 
+                            `<button class="btn btn-sm btn-info" onclick="restore(${i})">RESTAURAR</button>
+                             <button class="btn btn-sm btn-danger" onclick="hardDelete(${i})">EXCLUIR</button>` : 
+                            `<button class="btn btn-sm btn-danger" onclick="softDelete(${i})"><i class="bi bi-trash"></i></button>`
+                        }
+                    </div>
+                `;
             }
-            botoes += `
-                    <button class="btn btn-sm bg-lilas" onclick="editCliente(${i})"><i class="bi bi-pencil"></i></button>
-                    ${c.status === 'deletado' ? 
-                        `<button class="btn btn-sm btn-info" onclick="restore(${i})">RESTAURAR</button>
-                         <button class="btn btn-sm btn-danger" onclick="hardDelete(${i})">EXCLUIR</button>` : 
-                        `<button class="btn btn-sm btn-danger" onclick="softDelete(${i})"><i class="bi bi-trash"></i></button>`
-                    }
-                </div>
-            `;
 
             lista.innerHTML += `
                 <div class="card-cliente">
