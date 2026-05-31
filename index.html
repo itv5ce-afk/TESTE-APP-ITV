@@ -7,28 +7,145 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
-        body { background-color: #000; color: #fff; font-family: sans-serif; }
-        .navbar { background-color: #111; border-bottom: 1px solid #333; }
-        .card-cliente { background-color: #1a1a1a; border: 1px solid #333; border-radius: 8px; margin-bottom: 10px; padding: 15px; }
+        body { 
+            background-color: #000; 
+            color: #fff; 
+            font-family: sans-serif; 
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
+        /* ========== MATRIX BACKGROUND ========== */
+        #matrixCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none; /* Não interfere com cliques */
+        }
+        
+        /* Overlay sutil para melhorar legibilidade sobre o Matrix */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75); /* Escurece o fundo para melhor leitura */
+            z-index: -1;
+            pointer-events: none;
+        }
+        /* ========== FIM MATRIX ========== */
+        
+        .navbar { 
+            background-color: rgba(17, 17, 17, 0.95); 
+            border-bottom: 1px solid #333; 
+            position: relative;
+            z-index: 10;
+        }
+        .card-cliente {             background-color: rgba(26, 26, 26, 0.95); 
+            border: 1px solid #333; 
+            border-radius: 8px; 
+            margin-bottom: 10px; 
+            padding: 15px; 
+            position: relative;
+            z-index: 5;
+            backdrop-filter: blur(2px);
+        }
         .btn-small { font-size: 0.7rem; padding: 5px; flex: 1; margin: 2px; border: none; color: white; }
         .bg-lilas { background-color: #9933ff !important; color: white; }
-        #adminLock { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        .menu-lateral { height: 100%; width: 0; position: fixed; z-index: 1000; top: 0; left: 0; background-color: #111; overflow-x: hidden; transition: 0.5s; padding-top: 60px; }
-        .menu-lateral a, .menu-lateral label { padding: 8px 32px; text-decoration: none; font-size: 18px; color: #818181; display: block; }
+        #adminLock { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.95); 
+            z-index: 9999; 
+            display: none; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            text-align: center; 
+        }
+        .menu-lateral { 
+            height: 100%; 
+            width: 0; 
+            position: fixed; 
+            z-index: 1000; 
+            top: 0; 
+            left: 0; 
+            background-color: rgba(17, 17, 17, 0.98); 
+            overflow-x: hidden; 
+            transition: 0.5s; 
+            padding-top: 60px; 
+            border-right: 1px solid #333;
+        }
+        .menu-lateral a, .menu-lateral label { 
+            padding: 8px 32px; 
+            text-decoration: none; 
+            font-size: 18px; 
+            color: #818181; 
+            display: block; 
+            position: relative;
+            z-index: 1001;
+        }
         
         /* Estilos Novo Painel Administrativo */
-        .card-financeiro { background: #222; border-left: 4px solid #9933ff; border-radius: 5px; padding: 15px; margin-bottom: 15px; }
+        .card-financeiro {             background: rgba(34, 34, 34, 0.95); 
+            border-left: 4px solid #9933ff; 
+            border-radius: 5px; 
+            padding: 15px; 
+            margin-bottom: 15px;
+            backdrop-filter: blur(2px);
+            position: relative;
+            z-index: 5;
+        }
         .stat-val { font-size: 1.5rem; font-weight: bold; color: #00ff00; }
         .stat-label { font-size: 0.8rem; color: #aaa; text-transform: uppercase; }
 
         /* Ajuste para o dropdown do botão Renovar */
-        .dropdown-menu { background-color: #2c2c2c; border: 1px solid #444; }
+        .dropdown-menu { 
+            background-color: rgba(44, 44, 44, 0.98); 
+            border: 1px solid #444; 
+            z-index: 1050;
+        }
         .dropdown-item { color: #fff; }
         .dropdown-item:hover { background-color: #444; color: #fff; }
         .btn-group .btn { margin: 0 2px; }
+        
+        /* Inputs e elementos de formulário */
+        .form-control, .form-select {
+            background-color: rgba(30, 30, 30, 0.95) !important;
+            border: 1px solid #444 !important;
+            color: #fff !important;
+            position: relative;
+            z-index: 5;
+        }
+        .form-control::placeholder { color: #888 !important; }
+        
+        /* Modal */
+        .modal-content {
+            background-color: rgba(26, 26, 26, 0.98) !important;
+            border: 1px solid #444;
+            position: relative;
+            z-index: 1050;
+        }
+        
+        /* Botões */
+        .btn { position: relative; z-index: 5; }
+        
+        /* Container principal */
+        .container { position: relative; z-index: 5; }
     </style>
 </head>
 <body>
+
+<!-- Canvas para efeito Matrix --><canvas id="matrixCanvas"></canvas>
 
 <div id="adminLock">
     <h2>Entre em contato com o ADM</h2>
@@ -68,7 +185,7 @@
     
     <div id="adminPanel" style="display: none;" class="mb-4 animate__animated animate__fadeIn">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4><i class="bi bi- cash-stack text-success"></i> Gestão Financeira</h4>
+            <h4><i class="bi bi-cash-stack text-success"></i> Gestão Financeira</h4>
             <input type="month" id="filterMes" class="form-control w-auto bg-dark text-white border-secondary" onchange="renderFinanceiro()">
         </div>
         <div class="row g-2">
@@ -77,8 +194,7 @@
                     <div class="stat-label">Recebido (Mês)</div>
                     <div class="stat-val" id="finRecebido">R$ 0,00</div>
                 </div>
-            </div>
-            <div class="col-6 col-md-3">
+            </div>            <div class="col-6 col-md-3">
                 <div class="card-financeiro" style="border-left-color: #ffc107;">
                     <div class="stat-label">A Receber</div>
                     <div class="stat-val text-warning" id="finPendente">R$ 0,00</div>
@@ -127,8 +243,7 @@
                 <label class="small text-secondary">Nome do Cliente:</label>
                 <input type="text" id="cNome" class="form-control mb-2" placeholder="Nome">
                 <input type="text" id="cUser" class="form-control mb-2" placeholder="Usuário">
-                <input type="text" id="cPass" class="form-control mb-2" placeholder="Senha">
-                <label class="small text-secondary">Valor da Mensalidade:</label>
+                <input type="text" id="cPass" class="form-control mb-2" placeholder="Senha">                <label class="small text-secondary">Valor da Mensalidade:</label>
                 <input type="number" id="cValor" class="form-control mb-2" placeholder="Valor" step="0.01">
                 <label class="small text-secondary">Data de Vencimento:</label>
                 <input type="date" id="cData" class="form-control mb-2">
@@ -144,6 +259,77 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    // ========== MATRIX RAIN EFFECT ==========
+    (function initMatrix() {
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Ajusta canvas para tela cheia
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Caracteres do Matrix (katakana + latinos + números)
+        const matrixChars = 'ｦｧｨｩｪｫｬｭｮｯｰｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const chars = matrixChars.split('');
+        
+        // Configurações da animação
+        const fontSize = 14; // Tamanho da fonte
+        const columns = Math.floor(canvas.width / fontSize); // Colunas de caracteres
+        const drops = []; // Posição Y de cada coluna
+        
+        // Inicializa posições aleatórias
+        for(let i = 0; i < columns; i++) {
+            drops[i] = Math.random() * -100; // Começa acima da tela
+        }
+        
+        // Velocidade lenta conforme solicitado
+        const speed = 0.4; // Quanto menor, mais lento
+        
+        function draw() {
+            // Fundo preto semi-transparente para criar rastro
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);            
+            // Cor verde Matrix com brilho
+            ctx.fillStyle = '#00FF41'; // Verde neon clássico
+            ctx.font = `${fontSize}px monospace`;
+            
+            // Desenha cada caractere
+            for(let i = 0; i < drops.length; i++) {
+                // Caractere aleatório
+                const char = chars[Math.floor(Math.random() * chars.length)];
+                
+                // Posição X e Y
+                const x = i * fontSize;
+                const y = drops[i] * fontSize;
+                
+                // Brilho variável (caracteres no topo mais brilhantes)
+                const opacity = Math.min(1, Math.max(0.3, (canvas.height - y) / (canvas.height * 0.3)));
+                ctx.fillStyle = `rgba(0, 255, 65, ${opacity})`;
+                
+                // Desenha o caractere
+                ctx.fillText(char, x, y);
+                
+                // Move a gota para baixo
+                drops[i] += speed;
+                
+                // Reseta quando sai da tela (com variação aleatória)
+                if(drops[i] * fontSize > canvas.height + fontSize && Math.random() > 0.975) {
+                    drops[i] = Math.random() * -20;
+                }
+            }
+            
+            requestAnimationFrame(draw);
+        }
+        
+        // Inicia animação
+        draw();
+    })();
+    // ========== FIM MATRIX ==========
+
     let clientes = JSON.parse(localStorage.getItem('itv_clientes')) || [];
     let config = JSON.parse(localStorage.getItem('itv_config')) || { msg: "", p1: "", p2: "", p3: "" };
     let isUnlocked = localStorage.getItem('itv_unlocked') === 'true';
@@ -155,8 +341,7 @@
     // Função auxiliar para converter data ISO (YYYY-MM-DD) para DD/MM/AAAA
     function formatDateToBR(isoDate) {
         if (!isoDate) return '';
-        const parts = isoDate.split('-');
-        if (parts.length !== 3) return isoDate;
+        const parts = isoDate.split('-');        if (parts.length !== 3) return isoDate;
         return `${parts[2]}/${parts[1]}/${parts[0]}`;
     }
 
@@ -205,8 +390,7 @@
         if(index === -1) {
             document.getElementById('editIndex').value = "";
             document.getElementById('cNome').value = "";
-            document.getElementById('cUser').value = "";
-            document.getElementById('cPass').value = "";
+            document.getElementById('cUser').value = "";            document.getElementById('cPass').value = "";
             document.getElementById('cValor').value = "";
             document.getElementById('cData').value = "";
             document.getElementById('cServ').value = "";
@@ -255,8 +439,7 @@
 
     function renderFinanceiro() {
         const mesSelecionado = document.getElementById('filterMes').value; // YYYY-MM
-        let recebido = 0;
-        let pendente = 0;
+        let recebido = 0;        let pendente = 0;
         let totalGeral = 0;
         let totalAtivos = 0;
 
@@ -305,8 +488,7 @@
         clientes.forEach((c, i) => {
             const dataVenc = new Date(c.data);
             dataVenc.setHours(0,0,0,0);
-            const diffDays = Math.ceil((dataVenc - hoje) / (1000 * 60 * 60 * 24));
-            
+            const diffDays = Math.ceil((dataVenc - hoje) / (1000 * 60 * 60 * 24));            
             let statusReal = c.status;
             if(c.status !== 'deletado' && c.status !== 'apagar') {
                 if(diffDays < 0) statusReal = 'expirado';
@@ -355,8 +537,7 @@
                             </ul>
                         </div>
                         <button class="btn btn-sm bg-lilas" onclick="editCliente(${i})"><i class="bi bi-pencil"></i></button>
-                        ${c.status === 'deletado' ? 
-                            `<button class="btn btn-sm btn-info" onclick="restore(${i})">RESTAURAR</button>
+                        ${c.status === 'deletado' ?                             `<button class="btn btn-sm btn-info" onclick="restore(${i})">RESTAURAR</button>
                              <button class="btn btn-sm btn-danger" onclick="hardDelete(${i})">EXCLUIR</button>` : 
                             `<button class="btn btn-sm btn-danger" onclick="softDelete(${i})"><i class="bi bi-trash"></i></button>`
                         }
@@ -405,8 +586,7 @@
 
     function updateStatus(i, acao) {
         const dataAtual = new Date(clientes[i].data);
-        dataAtual.setMonth(dataAtual.getMonth() + 1);
-        clientes[i].data = dataAtual.toISOString().split('T')[0];
+        dataAtual.setMonth(dataAtual.getMonth() + 1);        clientes[i].data = dataAtual.toISOString().split('T')[0];
         
         if(acao === 'pago') {
             clientes[i].status = 'ativo';
