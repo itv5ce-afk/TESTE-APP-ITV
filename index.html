@@ -24,10 +24,9 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            pointer-events: none; /* Não interfere com cliques */
+            pointer-events: none;
         }
         
-        /* Overlay sutil para melhorar legibilidade sobre o Matrix */
         body::before {
             content: '';
             position: fixed;
@@ -35,11 +34,10 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.75); /* Escurece o fundo para melhor leitura */
+            background: rgba(0, 0, 0, 0.75);
             z-index: -1;
             pointer-events: none;
         }
-        /* ========== FIM MATRIX ========== */
         
         .navbar { 
             background-color: rgba(17, 17, 17, 0.95); 
@@ -47,9 +45,9 @@
             position: relative;
             z-index: 10;
         }
-        .card-cliente {             background-color: rgba(26, 26, 26, 0.95); 
-            border: 1px solid #333; 
-            border-radius: 8px; 
+        .card-cliente {             
+            background-color: rgba(26, 26, 26, 0.95); 
+            border: 1px solid #333;             border-radius: 8px; 
             margin-bottom: 10px; 
             padding: 15px; 
             position: relative;
@@ -95,11 +93,10 @@
             z-index: 1001;
         }
         
-        /* Estilos Novo Painel Administrativo */
-        .card-financeiro {             background: rgba(34, 34, 34, 0.95); 
+        .card-financeiro {             
+            background: rgba(34, 34, 34, 0.95); 
             border-left: 4px solid #9933ff; 
-            border-radius: 5px; 
-            padding: 15px; 
+            border-radius: 5px;             padding: 15px; 
             margin-bottom: 15px;
             backdrop-filter: blur(2px);
             position: relative;
@@ -108,7 +105,6 @@
         .stat-val { font-size: 1.5rem; font-weight: bold; color: #00ff00; }
         .stat-label { font-size: 0.8rem; color: #aaa; text-transform: uppercase; }
 
-        /* Ajuste para o dropdown do botão Renovar */
         .dropdown-menu { 
             background-color: rgba(44, 44, 44, 0.98); 
             border: 1px solid #444; 
@@ -118,7 +114,6 @@
         .dropdown-item:hover { background-color: #444; color: #fff; }
         .btn-group .btn { margin: 0 2px; }
         
-        /* Inputs e elementos de formulário */
         .form-control, .form-select {
             background-color: rgba(30, 30, 30, 0.95) !important;
             border: 1px solid #444 !important;
@@ -128,7 +123,6 @@
         }
         .form-control::placeholder { color: #888 !important; }
         
-        /* Modal */
         .modal-content {
             background-color: rgba(26, 26, 26, 0.98) !important;
             border: 1px solid #444;
@@ -136,16 +130,122 @@
             z-index: 1050;
         }
         
-        /* Botões */
         .btn { position: relative; z-index: 5; }
-        
-        /* Container principal */
         .container { position: relative; z-index: 5; }
+
+        /* ========== TELA DE LOGIN FIREBASE ========== */
+        #loginScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;        }
+        #loginCard {
+            background: rgba(26, 26, 26, 0.98);
+            border: 1px solid #444;
+            border-radius: 12px;
+            padding: 25px;
+            width: 100%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(153, 51, 255, 0.3);
+        }
+        #loginCard h3 {
+            color: #9933ff;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        #loginCard .form-control {
+            margin-bottom: 15px;
+        }
+        #loginCard .btn-login {
+            background: linear-gradient(135deg, #9933ff, #6600cc);
+            border: none;
+            padding: 10px;
+            font-weight: bold;
+            width: 100%;
+        }
+        #loginCard .btn-login:hover {
+            background: linear-gradient(135deg, #6600cc, #9933ff);
+        }
+        #loginCard .alert {
+            font-size: 0.9rem;
+        }
+        #loginCard .forgot-pass {
+            text-align: center;
+            margin-top: 10px;
+        }
+        #loginCard .forgot-pass a {
+            color: #9933ff;
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+        #loginCard .forgot-pass a:hover {
+            text-decoration: underline;
+        }
+        /* Loading spinner */
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+            border-width: 0.15em;        }
+        /* Botão sair */
+        #btnLogout {
+            background-color: #dc3545 !important;
+            border: none;
+        }
+        #btnLogout:hover {
+            background-color: #bb2d3b !important;
+        }
+        /* ========== FIM LOGIN ========== */
     </style>
 </head>
 <body>
 
-<!-- Canvas para efeito Matrix --><canvas id="matrixCanvas"></canvas>
+<!-- Canvas para efeito Matrix -->
+<canvas id="matrixCanvas"></canvas>
+
+<!-- ========== TELA DE LOGIN FIREBASE ========== -->
+<div id="loginScreen">
+    <div id="loginCard" class="animate__animated animate__fadeIn">
+        <h3><i class="bi bi-shield-lock"></i> ITVPlayer Admin</h3>
+        <div id="loginAlert" class="alert alert-danger d-none" role="alert"></div>
+        
+        <form id="loginForm">
+            <label class="small text-secondary">E-mail:</label>
+            <input type="email" id="loginEmail" class="form-control" placeholder="seu@email.com" required autocomplete="email">
+            
+            <label class="small text-secondary">Senha:</label>
+            <div class="input-group">
+                <input type="password" id="loginPass" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+                <button class="btn btn-outline-secondary" type="button" onclick="togglePass('loginPass', this)">
+                    <i class="bi bi-eye"></i>
+                </button>
+            </div>
+            
+            <button type="submit" id="btnLoginSubmit" class="btn btn-login mt-3">
+                <span id="loginText">ENTRAR</span>
+                <span id="loginSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+            </button>
+        </form>
+        
+        <div class="forgot-pass">
+            <a href="#" onclick="recoverPassword()">Esqueceu a senha?</a>
+        </div>
+        
+        <hr class="border-secondary my-3">
+        
+        <div class="text-center small text-secondary">
+            <i class="bi bi-fire"></i> Protegido por Firebase Authentication
+        </div>    </div>
+</div>
+<!-- ========== FIM LOGIN ========== -->
 
 <div id="adminLock">
     <h2>Entre em contato com o ADM</h2>
@@ -165,8 +265,10 @@
         <label>Painel 2 (WAREZ):</label>
         <input type="text" id="url2" class="form-control mb-2">
         <label>Painel 3 (ZEUS):</label>
-        <input type="text" id="url3" class="form-control mb-2">
+        type="text" id="url3" class="form-control mb-2">
         <button class="btn btn-info w-100 mt-3" onclick="saveSettings()">Salvar Configurações</button>
+        <hr class="border-secondary">
+        <button class="btn btn-outline-danger w-100" onclick="logoutFirebase()"><i class="bi bi-box-arrow-right"></i> SAIR</button>
     </div>
 </div>
 
@@ -190,11 +292,11 @@
         </div>
         <div class="row g-2">
             <div class="col-6 col-md-3">
-                <div class="card-financeiro">
-                    <div class="stat-label">Recebido (Mês)</div>
+                <div class="card-financeiro">                    <div class="stat-label">Recebido (Mês)</div>
                     <div class="stat-val" id="finRecebido">R$ 0,00</div>
                 </div>
-            </div>            <div class="col-6 col-md-3">
+            </div>
+            <div class="col-6 col-md-3">
                 <div class="card-financeiro" style="border-left-color: #ffc107;">
                     <div class="stat-label">A Receber</div>
                     <div class="stat-val text-warning" id="finPendente">R$ 0,00</div>
@@ -239,11 +341,11 @@
     <div class="modal-dialog">
         <div class="modal-content bg-dark text-white">
             <div class="modal-body">
-                <input type="hidden" id="editIndex">
-                <label class="small text-secondary">Nome do Cliente:</label>
+                <input type="hidden" id="editIndex">                <label class="small text-secondary">Nome do Cliente:</label>
                 <input type="text" id="cNome" class="form-control mb-2" placeholder="Nome">
                 <input type="text" id="cUser" class="form-control mb-2" placeholder="Usuário">
-                <input type="text" id="cPass" class="form-control mb-2" placeholder="Senha">                <label class="small text-secondary">Valor da Mensalidade:</label>
+                <input type="text" id="cPass" class="form-control mb-2" placeholder="Senha">
+                <label class="small text-secondary">Valor da Mensalidade:</label>
                 <input type="number" id="cValor" class="form-control mb-2" placeholder="Valor" step="0.01">
                 <label class="small text-secondary">Data de Vencimento:</label>
                 <input type="date" id="cData" class="form-control mb-2">
@@ -257,66 +359,76 @@
     </div>
 </div>
 
+<!-- ========== FIREBASE SDKs ========== -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<!-- ========== FIM FIREBASE ========== -->
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    // ========== CONFIGURAÇÃO FIREBASE ==========
+    const firebaseConfig = {
+        apiKey: "AIzaSyDd_rtYsto9_0zp8pxYwXRs4XRRip7k3uc",
+        authDomain: "itvcontrol.firebaseapp.com",
+        projectId: "itvcontrol",
+        storageBucket: "itvcontrol.firebasestorage.app",
+        messagingSenderId: "291731890067",
+        appId: "1:291731890067:web:e75e79766765d861db5266"
+    };
+    
+    // Inicializa Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    
+    // Configura persistência (mantém login mesmo fechando o navegador)
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    // ========== FIM FIREBASE ==========
+
     // ========== MATRIX RAIN EFFECT ==========
     (function initMatrix() {
         const canvas = document.getElementById('matrixCanvas');
         const ctx = canvas.getContext('2d');
-        
-        // Ajusta canvas para tela cheia
-        function resizeCanvas() {
+                function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         }
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
         
-        // Caracteres do Matrix (katakana + latinos + números)
         const matrixChars = 'ｦｧｨｩｪｫｬｭｮｯｰｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         const chars = matrixChars.split('');
         
-        // Configurações da animação
-        const fontSize = 14; // Tamanho da fonte
-        const columns = Math.floor(canvas.width / fontSize); // Colunas de caracteres
-        const drops = []; // Posição Y de cada coluna
+        const fontSize = 14;
+        const columns = Math.floor(canvas.width / fontSize);
+        const drops = [];
         
-        // Inicializa posições aleatórias
         for(let i = 0; i < columns; i++) {
-            drops[i] = Math.random() * -100; // Começa acima da tela
+            drops[i] = Math.random() * -100;
         }
         
-        // Velocidade lenta conforme solicitado
-        const speed = 0.4; // Quanto menor, mais lento
+        const speed = 0.4;
         
         function draw() {
-            // Fundo preto semi-transparente para criar rastro
             ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);            
-            // Cor verde Matrix com brilho
-            ctx.fillStyle = '#00FF41'; // Verde neon clássico
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#00FF41';
             ctx.font = `${fontSize}px monospace`;
             
-            // Desenha cada caractere
             for(let i = 0; i < drops.length; i++) {
-                // Caractere aleatório
                 const char = chars[Math.floor(Math.random() * chars.length)];
-                
-                // Posição X e Y
                 const x = i * fontSize;
                 const y = drops[i] * fontSize;
                 
-                // Brilho variável (caracteres no topo mais brilhantes)
                 const opacity = Math.min(1, Math.max(0.3, (canvas.height - y) / (canvas.height * 0.3)));
                 ctx.fillStyle = `rgba(0, 255, 65, ${opacity})`;
                 
-                // Desenha o caractere
                 ctx.fillText(char, x, y);
                 
-                // Move a gota para baixo
                 drops[i] += speed;
                 
-                // Reseta quando sai da tela (com variação aleatória)
                 if(drops[i] * fontSize > canvas.height + fontSize && Math.random() > 0.975) {
                     drops[i] = Math.random() * -20;
                 }
@@ -325,23 +437,180 @@
             requestAnimationFrame(draw);
         }
         
-        // Inicia animação
         draw();
     })();
     // ========== FIM MATRIX ==========
-
+    // ========== VARIÁVEIS GLOBAIS ==========
     let clientes = JSON.parse(localStorage.getItem('itv_clientes')) || [];
     let config = JSON.parse(localStorage.getItem('itv_config')) || { msg: "", p1: "", p2: "", p3: "" };
     let isUnlocked = localStorage.getItem('itv_unlocked') === 'true';
     let currentFilter = 'ativos';
+    let currentUser = null; // Usuário logado do Firebase
+    // ========== FIM VARIÁVEIS ==========
 
-    // Inicializar data do filtro de mês
-    document.getElementById('filterMes').value = new Date().toISOString().slice(0, 7);
+    // ========== FUNÇÕES DE LOGIN FIREBASE ==========
+    
+    // Mostrar/ocultar senha
+    function togglePass(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const icon = btn.querySelector('i');
+        if(input.type === 'password') {
+            input.type = 'text';
+            icon.classList.replace('bi-eye', 'bi-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.replace('bi-eye-slash', 'bi-eye');
+        }
+    }
+    
+    // Login com Firebase
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('loginEmail').value.trim();
+        const pass = document.getElementById('loginPass').value;
+        const alertBox = document.getElementById('loginAlert');
+        const btnSubmit = document.getElementById('btnLoginSubmit');
+        const loginText = document.getElementById('loginText');
+        const loginSpinner = document.getElementById('loginSpinner');
+        
+        // UI loading
+        alertBox.classList.add('d-none');
+        btnSubmit.disabled = true;
+        loginText.textContent = 'ENTRANDO...';
+        loginSpinner.classList.remove('d-none');
+        
+        try {
+            const userCredential = await auth.signInWithEmailAndPassword(email, pass);
+            currentUser = userCredential.user;
+            
+            // Sucesso: carregar dados do Firestore e mostrar app
+            await loadUserDataFromFirebase();
+            hideLoginScreen();
+            
+        } catch (error) {            console.error('Erro no login:', error);
+            let msg = 'Falha no login. Verifique e-mail e senha.';
+            
+            if(error.code === 'auth/user-not-found') msg = 'Usuário não encontrado.';
+            else if(error.code === 'auth/wrong-password') msg = 'Senha incorreta.';
+            else if(error.code === 'auth/invalid-email') msg = 'E-mail inválido.';
+            else if(error.code === 'auth/too-many-requests') msg = 'Muitas tentativas. Tente mais tarde.';
+            
+            alertBox.textContent = msg;
+            alertBox.classList.remove('d-none');
+        } finally {
+            // Restaura UI
+            btnSubmit.disabled = false;
+            loginText.textContent = 'ENTRAR';
+            loginSpinner.classList.add('d-none');
+        }
+    });
+    
+    // Carregar dados do usuário do Firestore
+    async function loadUserDataFromFirebase() {
+        if(!currentUser) return;
+        
+        try {
+            const userDoc = await db.collection('users').doc(currentUser.uid).get();
+            
+            if(userDoc.exists) {
+                const data = userDoc.data();
+                // Carrega clientes se existirem no Firestore
+                if(data.clientes && Array.isArray(data.clientes)) {
+                    clientes = data.clientes;
+                    localStorage.setItem('itv_clientes', JSON.stringify(clientes));
+                }
+                // Carrega configurações
+                if(data.config) {
+                    config = data.config;
+                    localStorage.setItem('itv_config', JSON.stringify(config));
+                }
+            }
+            // Se não existir documento, cria um vazio
+            await saveUserDataToFirebase();
+            
+        } catch (error) {
+            console.error('Erro ao carregar dados:', error);
+            // Continua com dados do localStorage se falhar
+        }
+    }
+    
+    // Salvar dados do usuário no Firestore
+    async function saveUserDataToFirebase() {
+        if(!currentUser) return;        
+        try {
+            await db.collection('users').doc(currentUser.uid).set({
+                email: currentUser.email,
+                clientes: clientes,
+                config: config,
+                lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+        } catch (error) {
+            console.error('Erro ao salvar dados:', error);
+        }
+    }
+    
+    // Esconder tela de login e mostrar app
+    function hideLoginScreen() {
+        document.getElementById('loginScreen').style.display = 'none';
+        // Inicializa interface
+        renderClientes();
+        document.getElementById('cfgMsg').value = config.msg || '';
+        document.getElementById('url1').value = config.p1 || '';
+        document.getElementById('url2').value = config.p2 || '';
+        document.getElementById('url3').value = config.p3 || '';
+    }
+    
+    // Logout do Firebase
+    function logoutFirebase() {
+        if(confirm('Deseja realmente sair?')) {
+            auth.signOut().then(() => {
+                currentUser = null;
+                // Opcional: limpar dados locais ao sair
+                // localStorage.clear();
+                location.reload();
+            }).catch(error => {
+                console.error('Erro ao sair:', error);
+                alert('Erro ao sair. Tente novamente.');
+            });
+        }
+    }
+    
+    // Recuperar senha
+    function recoverPassword() {
+        const email = prompt('Digite seu e-mail cadastrado para recuperar a senha:');
+        if(email) {
+            auth.sendPasswordResetEmail(email)
+                .then(() => alert('E-mail de recuperação enviado! Verifique sua caixa de entrada.'))
+                .catch(error => {
+                    let msg = 'Erro ao enviar e-mail.';
+                    if(error.code === 'auth/user-not-found') msg = 'E-mail não cadastrado.';
+                    alert(msg);
+                });        }
+    }
+    
+    // Listener de estado de autenticação
+    auth.onAuthStateChanged(user => {
+        if(user) {
+            currentUser = user;
+            // Se já estiver na página principal, não faz nada
+            if(document.getElementById('loginScreen').style.display !== 'none') {
+                loadUserDataFromFirebase().then(() => hideLoginScreen());
+            }
+        } else {
+            // Usuário não autenticado: mostra login
+            currentUser = null;
+            document.getElementById('loginScreen').style.display = 'flex';
+        }
+    });
+    
+    // ========== FIM FUNÇÕES LOGIN ==========
 
     // Função auxiliar para converter data ISO (YYYY-MM-DD) para DD/MM/AAAA
     function formatDateToBR(isoDate) {
         if (!isoDate) return '';
-        const parts = isoDate.split('-');        if (parts.length !== 3) return isoDate;
+        const parts = isoDate.split('-');
+        if (parts.length !== 3) return isoDate;
         return `${parts[2]}/${parts[1]}/${parts[0]}`;
     }
 
@@ -366,8 +635,7 @@
 
     function unlockApp() {
         if (document.getElementById('adminPass').value === 'itv2026001') {
-            isUnlocked = true;
-            localStorage.setItem('itv_unlocked', 'true');
+            isUnlocked = true;            localStorage.setItem('itv_unlocked', 'true');
             document.getElementById('adminLock').style.display = 'none';
         } else { alert("Senha incorreta!"); }
     }
@@ -383,14 +651,18 @@
             p3: document.getElementById('url3').value
         };
         localStorage.setItem('itv_config', JSON.stringify(config));
+        // Salva também no Firebase se estiver logado
+        saveUserDataToFirebase();
         closeNav();
+        alert('Configurações salvas! ✓');
     }
 
     function showModalCadastro(index = -1) {
         if(index === -1) {
             document.getElementById('editIndex').value = "";
             document.getElementById('cNome').value = "";
-            document.getElementById('cUser').value = "";            document.getElementById('cPass').value = "";
+            document.getElementById('cUser').value = "";
+            document.getElementById('cPass').value = "";
             document.getElementById('cValor').value = "";
             document.getElementById('cData').value = "";
             document.getElementById('cServ').value = "";
@@ -403,7 +675,7 @@
             document.getElementById('cUser').value = c.user;
             document.getElementById('cPass').value = c.pass;
             document.getElementById('cValor').value = c.valor;
-            document.getElementById('cData').value = c.data; // mantém ISO internamente
+            document.getElementById('cData').value = c.data;
             document.getElementById('cServ').value = c.serv;
             document.getElementById('cUrl').value = c.url;
             document.getElementById('cTel').value = c.tel;
@@ -412,14 +684,13 @@
         new bootstrap.Modal(document.getElementById('modalCadastro')).show();
     }
 
-    function saveCliente() {
-        const index = document.getElementById('editIndex').value;
+    function saveCliente() {        const index = document.getElementById('editIndex').value;
         const novo = {
             nome: document.getElementById('cNome').value,
             user: document.getElementById('cUser').value,
             pass: document.getElementById('cPass').value,
             valor: parseFloat(document.getElementById('cValor').value) || 0,
-            data: document.getElementById('cData').value, // já ISO
+            data: document.getElementById('cData').value,
             serv: document.getElementById('cServ').value,
             url: document.getElementById('cUrl').value,
             tel: document.getElementById('cTel').value,
@@ -434,12 +705,15 @@
         }
 
         localStorage.setItem('itv_clientes', JSON.stringify(clientes));
+        // Salva também no Firebase se estiver logado
+        saveUserDataToFirebase();
         location.reload();
     }
 
     function renderFinanceiro() {
-        const mesSelecionado = document.getElementById('filterMes').value; // YYYY-MM
-        let recebido = 0;        let pendente = 0;
+        const mesSelecionado = document.getElementById('filterMes').value;
+        let recebido = 0;
+        let pendente = 0;
         let totalGeral = 0;
         let totalAtivos = 0;
 
@@ -449,7 +723,7 @@
                 totalGeral += val;
                 totalAtivos++;
                 
-                if(c.data.startsWith(mesSelecionado)) {
+                if(c.data && c.data.startsWith(mesSelecionado)) {
                     if(c.status === 'ativo' || c.status === 'vencer' || c.status === 'expirado') {
                         recebido += val;
                     } else if(c.status === 'apagar') {
@@ -459,19 +733,18 @@
             }
         });
 
-        document.getElementById('finRecebido').innerText = `R$ ${recebido.toFixed(2)}`;
-        document.getElementById('finPendente').innerText = `R$ ${pendente.toFixed(2)}`;
+        document.getElementById('finRecebido').innerText = `R$ ${recebido.toFixed(2)}`;        document.getElementById('finPendente').innerText = `R$ ${pendente.toFixed(2)}`;
         document.getElementById('finTotalClientes').innerText = totalAtivos;
         document.getElementById('finGeral').innerText = `R$ ${totalGeral.toFixed(2)}`;
     }
 
     function pagarCliente(i) {
         const cliente = clientes[i];
-        // Mensagem com a data no formato DD/MM/AAAA
         const msg = `✅𝕊𝔼𝕌 ℙ𝔸𝔾𝔸𝕄𝔼ℕ𝕋𝕆 𝔽𝕆𝕀 ℂ𝕆ℕ𝔽𝕀ℝ𝕄𝔸𝔻𝕆𝕊!!\n\nNome: ${cliente.nome}\nPlano Familia: R$ ${cliente.valor.toFixed(2)}\nProvedor: ${cliente.serv}\nUsuário: ${cliente.user}\nSenha: ${cliente.pass}\nUrl: ${cliente.url}\nVence: ${formatDateToBR(cliente.data)}\n\nDivirta-se!!`;
         window.open(`https://wa.me/${cliente.tel.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`);
         cliente.status = 'ativo';
         localStorage.setItem('itv_clientes', JSON.stringify(clientes));
+        saveUserDataToFirebase();
         renderClientes();
     }
 
@@ -482,13 +755,15 @@
         
         let counts = { ativos: 0, vencer: 0, exp: 0, apagar: 0, del: 0 };
         const hoje = new Date();
-        // Zera horas para comparação de dias
         hoje.setHours(0,0,0,0);
 
         clientes.forEach((c, i) => {
-            const dataVenc = new Date(c.data);
+            // Verifica se a data é válida
+            const dataVenc = c.data ? new Date(c.data) : new Date();
+            if(isNaN(dataVenc.getTime())) dataVenc.setTime(0);
             dataVenc.setHours(0,0,0,0);
-            const diffDays = Math.ceil((dataVenc - hoje) / (1000 * 60 * 60 * 24));            
+            const diffDays = Math.ceil((dataVenc - hoje) / (1000 * 60 * 60 * 24));
+            
             let statusReal = c.status;
             if(c.status !== 'deletado' && c.status !== 'apagar') {
                 if(diffDays < 0) statusReal = 'expirado';
@@ -507,16 +782,13 @@
             if(currentFilter === 'expirados' && statusReal !== 'expirado') return;
             if(currentFilter === 'apagar' && c.status !== 'apagar') return;
             if(currentFilter === 'deletados' && c.status !== 'deletado') return;
-            
-            if(!c.nome.toLowerCase().includes(search)) return;
+                        if(!c.nome || !c.nome.toLowerCase().includes(search)) return;
 
             const dataFormatada = formatDateToBR(c.data);
-            const valorFormatado = `R$ ${c.valor.toFixed(2)}`;
+            const valorFormatado = `R$ ${(c.valor || 0).toFixed(2)}`;
 
-            // Determina quais botões mostrar
             let botoesHtml = '';
             if (c.status === 'apagar') {
-                // Na aba A PAGAR: botão PAGAR + botão EDITAR (agora visível)
                 botoesHtml = `
                     <div class="d-flex flex-wrap gap-1">
                         <button class="btn btn-sm btn-primary" onclick="pagarCliente(${i})">PAGAR</button>
@@ -524,7 +796,6 @@
                     </div>
                 `;
             } else {
-                // Botões normais para outras abas
                 botoesHtml = `
                     <div class="d-flex flex-wrap gap-1">
                         <button class="btn btn-sm btn-success" onclick="sendZap('${i}', 'cobranca')">COBRAR</button>
@@ -538,7 +809,8 @@
                             </ul>
                         </div>
                         <button class="btn btn-sm bg-lilas" onclick="editCliente(${i})"><i class="bi bi-pencil"></i></button>
-                        ${c.status === 'deletado' ?                             `<button class="btn btn-sm btn-info" onclick="restore(${i})">RESTAURAR</button>
+                        ${c.status === 'deletado' ? 
+                            `<button class="btn btn-sm btn-info" onclick="restore(${i})">RESTAURAR</button>
                              <button class="btn btn-sm btn-danger" onclick="hardDelete(${i})">EXCLUIR</button>` : 
                             `<button class="btn btn-sm btn-danger" onclick="softDelete(${i})"><i class="bi bi-trash"></i></button>`
                         }
@@ -549,18 +821,17 @@
             lista.innerHTML += `
                 <div class="card-cliente">
                     <div class="d-flex justify-content-between">
-                        <h5>${c.nome}</h5>
-                        <span class="badge ${statusReal === 'expirado' ? 'bg-danger' : (statusReal === 'vencer' ? 'bg-warning' : 'bg-success')}">${dataFormatada}</span>
+                        <h5>${c.nome || 'Sem nome'}</h5>
+                        <span class="badge ${statusReal === 'expirado' ? 'bg-danger' : (statusReal === 'vencer' ? 'bg-warning' : 'bg-success')}">${dataFormatada || '--/--/----'}</span>
                     </div>
-                    <p class="small mb-2">User: ${c.user} | Valor: <strong>${valorFormatado}</strong></p>
+                    <p class="small mb-2">User: ${c.user || '-'} | Valor: <strong>${valorFormatado}</strong></p>
                     ${botoesHtml}
                 </div>
             `;
         });
 
         document.getElementById('countAtivos').innerText = counts.ativos;
-        document.getElementById('countVencer').innerText = counts.vencer;
-        document.getElementById('countExp').innerText = counts.exp;
+        document.getElementById('countVencer').innerText = counts.vencer;        document.getElementById('countExp').innerText = counts.exp;
         document.getElementById('countPagar').innerText = counts.apagar;
         document.getElementById('countDel').innerText = counts.del;
         renderFinanceiro();
@@ -568,6 +839,8 @@
 
     function sendZap(i, tipo) {
         const c = clientes[i];
+        if(!c || !c.tel) { alert('Telefone do cliente não cadastrado!'); return; }
+        
         let msg = "";
         const novaData = new Date();
         novaData.setMonth(novaData.getMonth() + 1);
@@ -575,19 +848,20 @@
         const novaDataFormatada = formatDateToBR(novaData.toISOString().split('T')[0]);
 
         if(tipo === 'cobranca') {
-            msg = `📩 𝕞𝕤𝕘-𝕒𝕦𝕥𝕠𝕞á𝕥𝕚𝕔𝕒📩\n🚨🚨🚨🚨🚨🚨🚨🚨\n\nOla ${c.nome}!!\nSou o assistente virtual da ITVPlayer 🤖\n\nSua lista de\nTV, FILMES & SÉRIES\nexpirou ${dataFormatada}\n\nPara renovar Faz um Pix 💠\n💰Plano Familia: R$:${c.valor.toFixed(2)}\n${config.msg}`;
+            msg = `📩 𝕞𝕤𝕘-𝕒𝕦𝕥𝕠𝕞á𝕥𝕚𝕔𝕒📩\n🚨🚨🚨🚨🚨🚨🚨🚨\n\nOla ${c.nome || 'Cliente'}!!\nSou o assistente virtual da ITVPlayer 🤖\n\nSua lista de\nTV, FILMES & SÉRIES\nexpirou ${dataFormatada}\n\nPara renovar Faz um Pix 💠\n💰Plano Familia: R$:${(c.valor || 0).toFixed(2)}\n${config.msg || ''}`;
         } else if(tipo === 'pago') {
-            msg = `✅𝕊𝔼𝕌 ℙ𝔸𝔾𝔸𝕄𝔼ℕ𝕋𝕆 𝔽𝕆𝕀 ℂ𝕆ℕ𝔽𝕀ℝ𝕄𝔸𝔻𝕆𝕊!!\n\nNome: ${c.nome}\nPlano Familia: R$ ${c.valor.toFixed(2)}\nProvedor: ${c.serv}\nUsuário: ${c.user}\nSenha: ${c.pass}\nUrl: ${c.url}\nVence: ${novaDataFormatada}\n\nDivirta-se!!`;
+            msg = `✅𝕊𝔼𝕌 ℙ𝔸𝔾𝔸𝕄𝔼ℕ𝕋𝕆 𝔽𝕆𝕀 ℂ𝕆ℕ𝔽𝕀ℝ𝕄𝔸𝔻𝕆𝕊!!\n\nNome: ${c.nome}\nPlano Familia: R$ ${(c.valor || 0).toFixed(2)}\nProvedor: ${c.serv}\nUsuário: ${c.user}\nSenha: ${c.pass}\nUrl: ${c.url}\nVence: ${novaDataFormatada}\n\nDivirta-se!!`;
         } else {
-            msg = `⛔️𝕊𝔼𝕌 ℙ𝔸𝔾𝔸𝕄𝔼ℕ𝕋𝕆 ℕ𝔸𝕆 𝔽𝕆𝕀 ℂ𝕆ℕ𝔽𝕀ℝ𝕄𝔸𝔻𝕆𝕊!!\n\nNome: ${c.nome}\nPlano Familia: R$ ${c.valor.toFixed(2)}\nProvedor: ${c.serv}\nUsuário: ${c.user}\nSenha: ${c.pass}\nUrl: ${c.url}\nVence: ${novaDataFormatada}\n\nDivirta-se!!`;
+            msg = `⛔️𝕊𝔼𝕌 ℙ𝔸𝔾𝔸𝕄𝔼ℕ𝕋𝕆 ℕ𝔸𝕆 𝔽𝕆𝕀 ℂ𝕆ℕ𝔽𝕀ℝ𝕄𝔸𝔻𝕆𝕊!!\n\nNome: ${c.nome}\nPlano Familia: R$ ${(c.valor || 0).toFixed(2)}\nProvedor: ${c.serv}\nUsuário: ${c.user}\nSenha: ${c.pass}\nUrl: ${c.url}\nVence: ${novaDataFormatada}\n\nDivirta-se!!`;
         }
         
         window.open(`https://wa.me/${c.tel.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`);
     }
 
     function updateStatus(i, acao) {
-        const dataAtual = new Date(clientes[i].data);
-        dataAtual.setMonth(dataAtual.getMonth() + 1);        clientes[i].data = dataAtual.toISOString().split('T')[0];
+        const dataAtual = new Date(clientes[i].data || Date.now());
+        dataAtual.setMonth(dataAtual.getMonth() + 1);
+        clientes[i].data = dataAtual.toISOString().split('T')[0];
         
         if(acao === 'pago') {
             clientes[i].status = 'ativo';
@@ -597,36 +871,37 @@
             sendZap(i, 'naopago');
         }
         localStorage.setItem('itv_clientes', JSON.stringify(clientes));
+        saveUserDataToFirebase();
         renderClientes();
     }
 
     function filterData(f) { currentFilter = f; renderClientes(); }
-    function softDelete(i) { clientes[i].status = 'deletado'; localStorage.setItem('itv_clientes', JSON.stringify(clientes)); renderClientes(); }
-    function restore(i) { clientes[i].status = 'ativo'; localStorage.setItem('itv_clientes', JSON.stringify(clientes)); renderClientes(); }
-    function hardDelete(i) { if(confirm("Excluir permanentemente?")) { clientes.splice(i, 1); localStorage.setItem('itv_clientes', JSON.stringify(clientes)); renderClientes(); } }
+    function softDelete(i) { clientes[i].status = 'deletado'; localStorage.setItem('itv_clientes', JSON.stringify(clientes)); saveUserDataToFirebase(); renderClientes(); }
+    function restore(i) { clientes[i].status = 'ativo'; localStorage.setItem('itv_clientes', JSON.stringify(clientes)); saveUserDataToFirebase(); renderClientes(); }
+    function hardDelete(i) { if(confirm("Excluir permanentemente?")) { clientes.splice(i, 1); localStorage.setItem('itv_clientes', JSON.stringify(clientes)); saveUserDataToFirebase(); renderClientes(); } }
     function accessPanel(n) { const url = config['p'+n]; if(url) window.open(url); else alert("Cadastre a URL no menu lateral"); }
-
     function editCliente(i) {
         document.getElementById('editIndex').value = i;
         const c = clientes[i];
-        document.getElementById('cNome').value = c.nome;
-        document.getElementById('cUser').value = c.user;
-        document.getElementById('cPass').value = c.pass;
-        document.getElementById('cValor').value = c.valor;
-        document.getElementById('cData').value = c.data;
-        document.getElementById('cServ').value = c.serv;
-        document.getElementById('cUrl').value = c.url;
-        document.getElementById('cTel').value = c.tel;
-        document.getElementById('cObs').value = c.obs;
+        document.getElementById('cNome').value = c.nome || '';
+        document.getElementById('cUser').value = c.user || '';
+        document.getElementById('cPass').value = c.pass || '';
+        document.getElementById('cValor').value = c.valor || '';
+        document.getElementById('cData').value = c.data || '';
+        document.getElementById('cServ').value = c.serv || '';
+        document.getElementById('cUrl').value = c.url || '';
+        document.getElementById('cTel').value = c.tel || '';
+        document.getElementById('cObs').value = c.obs || '';
         new bootstrap.Modal(document.getElementById('modalCadastro')).show();
     }
 
-    // Inicialização
-    renderClientes();
-    document.getElementById('cfgMsg').value = config.msg;
-    document.getElementById('url1').value = config.p1;
-    document.getElementById('url2').value = config.p2;
-    document.getElementById('url3').value = config.p3;
+    // Inicialização - só executa após Firebase estar pronto
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inicializa data do filtro de mês
+        document.getElementById('filterMes').value = new Date().toISOString().slice(0, 7);
+        
+        // Verifica estado de autenticação (onAuthStateChanged já gerencia a UI)
+    });
 </script>
 </body>
 </html>
