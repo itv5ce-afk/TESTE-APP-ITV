@@ -2,906 +2,948 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ITVPlayer - Admin Edition</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="theme-color" content="#075e54">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Chat Moderno">
+    <link rel="manifest" href="data:application/manifest+json,{
+        %22name%22:%22Chat%20Moderno%22,
+        %22short_name%22:%22Chat%22,
+        %22start_url%22:%22.%22,
+        %22display%22:%22standalone%22,
+        %22background_color%22:%22%23f0f2f5%22,
+        %22theme_color%22:%22%23075e54%22,
+        %22icons%22:[{
+            %22src%22:%22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23075e54'/%3E%3Ctext x='50' y='65' font-size='50' text-anchor='middle' fill='white'%3E💬%3C/text%3E%3C/svg%3E%22,
+            %22sizes%22:%22192x192%22,
+            %22type%22:%22image/svg+xml%22
+        }]
+    }">
+    <title>Chat Moderno - Conexão entre Amigos</title>
     <style>
-        body { 
-            background-color: #000; 
-            color: #fff; 
-            font-family: sans-serif; 
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background: #f0f2f5; height: 100vh; display: flex; flex-direction: column; }
+
+        /* Header */
+        header { background: #075e54; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .add-btn { cursor: pointer; font-size: 24px; font-weight: bold; background: rgba(255,255,255,0.2); width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: 0.2s; }
+        .add-btn:hover { background: rgba(255,255,255,0.3); }
+        .back-btn { cursor: pointer; font-size: 20px; font-weight: bold; background: rgba(255,255,255,0.2); width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: 0.2s; margin-right: 5px; }
+        .back-btn:hover { background: rgba(255,255,255,0.3); transform: translateX(-2px); transition: 0.2s; }
         
-        /* ========== MATRIX BACKGROUND ========== */
-        #matrixCanvas {
+        /* Botão Engrenagem e Menu Suspenso */
+        .settings-container { position: relative; display: inline-block; }
+        .settings-btn { cursor: pointer; font-size: 20px; background: rgba(255,255,255,0.2); width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: 0.2s; }
+        .settings-btn:hover { background: rgba(255,255,255,0.3); transform: rotate(90deg); transition: 0.3s; }
+        .settings-menu { display: none; position: absolute; right: 0; top: 45px; background: white; min-width: 200px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); z-index: 150; overflow: hidden; }
+        .settings-menu.show { display: block; }
+        .settings-menu-item { padding: 12px 18px; cursor: pointer; color: #333; font-size: 14px; transition: 0.2s; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 10px; }
+        .settings-menu-item:last-child { border-bottom: none; }
+        .settings-menu-item:hover { background: #f0f2f5; }
+        .settings-menu-item.danger { color: #d32f2f; }
+        .settings-menu-item.danger:hover { background: #ffebee; }
+        .settings-menu-item input[type="file"] { display: none; }
+
+        /* Botão de notificação de solicitações */
+        .notification-container { position: relative; display: inline-block; margin-right: 10px; }
+        .notification-btn { cursor: pointer; font-size: 20px; background: rgba(255,255,255,0.2); width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: 0.2s; position: relative; }        .notification-btn:hover { background: rgba(255,255,255,0.3); }
+        .notification-badge { position: absolute; top: -5px; right: -5px; background: #f44336; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .notification-panel { display: none; position: absolute; right: 0; top: 45px; background: white; min-width: 280px; max-width: 320px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); z-index: 150; overflow: hidden; }
+        .notification-panel.show { display: block; }
+        .notification-header { padding: 12px 16px; background: #075e54; color: white; font-weight: bold; }
+        .notification-list { max-height: 300px; overflow-y: auto; }
+        .request-item { padding: 12px 16px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .request-info { flex: 1; }
+        .request-email { font-size: 13px; color: #666; }
+        .request-name { font-weight: 500; color: #333; }
+        .request-actions { display: flex; gap: 8px; }
+        .accept-btn, .reject-btn { padding: 4px 12px; border: none; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .accept-btn { background: #25d366; color: white; }
+        .accept-btn:hover { background: #20b858; }
+        .reject-btn { background: #f44336; color: white; }
+        .reject-btn:hover { background: #d32f2f; }
+        .no-requests { padding: 20px; text-align: center; color: #999; font-size: 13px; }
+
+        /* Lista de Contatos (Modal) */
+        #contact-list { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 100; padding: 20px; overflow-y: auto; }
+        .contact-item { padding: 15px; border-bottom: 1px solid #ddd; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+        .contact-item:hover { background: #f0f2f5; }
+        .contact-name { font-weight: 500; }
+        .contact-status { font-size: 12px; color: #25d366; }
+
+        /* Área de Chat */
+        #chat-area { flex: 1; padding: 20px; overflow-y: auto; background: #e5ddd5; display: flex; flex-direction: column; gap: 10px; }
+        .message { background: #dcf8c6; padding: 10px 15px; border-radius: 18px; width: fit-content; max-width: 80%; align-self: flex-end; box-shadow: 0 1px 1px rgba(0,0,0,0.05); position: relative; word-wrap: break-word; }
+        .message.received { background: white; align-self: flex-start; border-radius: 18px; }
+        .message strong { font-size: 12px; color: #075e54; display: block; margin-bottom: 4px; }
+        .message small { font-size: 10px; color: #999; display: block; margin-top: 4px; text-align: right; }
+        .input-area { padding: 15px; background: #f0f0f0; display: flex; gap: 10px; border-top: 1px solid #ddd; }
+        input { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 25px; outline: none; font-size: 15px; }
+        button#send-btn { padding: 0 22px; border: none; border-radius: 25px; background: #075e54; color: white; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        button#send-btn:hover { background: #054a3f; }
+
+        /* Tela de Login/Cadastro - responsiva e moderna */
+        #auth-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
+            background: linear-gradient(135deg, #075e54, #128c7e);
+            z-index: 200;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }        .auth-container {
+            background: white;
+            border-radius: 28px;
+            padding: 30px 25px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .auth-container h2 {
+            color: #075e54;
+            margin-bottom: 25px;
+            font-size: 28px;
+        }
+        .auth-container input {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 12px 0;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            font-size: 16px;
+            outline: none;
+            transition: 0.2s;
+        }
+        .auth-container input:focus {
+            border-color: #075e54;
+            box-shadow: 0 0 0 2px rgba(7,94,84,0.2);
+        }
+        .auth-container button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 30px;
+            background: #075e54;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .auth-container button:hover {
+            background: #054a3f;
+        }
+        .auth-container .toggle-btn {
+            background: transparent;
+            color: #075e54;
+            border: 1px solid #075e54;
+            margin-top: 5px;
+        }        .auth-container .toggle-btn:hover {
+            background: #e8f5e9;
+        }
+        .auth-container .error-msg {
+            color: #d32f2f;
+            font-size: 14px;
+            margin: 8px 0;
+            display: none;
+        }
+        .auth-container .success-msg {
+            color: #2e7d32;
+            font-size: 14px;
+            margin: 8px 0;
+            display: none;
+        }
+        .auth-container p {
+            margin-top: 15px;
+            color: #666;
+            font-size: 13px;
+        }
+        @media (max-width: 480px) {
+            .auth-container { padding: 25px 20px; }
+            .auth-container h2 { font-size: 24px; }
+        }
+        /* Indicador de conexão */
+        .online-badge { background: #25d366; border-radius: 50%; width: 10px; height: 10px; display: inline-block; margin-left: 8px; }
+        .contact-header-info { font-size: 13px; font-weight: normal; margin-left: 8px; opacity: 0.9; }
+        
+        /* Tela principal (seleção de contatos) */
+        .main-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            background: #e5ddd5;
+            padding: 20px;
+        }
+        .main-screen h2 {
+            color: #075e54;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        /* Barra de busca na tela principal */
+        .search-container {
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 20px;
+            position: relative;        }
+        .search-input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 30px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        .search-input:focus {
+            border-color: #075e54;
+            box-shadow: 0 0 0 3px rgba(7,94,84,0.1);
+        }
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 18px;
             pointer-events: none;
         }
+        .clear-search {
+            position: absolute;
+            right: 45px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #999;
+            font-size: 18px;
+            display: none;
+            transition: 0.2s;
+        }
+        .clear-search:hover {
+            color: #075e54;
+        }
+        .search-input:not(:placeholder-shown) ~ .clear-search {
+            display: block;
+        }
         
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
+        .main-screen .contact-list-main {
             width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.75);
-            z-index: -1;
-            pointer-events: none;
+            max-width: 500px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            overflow-y: auto;
+            max-height: 60vh;            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        
-        .navbar { 
-            background-color: rgba(17, 17, 17, 0.95); 
-            border-bottom: 1px solid #333; 
-            position: relative;
-            z-index: 10;
+        .main-screen .contact-item-main {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        .card-cliente {             
-            background-color: rgba(26, 26, 26, 0.95); 
-            border: 1px solid #333;             border-radius: 8px; 
-            margin-bottom: 10px; 
-            padding: 15px; 
-            position: relative;
-            z-index: 5;
-            backdrop-filter: blur(2px);
+        .main-screen .contact-item-main:hover {
+            background: #f0f2f5;
         }
-        .btn-small { font-size: 0.7rem; padding: 5px; flex: 1; margin: 2px; border: none; color: white; }
-        .bg-lilas { background-color: #9933ff !important; color: white; }
-        #adminLock { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(0,0,0,0.95); 
-            z-index: 9999; 
-            display: none; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            text-align: center; 
-        }
-        .menu-lateral { 
-            height: 100%; 
-            width: 0; 
-            position: fixed; 
-            z-index: 1000; 
-            top: 0; 
-            left: 0; 
-            background-color: rgba(17, 17, 17, 0.98); 
-            overflow-x: hidden; 
-            transition: 0.5s; 
-            padding-top: 60px; 
-            border-right: 1px solid #333;
-        }
-        .menu-lateral a, .menu-lateral label { 
-            padding: 8px 32px; 
-            text-decoration: none; 
-            font-size: 18px; 
-            color: #818181; 
-            display: block; 
-            position: relative;
-            z-index: 1001;
-        }
-        
-        .card-financeiro {             
-            background: rgba(34, 34, 34, 0.95); 
-            border-left: 4px solid #9933ff; 
-            border-radius: 5px;             padding: 15px; 
-            margin-bottom: 15px;
-            backdrop-filter: blur(2px);
-            position: relative;
-            z-index: 5;
-        }
-        .stat-val { font-size: 1.5rem; font-weight: bold; color: #00ff00; }
-        .stat-label { font-size: 0.8rem; color: #aaa; text-transform: uppercase; }
-
-        .dropdown-menu { 
-            background-color: rgba(44, 44, 44, 0.98); 
-            border: 1px solid #444; 
-            z-index: 1050;
-        }
-        .dropdown-item { color: #fff; }
-        .dropdown-item:hover { background-color: #444; color: #fff; }
-        .btn-group .btn { margin: 0 2px; }
-        
-        .form-control, .form-select {
-            background-color: rgba(30, 30, 30, 0.95) !important;
-            border: 1px solid #444 !important;
-            color: #fff !important;
-            position: relative;
-            z-index: 5;
-        }
-        .form-control::placeholder { color: #888 !important; }
-        
-        .modal-content {
-            background-color: rgba(26, 26, 26, 0.98) !important;
-            border: 1px solid #444;
-            position: relative;
-            z-index: 1050;
-        }
-        
-        .btn { position: relative; z-index: 5; }
-        .container { position: relative; z-index: 5; }
-
-        /* ========== TELA DE LOGIN FIREBASE ========== */
-        #loginScreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 10000;
+        .main-screen .contact-avatar {
+            width: 40px;
+            height: 40px;
+            background: #075e54;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;        }
-        #loginCard {
-            background: rgba(26, 26, 26, 0.98);
-            border: 1px solid #444;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .main-screen .contact-info {
+            flex: 1;
+        }
+        .main-screen .contact-name-main {
+            font-weight: 500;
+            color: #333;
+        }
+        .main-screen .contact-email-main {
+            font-size: 12px;
+            color: #999;
+        }
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 14px;
+        }
+        .add-friend-btn {
+            margin-top: 20px;
+            padding: 12px 20px;
+            background: #075e54;
+            color: white;
+            border: none;
+            border-radius: 30px;            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .add-friend-btn:hover {
+            background: #054a3f;
+            transform: scale(1.02);
+        }
+        .hidden {
+            display: none;
+        }
+        
+        /* Animação de piscar */
+        @keyframes blink {
+            0% { background-color: transparent; }
+            50% { background-color: #ffeb3b; }
+            100% { background-color: transparent; }
+        }
+        .blinking {
+            animation: blink 1s infinite;
             border-radius: 12px;
-            padding: 25px;
-            width: 100%;
-            max-width: 400px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 30px rgba(153, 51, 255, 0.3);
-        }
-        #loginCard h3 {
-            color: #9933ff;
-            text-align: center;
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
-        #loginCard .form-control {
-            margin-bottom: 15px;
-        }
-        #loginCard .btn-login {
-            background: linear-gradient(135deg, #9933ff, #6600cc);
-            border: none;
             padding: 10px;
-            font-weight: bold;
-            width: 100%;
+            margin: -10px;
         }
-        #loginCard .btn-login:hover {
-            background: linear-gradient(135deg, #6600cc, #9933ff);
-        }
-        #loginCard .alert {
-            font-size: 0.9rem;
-        }
-        #loginCard .forgot-pass {
+        
+        /* Toast de notificação */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            max-width: 90%;
             text-align: center;
-            margin-top: 10px;
         }
-        #loginCard .forgot-pass a {
-            color: #9933ff;
-            text-decoration: none;
-            font-size: 0.85rem;
+        .toast.show {
+            opacity: 1;
         }
-        #loginCard .forgot-pass a:hover {
-            text-decoration: underline;
+                /* Badge de permissão de notificação */
+        .permission-badge {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #075e54;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 13px;
+            z-index: 999;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            cursor: pointer;
+            animation: pulse 2s infinite;
         }
-        /* Loading spinner */
-        .spinner-border-sm {
-            width: 1rem;
-            height: 1rem;
-            border-width: 0.15em;        }
-        /* Botão sair */
-        #btnLogout {
-            background-color: #dc3545 !important;
-            border: none;
+        .permission-badge.show {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        #btnLogout:hover {
-            background-color: #bb2d3b !important;
+        @keyframes pulse {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.05); }
         }
-        /* ========== FIM LOGIN ========== */
+        
+        /* Indicador de notificações ativadas */
+        .notification-status {
+            font-size: 11px;
+            color: #25d366;
+            margin-left: 5px;
+        }
     </style>
-</head>
-<body>
-
-<!-- Canvas para efeito Matrix -->
-<canvas id="matrixCanvas"></canvas>
-
-<!-- ========== TELA DE LOGIN FIREBASE ========== -->
-<div id="loginScreen">
-    <div id="loginCard" class="animate__animated animate__fadeIn">
-        <h3><i class="bi bi-shield-lock"></i> ITVPlayer Admin</h3>
-        <div id="loginAlert" class="alert alert-danger d-none" role="alert"></div>
-        
-        <form id="loginForm">
-            <label class="small text-secondary">E-mail:</label>
-            <input type="email" id="loginEmail" class="form-control" placeholder="seu@email.com" required autocomplete="email">
-            
-            <label class="small text-secondary">Senha:</label>
-            <div class="input-group">
-                <input type="password" id="loginPass" class="form-control" placeholder="••••••••" required autocomplete="current-password">
-                <button class="btn btn-outline-secondary" type="button" onclick="togglePass('loginPass', this)">
-                    <i class="bi bi-eye"></i>
-                </button>
-            </div>
-            
-            <button type="submit" id="btnLoginSubmit" class="btn btn-login mt-3">
-                <span id="loginText">ENTRAR</span>
-                <span id="loginSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
-            </button>
-        </form>
-        
-        <div class="forgot-pass">
-            <a href="#" onclick="recoverPassword()">Esqueceu a senha?</a>
-        </div>
-        
-        <hr class="border-secondary my-3">
-        
-        <div class="text-center small text-secondary">
-            <i class="bi bi-fire"></i> Protegido por Firebase Authentication
-        </div>    </div>
-</div>
-<!-- ========== FIM LOGIN ========== -->
-
-<div id="adminLock">
-    <h2>Entre em contato com o ADM</h2>
-    <p>Aplicativo Bloqueado</p>
-    <button class="btn btn-success mb-3" onclick="window.open('https://wa.me/5585996498573')"><i class="bi bi-whatsapp"></i> WhatsApp ADM</button>
-    <input type="password" id="adminPass" class="form-control w-50 mb-2" placeholder="Senha">
-    <button class="btn btn-primary" onclick="unlockApp()">Desbloquear</button>
-</div>
-
-<div id="mySidenav" class="menu-lateral">
-    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-    <div class="p-3">
-        <label>Msg Cobrança:</label>
-        <textarea id="cfgMsg" class="form-control mb-2"></textarea>
-        <label>Painel 1 (CENTRAL):</label>
-        <input type="text" id="url1" class="form-control mb-2">
-        <label>Painel 2 (WAREZ):</label>
-        <input type="text" id="url2" class="form-control mb-2">
-        <label>Painel 3 (ZEUS):</label>
-        type="text" id="url3" class="form-control mb-2">
-        <button class="btn btn-info w-100 mt-3" onclick="saveSettings()">Salvar Configurações</button>
-        <hr class="border-secondary">
-        <button class="btn btn-outline-danger w-100" onclick="logoutFirebase()"><i class="bi bi-box-arrow-right"></i> SAIR</button>
-    </div>
-</div>
-
-<nav class="navbar sticky-top">
-    <div class="container-fluid">
-        <button class="btn text-white" onclick="openNav()"><i class="bi bi-list fs-3"></i></button>
-        <span class="navbar-brand mb-0 h1 text-white">ITVPlayer</span>
-        <div>
-            <button class="btn btn-outline-info me-2" onclick="toggleAdminPanel()"><i class="bi bi-graph-up"></i></button>
-            <button class="btn text-white" style="background-color: green;" onclick="showModalCadastro()"><i class="bi bi-plus-lg"></i></button>
-        </div>
-    </div>
-</nav>
-
-<div class="container mt-3">
     
-    <div id="adminPanel" style="display: none;" class="mb-4 animate__animated animate__fadeIn">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4><i class="bi bi-cash-stack text-success"></i> Gestão Financeira</h4>
-            <input type="month" id="filterMes" class="form-control w-auto bg-dark text-white border-secondary" onchange="renderFinanceiro()">
-        </div>
-        <div class="row g-2">
-            <div class="col-6 col-md-3">
-                <div class="card-financeiro">                    <div class="stat-label">Recebido (Mês)</div>
-                    <div class="stat-val" id="finRecebido">R$ 0,00</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="card-financeiro" style="border-left-color: #ffc107;">
-                    <div class="stat-label">A Receber</div>
-                    <div class="stat-val text-warning" id="finPendente">R$ 0,00</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="card-financeiro" style="border-left-color: #0dcaf0;">
-                    <div class="stat-label">Total Clientes</div>
-                    <div class="stat-val text-info" id="finTotalClientes">0</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="card-financeiro" style="border-left-color: #00ff00;">
-                    <div class="stat-label">Lucro Geral</div>
-                    <div class="stat-val" id="finGeral" style="color: #00ff00;">R$ 0,00</div>
-                </div>
-            </div>
-        </div>
-        <hr class="border-secondary">
-    </div>
-
-    <input type="text" id="search" class="form-control bg-dark text-white border-secondary mb-3" placeholder="Buscar cliente..." onkeyup="renderClientes()">
-
-    <div class="d-flex mb-3">
-        <button class="btn-small bg-primary" onclick="filterData('ativos')">ATIVOS (<span id="countAtivos">0</span>)</button>
-        <button class="btn-small" style="background-color: orange;" onclick="filterData('vencer')">A VENCER (<span id="countVencer">0</span>)</button>
-        <button class="btn-small bg-danger" onclick="filterData('expirados')">EXPIRADOS (<span id="countExp">0</span>)</button>
-        <button class="btn-small bg-info" onclick="filterData('apagar')">A PAGAR (<span id="countPagar">0</span>)</button>
-        <button class="btn-small bg-secondary" onclick="filterData('deletados')">LIXO (<span id="countDel">0</span>)</button>
-    </div>
-
-    <div class="d-flex gap-2 mb-4">
-        <button class="btn btn-outline-light btn-sm w-100" onclick="accessPanel(1)">CENTRAL</button>
-        <button class="btn btn-outline-light btn-sm w-100" onclick="accessPanel(2)">WAREZ</button>
-        <button class="btn btn-outline-light btn-sm w-100" onclick="accessPanel(3)">ZEUS</button>
-    </div>
-
-    <div id="listaClientes"></div>
-</div>
-
-<div class="modal fade" id="modalCadastro" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content bg-dark text-white">
-            <div class="modal-body">
-                <input type="hidden" id="editIndex">                <label class="small text-secondary">Nome do Cliente:</label>
-                <input type="text" id="cNome" class="form-control mb-2" placeholder="Nome">
-                <input type="text" id="cUser" class="form-control mb-2" placeholder="Usuário">
-                <input type="text" id="cPass" class="form-control mb-2" placeholder="Senha">
-                <label class="small text-secondary">Valor da Mensalidade:</label>
-                <input type="number" id="cValor" class="form-control mb-2" placeholder="Valor" step="0.01">
-                <label class="small text-secondary">Data de Vencimento:</label>
-                <input type="date" id="cData" class="form-control mb-2">
-                <input type="text" id="cServ" class="form-control mb-2" placeholder="Servidor">
-                <input type="text" id="cUrl" class="form-control mb-2" placeholder="URL">
-                <input type="text" id="cTel" class="form-control mb-2" placeholder="Celular: +55(xx)xxxxx-xxxx">
-                <textarea id="cObs" class="form-control mb-2" placeholder="Observações"></textarea>
-                <button class="btn btn-success w-100" onclick="saveCliente()">Salvar Cliente</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ========== FIREBASE SDKs ========== -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-<!-- ========== FIM FIREBASE ========== -->
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // ========== CONFIGURAÇÃO FIREBASE ==========
-    const firebaseConfig = {
-        apiKey: "AIzaSyDd_rtYsto9_0zp8pxYwXRs4XRRip7k3uc",
-        authDomain: "itvcontrol.firebaseapp.com",
-        projectId: "itvcontrol",
-        storageBucket: "itvcontrol.firebasestorage.app",
-        messagingSenderId: "291731890067",
-        appId: "1:291731890067:web:e75e79766765d861db5266"
-    };
-    
-    // Inicializa Firebase
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-    
-    // Configura persistência (mantém login mesmo fechando o navegador)
-    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-    // ========== FIM FIREBASE ==========
-
-    // ========== MATRIX RAIN EFFECT ==========
-    (function initMatrix() {
-        const canvas = document.getElementById('matrixCanvas');
-        const ctx = canvas.getContext('2d');
-                function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-        
-        const matrixChars = 'ｦｧｨｩｪｫｬｭｮｯｰｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        const chars = matrixChars.split('');
-        
-        const fontSize = 14;
-        const columns = Math.floor(canvas.width / fontSize);
-        const drops = [];
-        
-        for(let i = 0; i < columns; i++) {
-            drops[i] = Math.random() * -100;
-        }
-        
-        const speed = 0.4;
-        
-        function draw() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.fillStyle = '#00FF41';
-            ctx.font = `${fontSize}px monospace`;
-            
-            for(let i = 0; i < drops.length; i++) {
-                const char = chars[Math.floor(Math.random() * chars.length)];
-                const x = i * fontSize;
-                const y = drops[i] * fontSize;
-                
-                const opacity = Math.min(1, Math.max(0.3, (canvas.height - y) / (canvas.height * 0.3)));
-                ctx.fillStyle = `rgba(0, 255, 65, ${opacity})`;
-                
-                ctx.fillText(char, x, y);
-                
-                drops[i] += speed;
-                
-                if(drops[i] * fontSize > canvas.height + fontSize && Math.random() > 0.975) {
-                    drops[i] = Math.random() * -20;
-                }
-            }
-            
-            requestAnimationFrame(draw);
-        }
-        
-        draw();
-    })();
-    // ========== FIM MATRIX ==========
-    // ========== VARIÁVEIS GLOBAIS ==========
-    let clientes = JSON.parse(localStorage.getItem('itv_clientes')) || [];
-    let config = JSON.parse(localStorage.getItem('itv_config')) || { msg: "", p1: "", p2: "", p3: "" };
-    let isUnlocked = localStorage.getItem('itv_unlocked') === 'true';
-    let currentFilter = 'ativos';
-    let currentUser = null; // Usuário logado do Firebase
-    // ========== FIM VARIÁVEIS ==========
-
-    // ========== FUNÇÕES DE LOGIN FIREBASE ==========
-    
-    // Mostrar/ocultar senha
-    function togglePass(inputId, btn) {
-        const input = document.getElementById(inputId);
-        const icon = btn.querySelector('i');
-        if(input.type === 'password') {
-            input.type = 'text';
-            icon.classList.replace('bi-eye', 'bi-eye-slash');
-        } else {
-            input.type = 'password';
-            icon.classList.replace('bi-eye-slash', 'bi-eye');
-        }
-    }
-    
-    // Login com Firebase
-    document.getElementById('loginForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const email = document.getElementById('loginEmail').value.trim();
-        const pass = document.getElementById('loginPass').value;
-        const alertBox = document.getElementById('loginAlert');
-        const btnSubmit = document.getElementById('btnLoginSubmit');
-        const loginText = document.getElementById('loginText');
-        const loginSpinner = document.getElementById('loginSpinner');
-        
-        // UI loading
-        alertBox.classList.add('d-none');
-        btnSubmit.disabled = true;
-        loginText.textContent = 'ENTRANDO...';
-        loginSpinner.classList.remove('d-none');
-        
-        try {
-            const userCredential = await auth.signInWithEmailAndPassword(email, pass);
-            currentUser = userCredential.user;
-            
-            // Sucesso: carregar dados do Firestore e mostrar app
-            await loadUserDataFromFirebase();
-            hideLoginScreen();
-            
-        } catch (error) {            console.error('Erro no login:', error);
-            let msg = 'Falha no login. Verifique e-mail e senha.';
-            
-            if(error.code === 'auth/user-not-found') msg = 'Usuário não encontrado.';
-            else if(error.code === 'auth/wrong-password') msg = 'Senha incorreta.';
-            else if(error.code === 'auth/invalid-email') msg = 'E-mail inválido.';
-            else if(error.code === 'auth/too-many-requests') msg = 'Muitas tentativas. Tente mais tarde.';
-            
-            alertBox.textContent = msg;
-            alertBox.classList.remove('d-none');
-        } finally {
-            // Restaura UI
-            btnSubmit.disabled = false;
-            loginText.textContent = 'ENTRAR';
-            loginSpinner.classList.add('d-none');
-        }
-    });
-    
-    // Carregar dados do usuário do Firestore
-    async function loadUserDataFromFirebase() {
-        if(!currentUser) return;
-        
-        try {
-            const userDoc = await db.collection('users').doc(currentUser.uid).get();
-            
-            if(userDoc.exists) {
-                const data = userDoc.data();
-                // Carrega clientes se existirem no Firestore
-                if(data.clientes && Array.isArray(data.clientes)) {
-                    clientes = data.clientes;
-                    localStorage.setItem('itv_clientes', JSON.stringify(clientes));
-                }
-                // Carrega configurações
-                if(data.config) {
-                    config = data.config;
-                    localStorage.setItem('itv_config', JSON.stringify(config));
-                }
-            }
-            // Se não existir documento, cria um vazio
-            await saveUserDataToFirebase();
-            
-        } catch (error) {
-            console.error('Erro ao carregar dados:', error);
-            // Continua com dados do localStorage se falhar
-        }
-    }
-    
-    // Salvar dados do usuário no Firestore
-    async function saveUserDataToFirebase() {
-        if(!currentUser) return;        
-        try {
-            await db.collection('users').doc(currentUser.uid).set({
-                email: currentUser.email,
-                clientes: clientes,
-                config: config,
-                lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
-        } catch (error) {
-            console.error('Erro ao salvar dados:', error);
-        }
-    }
-    
-    // Esconder tela de login e mostrar app
-    function hideLoginScreen() {
-        document.getElementById('loginScreen').style.display = 'none';
-        // Inicializa interface
-        renderClientes();
-        document.getElementById('cfgMsg').value = config.msg || '';
-        document.getElementById('url1').value = config.p1 || '';
-        document.getElementById('url2').value = config.p2 || '';
-        document.getElementById('url3').value = config.p3 || '';
-    }
-    
-    // Logout do Firebase
-    function logoutFirebase() {
-        if(confirm('Deseja realmente sair?')) {
-            auth.signOut().then(() => {
-                currentUser = null;
-                // Opcional: limpar dados locais ao sair
-                // localStorage.clear();
-                location.reload();
-            }).catch(error => {
-                console.error('Erro ao sair:', error);
-                alert('Erro ao sair. Tente novamente.');
+    <!-- Service Worker para PWA e Notificações -->
+    <script>
+        // Registrar Service Worker para notificações em background
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swCode = `
+                    self.addEventListener('install', (event) => {
+                        self.skipWaiting();
+                    });
+                    self.addEventListener('activate', (event) => {
+                        self.clients.claim();
+                    });
+                    self.addEventListener('notificationclick', (event) => {
+                        event.notification.close();
+                        event.waitUntil(
+                            clients.matchAll({ type: 'window', includeUncontrolled: true })
+                                .then((clientList) => {
+                                    for (const client of clientList) {
+                                        if (client.url.includes(location.pathname) && 'focus' in client) {
+                                            return client.focus();
+                                        }
+                                    }
+                                    if (clients.openWindow) {
+                                        return clients.openWindow('/');
+                                    }
+                                })
+                        );
+                    });
+                    self.addEventListener('push', (event) => {
+                        const data = event.data?.json() || {};
+                        const title = data.title || '💬 Nova Mensagem';
+                        const options = {
+                            body: data.body || 'Você recebeu uma nova mensagem no Chat Moderno',
+                            icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23075e54"/><text x="50" y="65" font-size="50" text-anchor="middle" fill="white">💬</text></svg>',
+                            tag: 'chat-message',
+                            renotify: true,
+                            requireInteraction: true,
+                            actions: [{ action: 'open', title: 'Abrir Chat' }]
+                        };
+                        event.waitUntil(self.registration.showNotification(title, options));
+                    });
+                `;
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                navigator.serviceWorker.register(swUrl).then(registration => {
+                    console.log('✅ Service Worker registrado');
+                    window.swRegistration = registration;
+                }).catch(error => console.log('❌ Falha no Service Worker:', error));
             });
         }
-    }
+    </script>
     
-    // Recuperar senha
-    function recoverPassword() {
-        const email = prompt('Digite seu e-mail cadastrado para recuperar a senha:');
-        if(email) {
-            auth.sendPasswordResetEmail(email)
-                .then(() => alert('E-mail de recuperação enviado! Verifique sua caixa de entrada.'))
-                .catch(error => {
-                    let msg = 'Erro ao enviar e-mail.';
-                    if(error.code === 'auth/user-not-found') msg = 'E-mail não cadastrado.';
-                    alert(msg);
-                });        }
-    }
-    
-    // Listener de estado de autenticação
-    auth.onAuthStateChanged(user => {
-        if(user) {
-            currentUser = user;
-            // Se já estiver na página principal, não faz nada
-            if(document.getElementById('loginScreen').style.display !== 'none') {
-                loadUserDataFromFirebase().then(() => hideLoginScreen());
-            }
-        } else {
-            // Usuário não autenticado: mostra login
-            currentUser = null;
-            document.getElementById('loginScreen').style.display = 'flex';
-        }
-    });
-    
-    // ========== FIM FUNÇÕES LOGIN ==========
-
-    // Função auxiliar para converter data ISO (YYYY-MM-DD) para DD/MM/AAAA
-    function formatDateToBR(isoDate) {
-        if (!isoDate) return '';
-        const parts = isoDate.split('-');
-        if (parts.length !== 3) return isoDate;
-        return `${parts[2]}/${parts[1]}/${parts[0]}`;
-    }
-
-    // Função auxiliar para converter data DD/MM/AAAA para ISO (YYYY-MM-DD) ao salvar
-    function parseDateBRtoISO(brDate) {
-        if (!brDate) return '';
-        const parts = brDate.split('/');
-        if (parts.length !== 3) return brDate;
-        return `${parts[2]}-${parts[1]}-${parts[0]}`;
-    }
-
-    function checkLock() {
-        // Bloqueio desabilitado
-        return;
-    }
-
-    function toggleAdminPanel() {
-        const panel = document.getElementById('adminPanel');
-        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-        if(panel.style.display === 'block') renderFinanceiro();
-    }
-
-    function unlockApp() {
-        if (document.getElementById('adminPass').value === 'itv2026001') {
-            isUnlocked = true;            localStorage.setItem('itv_unlocked', 'true');
-            document.getElementById('adminLock').style.display = 'none';
-        } else { alert("Senha incorreta!"); }
-    }
-
-    function openNav() { document.getElementById("mySidenav").style.width = "250px"; }
-    function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
-
-    function saveSettings() {
-        config = {
-            msg: document.getElementById('cfgMsg').value,
-            p1: document.getElementById('url1').value,
-            p2: document.getElementById('url2').value,
-            p3: document.getElementById('url3').value
-        };
-        localStorage.setItem('itv_config', JSON.stringify(config));
-        // Salva também no Firebase se estiver logado
-        saveUserDataToFirebase();
-        closeNav();
-        alert('Configurações salvas! ✓');
-    }
-
-    function showModalCadastro(index = -1) {
-        if(index === -1) {
-            document.getElementById('editIndex').value = "";
-            document.getElementById('cNome').value = "";
-            document.getElementById('cUser').value = "";
-            document.getElementById('cPass').value = "";
-            document.getElementById('cValor').value = "";
-            document.getElementById('cData').value = "";
-            document.getElementById('cServ').value = "";
-            document.getElementById('cUrl').value = "";
-            document.getElementById('cTel').value = "";
-            document.getElementById('cObs').value = "";
-        } else {
-            const c = clientes[index];
-            document.getElementById('cNome').value = c.nome;
-            document.getElementById('cUser').value = c.user;
-            document.getElementById('cPass').value = c.pass;
-            document.getElementById('cValor').value = c.valor;
-            document.getElementById('cData').value = c.data;
-            document.getElementById('cServ').value = c.serv;
-            document.getElementById('cUrl').value = c.url;
-            document.getElementById('cTel').value = c.tel;
-            document.getElementById('cObs').value = c.obs;
-        }
-        new bootstrap.Modal(document.getElementById('modalCadastro')).show();
-    }
-
-    function saveCliente() {        const index = document.getElementById('editIndex').value;
-        const novo = {
-            nome: document.getElementById('cNome').value,
-            user: document.getElementById('cUser').value,
-            pass: document.getElementById('cPass').value,
-            valor: parseFloat(document.getElementById('cValor').value) || 0,
-            data: document.getElementById('cData').value,
-            serv: document.getElementById('cServ').value,
-            url: document.getElementById('cUrl').value,
-            tel: document.getElementById('cTel').value,
-            obs: document.getElementById('cObs').value,
-            status: 'ativo'
-        };
-
-        if(index === "") clientes.push(novo);
-        else {
-            novo.status = clientes[index].status;
-            clientes[index] = novo;
-        }
-
-        localStorage.setItem('itv_clientes', JSON.stringify(clientes));
-        // Salva também no Firebase se estiver logado
-        saveUserDataToFirebase();
-        location.reload();
-    }
-
-    function renderFinanceiro() {
-        const mesSelecionado = document.getElementById('filterMes').value;
-        let recebido = 0;
-        let pendente = 0;
-        let totalGeral = 0;
-        let totalAtivos = 0;
-
-        clientes.forEach(c => {
-            if(c.status !== 'deletado') {
-                const val = parseFloat(c.valor) || 0;
-                totalGeral += val;
-                totalAtivos++;
-                
-                if(c.data && c.data.startsWith(mesSelecionado)) {
-                    if(c.status === 'ativo' || c.status === 'vencer' || c.status === 'expirado') {
-                        recebido += val;
-                    } else if(c.status === 'apagar') {
-                        pendente += val;
-                    }
-                }
-            }
-        });
-
-        document.getElementById('finRecebido').innerText = `R$ ${recebido.toFixed(2)}`;        document.getElementById('finPendente').innerText = `R$ ${pendente.toFixed(2)}`;
-        document.getElementById('finTotalClientes').innerText = totalAtivos;
-        document.getElementById('finGeral').innerText = `R$ ${totalGeral.toFixed(2)}`;
-    }
-
-    function pagarCliente(i) {
-        const cliente = clientes[i];
-        const msg = `✅𝕊𝔼𝕌 ℙ𝔸𝔾𝔸𝕄𝔼ℕ𝕋𝕆 𝔽𝕆𝕀 ℂ𝕆ℕ𝔽𝕀ℝ𝕄𝔸𝔻𝕆𝕊!!\n\nNome: ${cliente.nome}\nPlano Familia: R$ ${cliente.valor.toFixed(2)}\nProvedor: ${cliente.serv}\nUsuário: ${cliente.user}\nSenha: ${cliente.pass}\nUrl: ${cliente.url}\nVence: ${formatDateToBR(cliente.data)}\n\nDivirta-se!!`;
-        window.open(`https://wa.me/${cliente.tel.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`);
-        cliente.status = 'ativo';
-        localStorage.setItem('itv_clientes', JSON.stringify(clientes));
-        saveUserDataToFirebase();
-        renderClientes();
-    }
-
-    function renderClientes() {
-        const lista = document.getElementById('listaClientes');
-        const search = document.getElementById('search').value.toLowerCase();
-        lista.innerHTML = "";
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, setDoc, getDoc, updateDoc, where, getDocs, deleteDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+        import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-messaging.js";
         
-        let counts = { ativos: 0, vencer: 0, exp: 0, apagar: 0, del: 0 };
-        const hoje = new Date();
-        hoje.setHours(0,0,0,0);
+        const firebaseConfig = {
+            apiKey: "AIzaSyD6sVu3hsBK0AyH4jxr3lj94Hj7JAj16_g",
+            authDomain: "chat-94349.firebaseapp.com",
+            projectId: "chat-94349",
+            storageBucket: "chat-94349.firebasestorage.app",
+            messagingSenderId: "1058859014174",
+            appId: "1:1058859014174:web:19d7b3ceef6f6dda1e360f"
+        };
 
-        clientes.forEach((c, i) => {
-            // Verifica se a data é válida
-            const dataVenc = c.data ? new Date(c.data) : new Date();
-            if(isNaN(dataVenc.getTime())) dataVenc.setTime(0);
-            dataVenc.setHours(0,0,0,0);
-            const diffDays = Math.ceil((dataVenc - hoje) / (1000 * 60 * 60 * 24));
-            
-            let statusReal = c.status;
-            if(c.status !== 'deletado' && c.status !== 'apagar') {
-                if(diffDays < 0) statusReal = 'expirado';
-                else if(diffDays <= 3) statusReal = 'vencer';
-                else statusReal = 'ativo';
-            }
-
-            if(statusReal === 'ativo') counts.ativos++;
-            if(statusReal === 'vencer') counts.vencer++;
-            if(statusReal === 'expirado') counts.exp++;
-            if(c.status === 'apagar') counts.apagar++;
-            if(c.status === 'deletado') counts.del++;
-
-            if(currentFilter === 'ativos' && (statusReal === 'deletado' || statusReal === 'expirado' || statusReal === 'apagar')) return;
-            if(currentFilter === 'vencer' && statusReal !== 'vencer') return;
-            if(currentFilter === 'expirados' && statusReal !== 'expirado') return;
-            if(currentFilter === 'apagar' && c.status !== 'apagar') return;
-            if(currentFilter === 'deletados' && c.status !== 'deletado') return;
-                        if(!c.nome || !c.nome.toLowerCase().includes(search)) return;
-
-            const dataFormatada = formatDateToBR(c.data);
-            const valorFormatado = `R$ ${(c.valor || 0).toFixed(2)}`;
-
-            let botoesHtml = '';
-            if (c.status === 'apagar') {
-                botoesHtml = `
-                    <div class="d-flex flex-wrap gap-1">
-                        <button class="btn btn-sm btn-primary" onclick="pagarCliente(${i})">PAGAR</button>
-                        <button class="btn btn-sm bg-lilas" onclick="editCliente(${i})"><i class="bi bi-pencil"></i> EDITAR</button>
-                    </div>
-                `;
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        let messaging = null;
+        
+        let currentContact = null;
+        let unsubscribe = null;
+        let currentUserEmail = null;
+        let currentUserDisplayName = null;
+        let unreadListeners = new Map();
+        let blinkingContacts = new Set();
+        let friendsList = [];
+        let pendingRequestsListener = null;
+        let notificationSound = null;
+        let notificationPermissionRequested = false;
+        const friendlyNameMap = {};
+        
+        const chatArea = document.getElementById('chat-area');
+        const chatTitle = document.getElementById('chat-title');
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn');
+        const authScreen = document.getElementById('auth-screen');
+        const mainScreen = document.getElementById('main-screen');
+        const chatContainer = document.getElementById('chat-container');
+        const notificationBtn = document.getElementById('notification-btn');
+        const notificationBadge = document.getElementById('notification-badge');
+        const notificationPanel = document.getElementById('notification-panel');
+        const notificationList = document.getElementById('notification-list');
+        
+        const authEmail = document.getElementById('auth-email');
+        const authPassword = document.getElementById('auth-password');
+        const authConfirmPassword = document.getElementById('auth-confirm-password');
+        const authError = document.getElementById('auth-error');
+        const authSuccess = document.getElementById('auth-success');
+        const authSubmitBtn = document.getElementById('auth-submit-btn');
+        const authToggleBtn = document.getElementById('auth-toggle-btn');
+        const authTitle = document.getElementById('auth-title');
+        let isLoginMode = true;
+        
+        // ========== SOM E NOTIFICAÇÕES ==========
+        function loadNotificationSound() {
+            const savedSound = localStorage.getItem('notificationSound');
+            if (savedSound) {
+                notificationSound = new Audio(savedSound);
+                notificationSound.volume = 0.7;
             } else {
-                botoesHtml = `
-                    <div class="d-flex flex-wrap gap-1">
-                        <button class="btn btn-sm btn-success" onclick="sendZap('${i}', 'cobranca')">COBRAR</button>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-sm btn-warning dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                RENOVAR
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><button class="dropdown-item" onclick="updateStatus('${i}', 'pago')">✅ PAGO</button></li>
-                                <li><button class="dropdown-item" onclick="updateStatus('${i}', 'naopago')">❌ NÃO PAGO</button></li>
-                            </ul>
-                        </div>
-                        <button class="btn btn-sm bg-lilas" onclick="editCliente(${i})"><i class="bi bi-pencil"></i></button>
-                        ${c.status === 'deletado' ? 
-                            `<button class="btn btn-sm btn-info" onclick="restore(${i})">RESTAURAR</button>
-                             <button class="btn btn-sm btn-danger" onclick="hardDelete(${i})">EXCLUIR</button>` : 
-                            `<button class="btn btn-sm btn-danger" onclick="softDelete(${i})"><i class="bi bi-trash"></i></button>`
-                        }
-                    </div>
-                `;
+                const defaultSound = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+                notificationSound = new Audio(defaultSound);
+                notificationSound.volume = 0.5;
             }
-
-            lista.innerHTML += `
-                <div class="card-cliente">
-                    <div class="d-flex justify-content-between">
-                        <h5>${c.nome || 'Sem nome'}</h5>
-                        <span class="badge ${statusReal === 'expirado' ? 'bg-danger' : (statusReal === 'vencer' ? 'bg-warning' : 'bg-success')}">${dataFormatada || '--/--/----'}</span>
-                    </div>
-                    <p class="small mb-2">User: ${c.user || '-'} | Valor: <strong>${valorFormatado}</strong></p>
-                    ${botoesHtml}
-                </div>
-            `;
+        }
+        
+        function playNotificationSound() {
+            if (!notificationSound) return;
+            notificationSound.currentTime = 0;
+            notificationSound.play().catch(e => {
+                const unlock = () => {
+                    notificationSound.play().catch(() => {});
+                    ['click', 'touchstart', 'keydown'].forEach(evt => document.removeEventListener(evt, unlock));
+                };
+                ['click', 'touchstart', 'keydown'].forEach(evt => document.addEventListener(evt, unlock, { once: true }));
+            });
+        }
+        
+        window.selectNotificationSound = function() {
+            document.getElementById('sound-file-input').click();
+        };
+        
+        function handleSoundFile(file) {
+            if (!file) return;
+            if (!file.type.startsWith('audio/')) {
+                showToast('Selecione um arquivo de áudio válido');
+                return;
+            }
+            if (file.size > 3 * 1024 * 1024) {
+                showToast('Arquivo muito grande. Máximo 3MB.');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                localStorage.setItem('notificationSound', e.target.result);
+                notificationSound = new Audio(e.target.result);
+                notificationSound.volume = 0.7;
+                showToast('🔔 Som de notificação alterado! Clique em "Fixar Som" para confirmar.');
+                playNotificationSound();
+            };
+            reader.onerror = () => showToast('Erro ao carregar arquivo');
+            reader.readAsDataURL(file);
+        }
+        
+        // NOVO BOTÃO FIXAR SOM: refixa o som atual (salvo no localStorage) e garante que será tocado nas mensagens
+        window.fixNotificationSound = function() {
+            const savedSound = localStorage.getItem('notificationSound');
+            if (savedSound) {
+                notificationSound = new Audio(savedSound);
+                notificationSound.volume = 0.7;
+                showToast('📌 Som de notificação fixado com sucesso! ✅');
+                playNotificationSound();
+            } else {
+                showToast('⚠️ Nenhum som personalizado encontrado. Use "Som de Notificação" primeiro.');
+            }
+        };
+        
+        async function requestNotificationPermission() {
+            if (!('Notification' in window)) return false;
+            if (Notification.permission === 'granted') return true;
+            if (Notification.permission !== 'denied') {
+                const permission = await Notification.requestPermission();
+                return permission === 'granted';
+            }
+            return false;
+        }
+        
+        function showSystemNotification(title, body, contactName) {
+            if (!('Notification' in window) || Notification.permission !== 'granted') return;
+            if (window.isPageVisible && currentContact === contactName) return;
+            const icon = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23075e54"/><text x="50" y="65" font-size="50" text-anchor="middle" fill="white">💬</text></svg>';
+            const notification = new Notification(title, { body: body, icon: icon, tag: `chat-${contactName}`, renotify: true });
+            notification.onclick = function() {
+                window.focus();
+                if (currentContact !== contactName && friendsList.includes(contactName)) {
+                    startChatFromMain(contactName, friendlyNameMap[contactName] || contactName.split('@')[0]);
+                }
+            };
+            setTimeout(() => notification.close(), 5000);
+        }
+        
+        function showToast(message) {
+            let toast = document.getElementById('notification-toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'notification-toast';
+                toast.className = 'toast';
+                document.body.appendChild(toast);
+            }
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+        
+        // ========== FUNÇÕES DE AMIZADE E MENSAGENS ==========
+        async function userExists(email) {
+            const usersRef = collection(db, "usuarios");
+            const q = query(usersRef, where("email", "==", email));
+            const snapshot = await getDocs(q);
+            return !snapshot.empty;
+        }
+        
+        window.sendFriendRequest = async function() {
+            if (!currentUserEmail) { alert("Faça login primeiro!"); return; }
+            const friendEmail = prompt("Digite o e-mail do seu amigo:");
+            if (!friendEmail || friendEmail.trim() === "") return;
+            const emailTrimmed = friendEmail.trim();
+            if (emailTrimmed === currentUserEmail) { alert("Você não pode enviar solicitação para si mesmo."); return; }
+            if (friendsList.includes(emailTrimmed)) { alert("Você já é amigo(a) desta pessoa!"); return; }
+            
+            const requestsRef = collection(db, "solicitacoes");
+            const existingQuery = query(requestsRef, where("remetente", "==", currentUserEmail), where("destinatario", "==", emailTrimmed), where("status", "==", "pendente"));
+            const existingSnap = await getDocs(existingQuery);
+            if (!existingSnap.empty) { alert("Você já enviou uma solicitação para este e-mail."); return; }
+            
+            const reverseQuery = query(requestsRef, where("remetente", "==", emailTrimmed), where("destinatario", "==", currentUserEmail), where("status", "==", "pendente"));
+            const reverseSnap = await getDocs(reverseQuery);
+            if (!reverseSnap.empty) { alert("Este usuário já te enviou uma solicitação. Aceite-a primeiro."); return; }
+            
+            const exists = await userExists(emailTrimmed);
+            if (!exists) { alert("Usuário não encontrado."); return; }
+            
+            await addDoc(collection(db, "solicitacoes"), {
+                remetente: currentUserEmail, destinatario: emailTrimmed, status: "pendente",
+                timestamp: serverTimestamp(), remetenteNome: currentUserDisplayName || currentUserEmail.split('@')[0]
+            });
+            alert(`Solicitação enviada para ${emailTrimmed}!`);
+        };
+        
+        window.acceptRequest = async function(requestId, remetenteEmail, remetenteNome) {
+            const requestRef = doc(db, "solicitacoes", requestId);
+            await updateDoc(requestRef, { status: "aceito" });
+            const friendshipId = [currentUserEmail, remetenteEmail].sort().join('_');
+            await setDoc(doc(db, "amizades", friendshipId), { usuarios: [currentUserEmail, remetenteEmail], criadoEm: serverTimestamp(), status: "ativa" });
+            alert(`Agora você é amigo(a) de ${remetenteNome || remetenteEmail.split('@')[0]}!`);
+            loadFriendsAndContacts();
+        };
+        
+        window.rejectRequest = async function(requestId) {
+            await deleteDoc(doc(db, "solicitacoes", requestId));
+            alert("Solicitação recusada.");
+        };
+        
+        function loadPendingRequests() {
+            if (!currentUserEmail) return;
+            if (pendingRequestsListener) pendingRequestsListener();
+            const q = query(collection(db, "solicitacoes"), where("destinatario", "==", currentUserEmail), where("status", "==", "pendente"));
+            pendingRequestsListener = onSnapshot(q, (snapshot) => {
+                const requests = []; snapshot.forEach(doc => requests.push({ id: doc.id, ...doc.data() }));
+                const count = requests.length;
+                notificationBadge.style.display = count ? 'flex' : 'none';
+                if (count) notificationBadge.textContent = count > 9 ? '9+' : count;
+                notificationList.innerHTML = requests.length ? '' : '<div class="no-requests">Nenhuma solicitação pendente</div>';
+                requests.forEach(req => {
+                    const nomeExib = req.remetenteNome || req.remetente.split('@')[0];
+                    const div = document.createElement('div');
+                    div.className = 'request-item';
+                    div.innerHTML = `
+                        <div class="request-info"><div class="request-name">${escapeHtml(nomeExib)}</div><div class="request-email">${escapeHtml(req.remetente)}</div></div>
+                        <div class="request-actions"><button class="accept-btn" onclick="window.acceptRequest('${req.id}', '${req.remetente}', '${nomeExib}')">Aceitar</button><button class="reject-btn" onclick="window.rejectRequest('${req.id}')">Recusar</button></div>
+                    `;
+                    notificationList.appendChild(div);
+                });
+            });
+        }
+        
+        async function loadFriendsAndContacts() {
+            if (!currentUserEmail) return;
+            const amigosSet = new Set();
+            const snapshot = await getDocs(query(collection(db, "amizades"), where("usuarios", "array-contains", currentUserEmail)));
+            snapshot.forEach(doc => {
+                const outro = doc.data().usuarios.find(u => u !== currentUserEmail);
+                if (outro) amigosSet.add(outro);
+            });
+            friendsList = Array.from(amigosSet);
+            for (const email of friendsList) {
+                if (!friendlyNameMap[email]) {
+                    const userDoc = await getDoc(doc(db, "usuarios", email.replace(/\./g, '_')));
+                    friendlyNameMap[email] = userDoc.exists() ? (userDoc.data().displayName || email.split('@')[0]) : email.split('@')[0];
+                }
+                startUnreadListener(email, friendlyNameMap[email]);
+            }
+            renderFriendsList();
+        }
+        
+        function renderFriendsList() {
+            const container = document.getElementById('contact-list-main');
+            if (!container) return;
+            if (!friendsList.length) { container.innerHTML = '<div class="no-results">😊 Nenhum amigo ainda. Adicione amigos!</div>'; return; }
+            const contacts = friendsList.map(email => ({ email, name: friendlyNameMap[email] || email.split('@')[0], initial: (friendlyNameMap[email] || email.split('@')[0]).charAt(0).toUpperCase() }));
+            renderContactsList(contacts);
+        }
+        
+        function renderContactsList(contacts) {
+            const container = document.getElementById('contact-list-main');
+            container.innerHTML = '';
+            if (!contacts.length) { container.innerHTML = '<div class="no-results">🔍 Nenhum amigo encontrado</div>'; return; }
+            contacts.forEach(contact => {
+                const div = document.createElement('div');
+                div.className = 'contact-item-main';
+                div.setAttribute('data-email', contact.email);
+                div.innerHTML = `<div class="contact-avatar">${contact.initial}</div><div class="contact-info"><div class="contact-name-main">${escapeHtml(contact.name)}</div><div class="contact-email-main">${escapeHtml(contact.email)}</div></div>`;
+                div.onclick = () => { markAsRead(contact.email); startChatFromMain(contact.email, contact.name); };
+                container.appendChild(div);
+                if (blinkingContacts.has(contact.email)) div.classList.add('blinking');
+            });
+        }
+        
+        function startUnreadListener(contactEmail, contactName) {
+            if (!currentUserEmail) return;
+            if (unreadListeners.has(contactEmail)) unreadListeners.get(contactEmail)();
+            const conversationId = [currentUserEmail, contactEmail].sort().join('_');
+            const q = query(collection(db, "conversas", conversationId, "mensagens"), orderBy("timestamp", "desc"));
+            const lastReadRef = doc(db, "leituras", `${currentUserEmail}_${contactEmail}`);
+            const unsub = onSnapshot(q, async (snapshot) => {
+                if (snapshot.empty) return;
+                const lastMsg = snapshot.docs[0].data();
+                if (lastMsg.enviadoPor === currentUserEmail) { stopBlinking(contactEmail); return; }
+                const lastReadDoc = await getDoc(lastReadRef);
+                let needBlink = true;
+                if (lastReadDoc.exists() && lastMsg.timestamp) {
+                    needBlink = lastMsg.timestamp.toDate() > lastReadDoc.data().lastRead?.toDate();
+                }
+                if (needBlink && currentContact !== contactEmail) {
+                    if (!blinkingContacts.has(contactEmail)) {
+                        blinkingContacts.add(contactEmail);
+                        const el = document.querySelector(`.contact-item-main[data-email="${contactEmail}"]`);
+                        if (el) el.classList.add('blinking');
+                        playNotificationSound();
+                        const senderName = friendlyNameMap[lastMsg.enviadoPor] || lastMsg.enviadoPor.split('@')[0];
+                        const preview = lastMsg.texto?.substring(0, 50);
+                        if (Notification.permission === 'granted') showSystemNotification(`💬 ${senderName}`, preview || 'Nova mensagem', contactEmail);
+                        else showToast(`🔔 ${senderName}: ${preview || 'Nova mensagem'}`);
+                    }
+                } else { stopBlinking(contactEmail); }
+            });
+            unreadListeners.set(contactEmail, unsub);
+        }
+        
+        function stopBlinking(email) {
+            if (blinkingContacts.has(email)) {
+                blinkingContacts.delete(email);
+                const el = document.querySelector(`.contact-item-main[data-email="${email}"]`);
+                if (el) el.classList.remove('blinking');
+            }
+        }
+        
+        async function markAsRead(contactEmail) {
+            if (!currentUserEmail || !contactEmail) return;
+            await setDoc(doc(db, "leituras", `${currentUserEmail}_${contactEmail}`), { lastRead: serverTimestamp(), updatedAt: serverTimestamp() });
+            stopBlinking(contactEmail);
+        }
+        
+        function startChatFromMain(email, name) {
+            if (!currentUserEmail) return;
+            markAsRead(email);
+            currentContact = email;
+            chatTitle.innerText = name;
+            mainScreen.classList.add('hidden');
+            chatContainer.classList.remove('hidden');
+            loadMessages(email);
+            messageInput.focus();
+        }
+        
+        function loadMessages(contactEmail) {
+            if (unsubscribe) unsubscribe();
+            const conversationId = [currentUserEmail, contactEmail].sort().join('_');
+            const q = query(collection(db, "conversas", conversationId, "mensagens"), orderBy("timestamp", "asc"));
+            chatArea.innerHTML = "";
+            unsubscribe = onSnapshot(q, (snapshot) => {
+                chatArea.innerHTML = "";
+                if (snapshot.empty) {
+                    const empty = document.createElement('p');
+                    empty.style.cssText = "text-align:center;color:#777;margin-top:20px";
+                    empty.innerText = "Nenhuma mensagem ainda. Envie um olá!";
+                    chatArea.appendChild(empty);
+                } else {
+                    snapshot.forEach(docSnap => {
+                        const data = docSnap.data();
+                        const div = document.createElement('div');
+                        const timeStr = data.timestamp?.toDate().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) || '';
+                        if (data.enviadoPor === currentUserEmail) {
+                            div.className = 'message';
+                            div.innerHTML = `${escapeHtml(data.texto)}<small>${timeStr}</small>`;
+                        } else {
+                            const nome = friendlyNameMap[data.enviadoPor] || data.enviadoPor.split('@')[0];
+                            div.className = 'message received';
+                            div.innerHTML = `<strong>${escapeHtml(nome)}</strong><span>${escapeHtml(data.texto)}</span><small>${timeStr}</small>`;
+                        }
+                        chatArea.appendChild(div);
+                    });
+                }
+                chatArea.scrollTop = chatArea.scrollHeight;
+            });
+        }
+        
+        window.sendMessage = async function() {
+            if (!currentUserEmail || !currentContact) { alert("Selecione um contato"); return; }
+            const text = messageInput.value.trim();
+            if (!text) return;
+            const conversationId = [currentUserEmail, currentContact].sort().join('_');
+            await addDoc(collection(db, "conversas", conversationId, "mensagens"), {
+                texto: text, timestamp: serverTimestamp(), enviadoPor: currentUserEmail,
+                nomeExibicao: currentUserDisplayName || currentUserEmail.split('@')[0]
+            });
+            messageInput.value = "";
+        };
+        
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&', '<':'<', '>':'>' }[m])); }
+        
+        window.goToMainScreen = function() {
+            if (!currentUserEmail) return;
+            if (unsubscribe) unsubscribe();
+            if (currentContact) markAsRead(currentContact);
+            currentContact = null;
+            chatTitle.innerText = "Chat";
+            chatContainer.classList.add('hidden');
+            mainScreen.classList.remove('hidden');
+            renderFriendsList();
+        };
+        window.filterContacts = function(term) {
+            if (!term.trim()) { renderFriendsList(); return; }
+            const filtered = friendsList.filter(email => {
+                const name = (friendlyNameMap[email] || email.split('@')[0]).toLowerCase();
+                return name.includes(term.toLowerCase()) || email.toLowerCase().includes(term.toLowerCase());
+            }).map(email => ({ email, name: friendlyNameMap[email] || email.split('@')[0], initial: (friendlyNameMap[email] || email.split('@')[0]).charAt(0).toUpperCase() }));
+            renderContactsList(filtered);
+        };
+        window.clearSearch = function() { document.getElementById('search-input').value = ''; renderFriendsList(); };
+        window.toggleNotificationPanel = function() { notificationPanel.classList.toggle('show'); };
+        window.toggleSettingsMenu = function() { document.getElementById('settings-menu').classList.toggle('show'); };
+        
+        window.logout = async function() {
+            for (const [_, fn] of unreadListeners) fn();
+            if (pendingRequestsListener) pendingRequestsListener();
+            await signOut(auth);
+            if (unsubscribe) unsubscribe();
+            currentContact = null;
+            currentUserEmail = null;
+            chatContainer.classList.add('hidden');
+            mainScreen.classList.add('hidden');
+            authScreen.style.display = 'flex';
+            document.getElementById('settings-menu').classList.remove('show');
+            notificationPanel.classList.remove('show');
+        };
+        
+        // Autenticação
+        window.toggleAuthMode = function() {
+            isLoginMode = !isLoginMode;
+            authTitle.textContent = isLoginMode ? 'Login' : 'Cadastro';
+            authSubmitBtn.textContent = isLoginMode ? 'Entrar' : 'Cadastrar';
+            authToggleBtn.textContent = isLoginMode ? 'Criar nova conta' : 'Já tenho uma conta';
+            authConfirmPassword.style.display = isLoginMode ? 'none' : 'block';
+            authConfirmPassword.required = !isLoginMode;
+        };
+        window.submitAuth = async function() {
+            const email = authEmail.value.trim();
+            const password = authPassword.value;
+            const confirm = authConfirmPassword.value;
+            if (!email || !password) { showError('Preencha e-mail e senha.'); return; }
+            if (!isLoginMode && password !== confirm) { showError('Senhas não coincidem.'); return; }
+            if (password.length < 6) { showError('Senha mínima 6 caracteres.'); return; }
+            try {
+                if (isLoginMode) await signInWithEmailAndPassword(auth, email, password);
+                else await createUserWithEmailAndPassword(auth, email, password);
+                showSuccess(isLoginMode ? 'Login realizado!' : 'Cadastro realizado!');
+            } catch (error) {
+                let msg = 'Erro. ';
+                if (error.code === 'auth/email-already-in-use') msg = 'E-mail já cadastrado.';
+                else if (error.code === 'auth/user-not-found') msg = 'Usuário não encontrado.';
+                else if (error.code === 'auth/wrong-password') msg = 'Senha incorreta.';
+                else msg = error.message;
+                showError(msg);
+            }
+        };
+        function showError(msg) { authError.textContent = msg; authError.style.display = 'block'; setTimeout(() => authError.style.display = 'none', 4000); }
+        function showSuccess(msg) { authSuccess.textContent = msg; authSuccess.style.display = 'block'; setTimeout(() => authSuccess.style.display = 'none', 3000); }
+        
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUserEmail = user.email;
+                currentUserDisplayName = user.email.split('@')[0];
+                await setDoc(doc(db, "usuarios", currentUserEmail.replace(/\./g, '_')), { email: currentUserEmail, displayName: currentUserDisplayName, lastSeen: serverTimestamp() }, { merge: true });
+                authScreen.style.display = 'none';
+                mainScreen.classList.remove('hidden');
+                chatContainer.classList.add('hidden');
+                loadNotificationSound();
+                loadFriendsAndContacts();
+                loadPendingRequests();
+                if (Notification.permission === 'default') setTimeout(() => requestNotificationPermission(), 2000);
+            } else {
+                for (const [_, fn] of unreadListeners) fn();
+                unreadListeners.clear();
+                blinkingContacts.clear();
+                if (pendingRequestsListener) pendingRequestsListener();
+                friendsList = [];
+                currentUserEmail = null;
+                if (unsubscribe) unsubscribe();
+                authScreen.style.display = 'flex';
+                mainScreen.classList.add('hidden');
+                chatContainer.classList.add('hidden');
+                notificationBadge.style.display = 'none';
+                if (!isLoginMode) window.toggleAuthMode();
+            }
         });
-
-        document.getElementById('countAtivos').innerText = counts.ativos;
-        document.getElementById('countVencer').innerText = counts.vencer;        document.getElementById('countExp').innerText = counts.exp;
-        document.getElementById('countPagar').innerText = counts.apagar;
-        document.getElementById('countDel').innerText = counts.del;
-        renderFinanceiro();
-    }
-
-    function sendZap(i, tipo) {
-        const c = clientes[i];
-        if(!c || !c.tel) { alert('Telefone do cliente não cadastrado!'); return; }
         
-        let msg = "";
-        const novaData = new Date();
-        novaData.setMonth(novaData.getMonth() + 1);
-        const dataFormatada = formatDateToBR(c.data);
-        const novaDataFormatada = formatDateToBR(novaData.toISOString().split('T')[0]);
-
-        if(tipo === 'cobranca') {
-            msg = `📩 𝕞𝕤𝕘-𝕒𝕦𝕥𝕠𝕞á𝕥𝕚𝕔𝕒📩\n🚨🚨🚨🚨🚨🚨🚨🚨\n\nOla ${c.nome || 'Cliente'}!!\nSou o assistente virtual da ITVPlayer 🤖\n\nSua lista de\nTV, FILMES & SÉRIES\nexpirou ${dataFormatada}\n\nPara renovar Faz um Pix 💠\n💰Plano Familia: R$:${(c.valor || 0).toFixed(2)}\n${config.msg || ''}`;
-        } else if(tipo === 'pago') {
-            msg = `✅𝕊𝔼𝕌 ℙ𝔸𝔾𝔸𝕄𝔼ℕ𝕋𝕆 𝔽𝕆𝕀 ℂ𝕆ℕ𝔽𝕀ℝ𝕄𝔸𝔻𝕆𝕊!!\n\nNome: ${c.nome}\nPlano Familia: R$ ${(c.valor || 0).toFixed(2)}\nProvedor: ${c.serv}\nUsuário: ${c.user}\nSenha: ${c.pass}\nUrl: ${c.url}\nVence: ${novaDataFormatada}\n\nDivirta-se!!`;
-        } else {
-            msg = `⛔️𝕊𝔼𝕌 ℙ𝔸𝔾𝔸𝕄𝔼ℕ𝕋𝕆 ℕ𝔸𝕆 𝔽𝕆𝕀 ℂ𝕆ℕ𝔽𝕀ℝ𝕄𝔸𝔻𝕆𝕊!!\n\nNome: ${c.nome}\nPlano Familia: R$ ${(c.valor || 0).toFixed(2)}\nProvedor: ${c.serv}\nUsuário: ${c.user}\nSenha: ${c.pass}\nUrl: ${c.url}\nVence: ${novaDataFormatada}\n\nDivirta-se!!`;
-        }
-        
-        window.open(`https://wa.me/${c.tel.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`);
-    }
-
-    function updateStatus(i, acao) {
-        const dataAtual = new Date(clientes[i].data || Date.now());
-        dataAtual.setMonth(dataAtual.getMonth() + 1);
-        clientes[i].data = dataAtual.toISOString().split('T')[0];
-        
-        if(acao === 'pago') {
-            clientes[i].status = 'ativo';
-            sendZap(i, 'pago');
-        } else {
-            clientes[i].status = 'apagar';
-            sendZap(i, 'naopago');
-        }
-        localStorage.setItem('itv_clientes', JSON.stringify(clientes));
-        saveUserDataToFirebase();
-        renderClientes();
-    }
-
-    function filterData(f) { currentFilter = f; renderClientes(); }
-    function softDelete(i) { clientes[i].status = 'deletado'; localStorage.setItem('itv_clientes', JSON.stringify(clientes)); saveUserDataToFirebase(); renderClientes(); }
-    function restore(i) { clientes[i].status = 'ativo'; localStorage.setItem('itv_clientes', JSON.stringify(clientes)); saveUserDataToFirebase(); renderClientes(); }
-    function hardDelete(i) { if(confirm("Excluir permanentemente?")) { clientes.splice(i, 1); localStorage.setItem('itv_clientes', JSON.stringify(clientes)); saveUserDataToFirebase(); renderClientes(); } }
-    function accessPanel(n) { const url = config['p'+n]; if(url) window.open(url); else alert("Cadastre a URL no menu lateral"); }
-    function editCliente(i) {
-        document.getElementById('editIndex').value = i;
-        const c = clientes[i];
-        document.getElementById('cNome').value = c.nome || '';
-        document.getElementById('cUser').value = c.user || '';
-        document.getElementById('cPass').value = c.pass || '';
-        document.getElementById('cValor').value = c.valor || '';
-        document.getElementById('cData').value = c.data || '';
-        document.getElementById('cServ').value = c.serv || '';
-        document.getElementById('cUrl').value = c.url || '';
-        document.getElementById('cTel').value = c.tel || '';
-        document.getElementById('cObs').value = c.obs || '';
-        new bootstrap.Modal(document.getElementById('modalCadastro')).show();
-    }
-
-    // Inicialização - só executa após Firebase estar pronto
-    document.addEventListener('DOMContentLoaded', function() {
-        // Inicializa data do filtro de mês
-        document.getElementById('filterMes').value = new Date().toISOString().slice(0, 7);
-        
-        // Verifica estado de autenticação (onAuthStateChanged já gerencia a UI)
-    });
-</script>
+        document.getElementById('auth-submit-btn').onclick = () => window.submitAuth();
+        document.getElementById('auth-toggle-btn').onclick = () => window.toggleAuthMode();
+        window.toggleAuthMode();
+        document.getElementById('message-input')?.addEventListener('keypress', e => { if(e.key === 'Enter') window.sendMessage(); });
+        document.getElementById('sound-file-input')?.addEventListener('change', e => handleSoundFile(e.target.files[0]));
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('settings-menu');
+            if (menu && menu.classList.contains('show') && !menu.contains(e.target) && !e.target.closest('.settings-btn')) menu.classList.remove('show');
+            const panel = document.getElementById('notification-panel');
+            if (panel && panel.classList.contains('show') && !panel.contains(e.target) && !e.target.closest('.notification-btn')) panel.classList.remove('show');
+        });
+        window.isPageVisible = !document.hidden;
+        document.addEventListener('visibilitychange', () => { window.isPageVisible = !document.hidden; });
+        console.log("✅ Chat Moderno carregado com botão FIXAR SOM!");
+    </script>
+</head>
+<body>
+<header>
+    <div style="display: flex; align-items: baseline; gap: 10px;"><span id="chat-title">Chat</span></div>
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <div class="notification-container">
+            <div class="notification-btn" onclick="toggleNotificationPanel()">🔔<div class="notification-badge" id="notification-badge" style="display: none;">0</div></div>
+            <div class="notification-panel" id="notification-panel"><div class="notification-header">Solicitações de Amizade</div><div class="notification-list" id="notification-list"><div class="no-requests">Nenhuma solicitação pendente</div></div></div>
+        </div>
+        <div class="back-btn" onclick="goToMainScreen()">⬅️</div>
+        <div class="settings-container">
+            <div class="settings-btn" onclick="toggleSettingsMenu()">⚙️</div>
+            <div id="settings-menu" class="settings-menu">
+                <div class="settings-menu-item" onclick="sendFriendRequest()">➕ Adicionar Amigo</div>
+                <div class="settings-menu-item" onclick="selectNotificationSound()">🔔 Som de Notificação<input type="file" id="sound-file-input" accept="audio/*"></div>
+                <div class="settings-menu-item" onclick="fixNotificationSound()">📌 Fixar Som</div>
+                <div class="settings-menu-item danger" onclick="logout()">🚪 Sair</div>
+            </div>
+        </div>
+    </div>
+</header>
+<div id="main-screen" class="main-screen hidden">
+    <h2>💬 Seus Amigos</h2>
+    <div class="search-container"><input type="text" id="search-input" class="search-input" placeholder="🔍 Buscar amigo..." onkeyup="filterContacts(this.value)"><span class="search-icon">🔍</span><span class="clear-search" onclick="clearSearch()">✖</span></div>
+    <div id="contact-list-main" class="contact-list-main"></div>
+    <button class="add-friend-btn" onclick="sendFriendRequest()">➕ Adicionar amigo por e-mail</button>
+</div>
+<div id="chat-container" class="hidden">
+    <div id="chat-area"><p style="text-align: center; color: #777; margin-top: 20px;">Selecione um contato para começar</p></div>
+    <div class="input-area"><input type="text" id="message-input" placeholder="Digite uma mensagem..."><button id="send-btn" onclick="sendMessage()">Enviar</button></div>
+</div>
+<div id="auth-screen">
+    <div class="auth-container"><h2 id="auth-title">Login</h2><input type="email" id="auth-email" placeholder="E-mail"><input type="password" id="auth-password" placeholder="Senha"><input type="password" id="auth-confirm-password" placeholder="Confirmar senha" style="display: none;"><div id="auth-error" class="error-msg"></div><div id="auth-success" class="success-msg"></div><button id="auth-submit-btn">Entrar</button><button id="auth-toggle-btn" class="toggle-btn">Criar nova conta</button><p>🔒 Chat seguro - Envie solicitações de amizade!</p></div>
+</div>
 </body>
 </html>
