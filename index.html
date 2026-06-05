@@ -837,6 +837,11 @@
                     <span class="menu-status" id="chat-sound-status"></span>
                     <input type="file" id="sound-input" accept="audio/*">
                 </div>
+                <!-- NOVO BOTÃO: REMOVER CONTATO -->
+                <div class="chat-menu-item danger" id="menu-delete-friend">
+                    <span class="menu-icon">🚫</span>
+                    <span class="menu-text">Remover Contato</span>
+                </div>
             </div>
         </div>
     </div>
@@ -1029,6 +1034,34 @@
         return [user1, user2].sort().join('_');
     }
 
+    // ========== NOVA FUNÇÃO: REMOVER CONTATO ==========
+    async function removeContact(contactEmail, contactDisplayName) {
+        if (!confirm(`Deseja realmente remover "${contactDisplayName}" da sua lista de contatos?\nA conversa será mantida, mas o contato sumirá da sua lista.`)) return;
+
+        try {
+            // IDs dos documentos de contato (duas direções)
+            const myId = `${currentUser.email.replace(/\./g, '_')}_${contactEmail.replace(/\./g, '_')}`;
+            const friendId = `${contactEmail.replace(/\./g, '_')}_${currentUser.email.replace(/\./g, '_')}`;
+            
+            // Deleta os dois registros de contato
+            await deleteDoc(doc(db, "contatos", myId));
+            await deleteDoc(doc(db, "contatos", friendId));
+            
+            showToast(`✅ Contato ${contactDisplayName} removido!`);
+            
+            // Se o chat atual for o mesmo que está aberto, fecha e volta para a tela principal
+            if (currentChat && (currentChat.contactEmail === contactEmail || (currentChat.isAdminView && currentChat.ownerEmail === contactEmail))) {
+                closeChat();
+            }
+            // Força a recarga da lista de conversas (ou admin view)
+            refreshMainContent();
+            chatMenu.classList.remove('show');
+        } catch (error) {
+            console.error("Erro ao remover contato:", error);
+            showToast("❌ Erro ao remover contato. Tente novamente.");
+        }
+    }
+
     // ADMIN: Carregar todos os usuários
     async function loadAllUsers() {
         conversationsList.innerHTML = '<div class="loading">Carregando usuários...</div>';
@@ -1037,7 +1070,7 @@
             const users = [];
             usersSnap.forEach(doc => {
                 const data = doc.data();
-                if (data.email !== currentUser.email) { // excluir o próprio admin
+                if (data.email !== currentUser.email) {
                     users.push({ email: data.email, displayName: data.displayName || data.email.split('@')[0] });
                 }
             });
@@ -1136,7 +1169,6 @@
         mainScreen.classList.remove('active');
         chatScreen.classList.add('active');
         
-        // Desabilitar envio de mensagens
         messageInput.disabled = true;
         sendBtn.disabled = true;
         messageInput.placeholder = "Modo de visualização - não é possível enviar mensagens";
@@ -1147,9 +1179,11 @@
         const clearItem = document.getElementById('menu-clear-messages');
         const cameraItem = document.getElementById('menu-camera');
         const galleryItem = document.getElementById('menu-gallery');
+        const deleteFriendItem = document.getElementById('menu-delete-friend');
         if (clearItem) clearItem.style.display = 'none';
         if (cameraItem) cameraItem.style.display = 'none';
         if (galleryItem) galleryItem.style.display = 'none';
+        if (deleteFriendItem) deleteFriendItem.style.display = 'none';
         
         loadAdminMessages(ownerUser.email, contact.contactEmail);
         messageInput.focus();
@@ -1256,7 +1290,11 @@
     }
     
     function openNormalChat(contact) {
-        currentChat = { contactEmail: contact.contactEmail, displayName: contact.displayName, isAdminView: false };
+        currentChat = { 
+            contactEmail: contact.contactEmail, 
+            displayName: contact.displayName, 
+            isAdminView: false 
+        };
         document.getElementById('chat-avatar').textContent = contact.displayName.charAt(0).toUpperCase();
         chatContactName.textContent = contact.displayName;
         chatContactName.classList.remove('blinking');
@@ -1268,12 +1306,15 @@
         messageInput.placeholder = "Digite uma mensagem...";
         sendBtn.style.opacity = '1';
         messageInput.style.background = 'white';
+        // Mostrar todos os itens do menu (inclusive o de remover contato)
         const clearItem = document.getElementById('menu-clear-messages');
         const cameraItem = document.getElementById('menu-camera');
         const galleryItem = document.getElementById('menu-gallery');
+        const deleteFriendItem = document.getElementById('menu-delete-friend');
         if (clearItem) clearItem.style.display = 'flex';
         if (cameraItem) cameraItem.style.display = 'flex';
         if (galleryItem) galleryItem.style.display = 'flex';
+        if (deleteFriendItem) deleteFriendItem.style.display = 'flex';
         loadNormalMessages();
         messageInput.focus();
     }
@@ -1385,7 +1426,18 @@
     
     function openAddContactModal() { addContactModal.classList.add('active'); settingsMenu.classList.remove('show'); }
     function closeAddContactModal() { addContactModal.classList.remove('active'); document.getElementById('new-contact-email').value = ''; document.getElementById('new-contact-name').value = ''; }
-    function closeChat() { if (messagesListener) messagesListener(); chatScreen.classList.remove('active'); mainScreen.classList.add('active'); chatMenu.classList.remove('show'); if (isAdmin && adminViewMode === 'users') loadAllUsers(); else if (isAdmin && adminViewMode === 'conversations') showUserConversations(selectedUserForAdmin); else loadNormalConversations(); }
+    function closeChat() { 
+        if (messagesListener) messagesListener(); 
+        chatScreen.classList.remove('active'); 
+        mainScreen.classList.add('active'); 
+        chatMenu.classList.remove('show'); 
+        if (isAdmin) {
+            if (adminViewMode === 'users') loadAllUsers();
+            else if (adminViewMode === 'conversations' && selectedUserForAdmin) showUserConversations(selectedUserForAdmin);
+        } else {
+            loadNormalConversations();
+        }
+    }
     
     function refreshMainContent() {
         if (!currentUser) return;
@@ -1409,14 +1461,18 @@
                 adminViewMode = 'users';
                 selectedUserForAdmin = null;
                 loadAllUsers();
-                // Ocultar opção de adicionar contato para admin
                 const addContactSetting = document.getElementById('settings-add-contact');
                 if (addContactSetting) addContactSetting.style.display = 'none';
+                // Esconder também o botão de remover contato no menu (já que admin não tem contatos próprios)
+                const deleteFriendMenuItem = document.getElementById('menu-delete-friend');
+                if (deleteFriendMenuItem) deleteFriendMenuItem.style.display = 'none';
             } else {
                 mainTitle.textContent = 'Conversas';
                 backAdminBtn.style.display = 'none';
                 const addContactSetting = document.getElementById('settings-add-contact');
                 if (addContactSetting) addContactSetting.style.display = 'flex';
+                const deleteFriendMenuItem = document.getElementById('menu-delete-friend');
+                if (deleteFriendMenuItem) deleteFriendMenuItem.style.display = 'flex';
                 loadNormalConversations();
             }
         } else {
@@ -1462,7 +1518,14 @@
     document.getElementById('settings-sound-input').addEventListener('change', (e) => { if(e.target.files[0]) handleSoundFile(e.target.files[0]); e.target.value=''; });
     messageInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
     
-    console.log('✅ iChat com painel administrativo carregado');
+    // Evento para o novo botão "Remover Contato"
+    document.getElementById('menu-delete-friend').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!currentChat || currentChat.isAdminView) return;
+        removeContact(currentChat.contactEmail, currentChat.displayName);
+    });
+    
+    console.log('✅ iChat com opção "Remover Contato" carregado');
 </script>
 </body>
 </html>
