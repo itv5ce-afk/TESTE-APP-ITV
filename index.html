@@ -257,7 +257,6 @@
             align-items: center;
             gap: 15px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            position: relative;
         }
 
         .back-button {
@@ -291,12 +290,11 @@
             opacity: 0.9;
         }
 
-        .chat-actions {
-            display: flex;            gap: 10px;
-            align-items: center;
-        }
+        /* Menu do Chat */
+        .chat-menu-container {
+            position: relative;        }
 
-        .chat-action-btn {
+        .chat-menu-btn {
             background: rgba(255,255,255,0.2);
             width: 40px;
             height: 40px;
@@ -309,8 +307,56 @@
             transition: background 0.3s;
         }
 
-        .chat-action-btn:hover {
+        .chat-menu-btn:hover {
             background: rgba(255,255,255,0.3);
+        }
+
+        .chat-menu-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 50px;
+            background: white;
+            min-width: 220px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        .chat-menu-dropdown.active {
+            display: block;
+        }
+
+        .chat-menu-item {
+            padding: 15px 20px;
+            cursor: pointer;
+            color: #333;
+            font-size: 14px;
+            transition: background 0.2s;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-menu-item:last-child {
+            border-bottom: none;        }
+
+        .chat-menu-item:hover {
+            background: #f5f5f5;
+        }
+
+        .chat-menu-item.danger {
+            color: #d32f2f;
+        }
+
+        .chat-menu-item.danger:hover {
+            background: #ffebee;
+        }
+
+        .chat-menu-item input[type="file"] {
+            display: none;
         }
 
         .messages-area {
@@ -342,21 +388,16 @@
             align-self: flex-start;
             border-bottom-left-radius: 4px;
         }
-        .message-text {
-            margin-bottom: 5px;
-            font-size: 15px;
-        }
 
-        .message-time {
-            font-size: 11px;
-            color: #666;
-            text-align: right;
+        .message-text {
+            margin-bottom: 5px;            font-size: 15px;
         }
 
         .message-image {
             max-width: 100%;
-            border-radius: 8px;
+            border-radius: 12px;
             margin-bottom: 5px;
+            cursor: pointer;
         }
 
         .message-file {
@@ -367,6 +408,12 @@
             background: rgba(0,0,0,0.05);
             border-radius: 8px;
             margin-bottom: 5px;
+            text-decoration: none;
+            color: #075e54;
+        }
+
+        .message-file:hover {
+            background: rgba(0,0,0,0.1);
         }
 
         .message-file-icon {
@@ -375,11 +422,15 @@
 
         .message-file-info {
             flex: 1;
+            min-width: 0;
         }
 
         .message-file-name {
             font-weight: 500;
             font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .message-file-size {
@@ -387,12 +438,17 @@
             color: #666;
         }
 
+        .message-time {
+            font-size: 11px;            color: #666;
+            text-align: right;
+        }
+
         .message-input-area {
             padding: 15px;
             background: #f0f0f0;
-            display: flex;            gap: 10px;
+            display: flex;
+            gap: 10px;
             border-top: 1px solid #ddd;
-            flex-wrap: wrap;
         }
 
         .message-input-area input {
@@ -403,28 +459,6 @@
             font-size: 15px;
             outline: none;
             background: white;
-            min-width: 150px;
-        }
-
-        .input-actions {
-            display: flex;
-            gap: 5px;
-        }
-
-        .input-action-btn {
-            background: #075e54;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            cursor: pointer;
-            font-size: 18px;
-            transition: background 0.3s;
-        }
-
-        .input-action-btn:hover {
-            background: #054a3f;
         }
 
         .send-button {
@@ -439,47 +473,8 @@
             transition: background 0.3s;
         }
 
-        .send-button:hover {            background: #054a3f;
-        }
-
-        /* Menu Dropdown */
-        .menu-dropdown {
-            display: none;
-            position: absolute;
-            right: 20px;
-            top: 60px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            z-index: 100;
-            min-width: 200px;
-        }
-
-        .menu-dropdown.active {
-            display: block;
-        }
-
-        .menu-item {
-            padding: 12px 20px;
-            cursor: pointer;
-            color: #333;
-            font-size: 14px;
-            transition: background 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .menu-item:hover {
-            background: #f5f5f5;
-        }
-
-        .menu-item.danger {
-            color: #d32f2f;
-        }
-
-        .menu-item.danger:hover {
-            background: #ffebee;
+        .send-button:hover {
+            background: #054a3f;
         }
 
         /* Modal Adicionar Contato */
@@ -488,12 +483,12 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;            height: 100%;
+            width: 100%;
+            height: 100%;
             background: rgba(0,0,0,0.5);
             z-index: 2000;
             justify-content: center;
-            align-items: center;
-        }
+            align-items: center;        }
 
         .modal.active {
             display: flex;
@@ -537,12 +532,12 @@
             padding: 12px;
             border: none;
             border-radius: 8px;
-            font-size: 15px;            font-weight: bold;
+            font-size: 15px;
+            font-weight: bold;
             cursor: pointer;
         }
 
-        .btn-confirm {
-            background: #075e54;
+        .btn-confirm {            background: #075e54;
             color: white;
         }
 
@@ -551,159 +546,61 @@
             color: #666;
         }
 
-        /* Painel de Emojis */
-        .emoji-panel {
-            display: none;
-            position: absolute;
+        /* Animação de piscar */
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .blinking {
+            animation: blink 1s infinite;
+        }
+
+        /* Toast de notificação */
+        .toast {
+            position: fixed;
             bottom: 80px;
-            left: 15px;
-            right: 15px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 -4px 12px rgba(0,0,0,0.2);
-            padding: 15px;
-            max-height: 300px;
-            overflow-y: auto;
-            z-index: 50;
-        }
-
-        .emoji-panel.active {
-            display: block;
-        }
-
-        .emoji-grid {
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 5px;
-        }
-
-        .emoji-item {
-            font-size: 24px;
-            cursor: pointer;
-            padding: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            z-index: 3000;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            max-width: 90%;
             text-align: center;
-            border-radius: 5px;
-            transition: background 0.2s;
         }
 
-        .emoji-item:hover {            background: #f0f0f0;
+        .toast.show {
+            opacity: 1;
         }
 
-        /* Tela de Chamada */
-        .call-screen {
+        /* Modal de visualização de imagem */
+        .image-modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #075e54 0%, #128c7e 100%);
+            height: 100%;            background: rgba(0,0,0,0.95);
             z-index: 3000;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: white;
-        }
-
-        .call-screen.active {
-            display: flex;
-        }
-
-        .call-avatar {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        .call-name {
-            font-size: 24px;
-            font-weight: 500;
-            margin-bottom: 10px;
-        }
-
-        .call-status {
-            font-size: 16px;
-            opacity: 0.9;
-            margin-bottom: 40px;
-        }
-
-        .call-controls {
-            display: flex;            gap: 30px;
-        }
-
-        .call-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: none;
             cursor: pointer;
-            font-size: 24px;
-            transition: transform 0.2s;
         }
 
-        .call-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .call-btn.end {
-            background: #f44336;
-            color: white;
-        }
-
-        .call-btn.accept {
-            background: #25d366;
-            color: white;
-        }
-
-        .call-btn.mute {
-            background: rgba(255,255,255,0.2);
-            color: white;
-        }
-
-        .call-btn.video-toggle {
-            background: rgba(255,255,255,0.2);
-            color: white;
-        }
-
-        /* Vídeo da chamada */
-        .video-container {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
-
-        .remote-video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            background: #000;
-        }
-        .local-video {
-            position: absolute;
-            bottom: 100px;
-            right: 20px;
-            width: 120px;
-            height: 160px;
-            border-radius: 12px;
-            object-fit: cover;
-            background: #333;
-            border: 3px solid white;
-        }
-
-        .video-call-controls {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
+        .image-modal.active {
             display: flex;
-            gap: 20px;
+        }
+
+        .image-modal img {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain;
         }
 
         /* Responsividade */
@@ -715,16 +612,6 @@
             .message {
                 max-width: 85%;
             }
-
-            .emoji-grid {
-                grid-template-columns: repeat(6, 1fr);
-            }
-
-            .input-actions {
-                order: 3;
-                width: 100%;
-                justify-content: center;
-            }
         }
 
         /* Scrollbar personalizada */
@@ -733,7 +620,8 @@
         }
 
         ::-webkit-scrollbar-track {
-            background: #f0f0f0;        }
+            background: #f0f0f0;
+        }
 
         ::-webkit-scrollbar-thumb {
             background: #075e54;
@@ -747,12 +635,7 @@
         .loading {
             text-align: center;
             padding: 20px;
-            color: #666;
-        }
-
-        .hidden-input {
-            display: none;
-        }
+            color: #666;        }
     </style>
 </head>
 <body>
@@ -783,6 +666,7 @@
         <div class="loading">Carregando conversas...</div>
     </div>
 </div>
+
 <!-- Tela de Chat -->
 <div id="chat-screen">
     <div class="chat-header">
@@ -792,51 +676,32 @@
             <div class="chat-contact-name" id="chat-contact-name">Contato</div>
             <div class="chat-contact-status" id="chat-contact-status">online</div>
         </div>
-        <div class="chat-actions">
-            <div class="chat-action-btn" id="voice-call-btn" title="Ligar">📞</div>
-            <div class="chat-action-btn" id="video-call-btn" title="Vídeo Chamada">📹</div>
-            <div class="chat-action-btn" id="menu-btn" title="Menu">⋮</div>
-        </div>
-        <div class="menu-dropdown" id="menu-dropdown">
-            <div class="menu-item" id="clear-messages-btn">🗑️ Limpar Mensagens</div>
-            <div class="menu-item" id="notification-sound-btn">🔔 Som de Notificação</div>
+        <div class="chat-menu-container">
+            <div class="chat-menu-btn" id="chat-menu-btn">☰</div>
+            <div class="chat-menu-dropdown" id="chat-menu-dropdown">
+                <div class="chat-menu-item" id="menu-photo-btn">
+                    📷 Tirar Foto
+                    <input type="file" id="photo-input" accept="image/*" capture="environment">
+                </div>
+                <div class="chat-menu-item" id="menu-attachment-btn">
+                    📎 Anexar Arquivo                    <input type="file" id="attachment-input">
+                </div>
+                <div class="chat-menu-item" id="menu-sound-btn">
+                    🔔 Som de Notificação
+                    <input type="file" id="sound-input" accept="audio/*">
+                </div>
+                <div class="chat-menu-item danger" id="menu-clear-btn">
+                    🗑️ Limpar Mensagens
+                </div>
+            </div>
         </div>
     </div>
     <div class="messages-area" id="messages-area">
         <div class="loading">Carregando mensagens...</div>
     </div>
-    <div class="emoji-panel" id="emoji-panel">
-        <div class="emoji-grid" id="emoji-grid"></div>
-    </div>
     <div class="message-input-area">
         <input type="text" id="message-input" placeholder="Digite uma mensagem..." autocomplete="off">
-        <div class="input-actions">
-            <button class="input-action-btn" id="emoji-btn" title="Emoji">😊</button>
-            <button class="input-action-btn" id="photo-btn" title="Foto">📷</button>
-            <button class="input-action-btn" id="attachment-btn" title="Anexo">📎</button>
-        </div>
         <button class="send-button" id="send-btn">➤</button>
-    </div>
-</div>
-
-<!-- Tela de Chamada -->
-<div class="call-screen" id="call-screen">
-    <div class="video-container" id="video-container" style="display: none;">
-        <video class="remote-video" id="remote-video" autoplay playsinline></video>
-        <video class="local-video" id="local-video" autoplay playsinline muted></video>
-        <div class="video-call-controls">
-            <button class="call-btn mute" id="toggle-mute-btn">🎤</button>
-            <button class="call-btn video-toggle" id="toggle-video-btn">📹</button>
-            <button class="call-btn end" id="end-call-btn">📞</button>
-        </div>
-    </div>
-    <div id="audio-call-ui">
-        <div class="call-avatar" id="call-avatar">U</div>        <div class="call-name" id="call-name">Contato</div>
-        <div class="call-status" id="call-status">Chamando...</div>
-        <div class="call-controls">
-            <button class="call-btn mute" id="mute-btn">🎤</button>
-            <button class="call-btn end" id="end-audio-call-btn">📞</button>
-        </div>
     </div>
 </div>
 
@@ -853,34 +718,34 @@
     </div>
 </div>
 
-<!-- Inputs ocultos para arquivos -->
-<input type="file" id="photo-input" accept="image/*" capture="environment" class="hidden-input">
-<input type="file" id="attachment-input" class="hidden-input">
-<input type="file" id="sound-input" accept="audio/*" class="hidden-input">
+<!-- Modal de visualização de imagem -->
+<div class="image-modal" id="image-modal">
+    <img id="image-modal-img" src="" alt="Imagem">
+</div>
+
+<!-- Toast de notificação -->
+<div class="toast" id="toast"></div>
 
 <!-- Firebase SDKs -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
     import { getFirestore, collection, addDoc, query, where, orderBy, onSnapshot, serverTimestamp, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
-    import { getDatabase, ref, set, onValue, remove, push } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
 
     // Configuração do Firebase
-    const firebaseConfig = {
-        apiKey: "AIzaSyD6sVu3hsBK0AyH4jxr3lj94Hj7JAj16_g",
+    const firebaseConfig = {        apiKey: "AIzaSyD6sVu3hsBK0AyH4jxr3lj94Hj7JAj16_g",
         authDomain: "chat-94349.firebaseapp.com",
         projectId: "chat-94349",
         storageBucket: "chat-94349.firebasestorage.app",
         messagingSenderId: "1058859014174",
-        appId: "1:1058859014174:web:19d7b3ceef6f6dda1e360f",
-        databaseURL: "https://chat-94349-default-rtdb.firebaseio.com"
+        appId: "1:1058859014174:web:19d7b3ceef6f6dda1e360f"
     };
 
     // Inicializar Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    const rtdb = getDatabase(app);
+
     // Variáveis globais
     let currentUser = null;
     let currentChat = null;
@@ -889,23 +754,7 @@
     let messagesListener = null;
     let conversationsListener = null;
     let notificationSound = null;
-    let peerConnection = null;
-    let localStream = null;
-    let remoteStream = null;
-    let callType = null; // 'audio' ou 'video'
-    let isMuted = false;
-    let isVideoOff = false;
-
-    // Configuração WebRTC
-    const rtcConfig = {
-        iceServers: [
-            { urls: 'stun:stun.l.google.com:19302' },
-            { urls: 'stun:stun1.l.google.com:19302' }
-        ]
-    };
-
-    // Emojis
-    const emojis = ['😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃', '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '😚', '😙', '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭', '🤫', '🤔', '🤐', '🤨', '😐', '😑', '😶', '😏', '😒', '🙄', '😬', '🤥', '😌', '😔', '😪', '🤤', '😴', '😷', '🤒', '🤕', '🤢', '🤮', '🥵', '🥶', '🥴', '😵', '🤯', '🤠', '🥳', '😎', '🤓', '🧐', '😕', '😟', '🙁', '☹️', '😮', '😯', '😲', '😳', '🥺', '😦', '😧', '😨', '😰', '😥', '😢', '😭', '😱', '😖', '😣', '😞', '😓', '😩', '😫', '🥱', '😤', '😡', '😠', '🤬', '😈', '👿', '💀', '☠️', '💩', '🤡', '👹', '👺', '👻', '👽', '👾', '🤖', '😺', '😸', '😹', '😻', '😼', '😽', '🙀', '😿', '😾', '🙈', '🙉', '🙊', '💋', '💌', '💘', '💝', '💖', '💗', '💓', '💞', '💕', '💟', '❣️', '💔', '❤️', '🧡', '💛', '💚', '💙', '💜', '🤎', '🖤', '🤍', '💯', '💢', '💥', '💫', '💦', '💨', '🕳️', '💣', '💬', '👁️‍🗨️', '🗨️', '🗯️', '💭', '💤', '👋', '🤚', '🖐️', '✋', '🖖', '👌', '🤌', '🤏', '✌️', '🤞', '🤟', '🤘', '🤙', '👈', '👉', '👆', '🖕', '👇', '☝️', '👍', '👎', '✊', '👊', '🤛', '🤜', '👏', '🙌', '👐', '🤲', '🤝', '🙏', '✍️', '💅', '🤳', '💪', '🦾', '🦿', '🦵', '🦶', '👂', '🦻', '👃', '🧠', '🦷', '🦴', '👀', '👁️', '👅', '👄', '👶', '🧒', '👦', '👧', '🧑', '👱', '👨', '🧔', '👩', '🧓', '👴', '👵', '🙍', '🙎', '🙅', '🙆', '💁', '🙋', '🧏', '🙇', '🤦', '🤷', '👮', '🕵️', '💂', '🥷', '👷', '🤴', '👸', '👳', '👲', '🧕', '🤵', '👰', '🤰', '🤱', '👼', '🎅', '🤶', '🦸', '🦹', '🧙', '🧚', '🧛', '🧜', '🧝', '🧞', '🧟', '💆', '💇', '🚶', '🧍', '🧎', '🏃', '💃', '🕺', '🕴️', '👯', '🧖', '🧗', '🤸', '🏌️', '🏇', '⛷️', '🏂', '🏋️', '🤼', '🤽', '🤾', '🤺', '⛹️', '🏊', '🚣', '🧘', '🛀', '🛌', '👭', '👫', '👬', '💏', '💑', '👪', '👨‍👩‍👦', '👨‍👩‍👧', '👨‍👩‍👧‍👦', '👨‍👩‍👦‍👦', '👨‍👩‍👧‍👧', '👨‍👦', '👨‍👦‍👦', '👨‍👧', '👨‍👧‍👦', '👨‍👧‍👧', '👩‍👦', '👩‍👦‍👦', '👩‍👧', '👩‍👧‍👦', '👩‍👧‍👧', '🗣️', '👤', '👥', '👣'];
+    let messageListeners = new Map();
 
     // Elementos DOM
     const loginScreen = document.getElementById('login-screen');
@@ -926,34 +775,17 @@
     const addContactModal = document.getElementById('add-contact-modal');
     const cancelAddContact = document.getElementById('cancel-add-contact');
     const confirmAddContact = document.getElementById('confirm-add-contact');
-    const menuBtn = document.getElementById('menu-btn');
-    const menuDropdown = document.getElementById('menu-dropdown');
-    const clearMessagesBtn = document.getElementById('clear-messages-btn');
-    const notificationSoundBtn = document.getElementById('notification-sound-btn');    const emojiBtn = document.getElementById('emoji-btn');
-    const emojiPanel = document.getElementById('emoji-panel');
-    const emojiGrid = document.getElementById('emoji-grid');
-    const photoBtn = document.getElementById('photo-btn');
-    const attachmentBtn = document.getElementById('attachment-btn');
+    const chatMenuBtn = document.getElementById('chat-menu-btn');
+    const chatMenuDropdown = document.getElementById('chat-menu-dropdown');
+    const menuPhotoBtn = document.getElementById('menu-photo-btn');
+    const menuAttachmentBtn = document.getElementById('menu-attachment-btn');
+    const menuSoundBtn = document.getElementById('menu-sound-btn');
+    const menuClearBtn = document.getElementById('menu-clear-btn');
     const photoInput = document.getElementById('photo-input');
-    const attachmentInput = document.getElementById('attachment-input');
-    const soundInput = document.getElementById('sound-input');
-    const callScreen = document.getElementById('call-screen');
-    const voiceCallBtn = document.getElementById('voice-call-btn');
-    const videoCallBtn = document.getElementById('video-call-btn');
-
-    // Inicializar emojis
-    function initEmojis() {
-        emojis.forEach(emoji => {
-            const span = document.createElement('span');
-            span.className = 'emoji-item';
-            span.textContent = emoji;
-            span.onclick = () => {
-                messageInput.value += emoji;
-                messageInput.focus();
-            };
-            emojiGrid.appendChild(span);
-        });
-    }
+    const attachmentInput = document.getElementById('attachment-input');    const soundInput = document.getElementById('sound-input');
+    const toast = document.getElementById('toast');
+    const imageModal = document.getElementById('image-modal');
+    const imageModalImg = document.getElementById('image-modal-img');
 
     // Funções de Autenticação
     async function login() {
@@ -979,6 +811,7 @@
     async function register() {
         const email = loginEmail.value.trim();
         const password = loginPassword.value.trim();
+
         if (!email || !password) {
             showError('Preencha todos os campos');
             return;
@@ -992,13 +825,13 @@
         try {
             await createUserWithEmailAndPassword(auth, email, password);
             
+            // Registrar usuário no Firestore
             await setDoc(doc(db, "usuarios", email.replace(/\./g, '_')), {
                 email: email,
                 displayName: email.split('@')[0],
                 createdAt: serverTimestamp(),
                 contacts: []
-            });
-        } catch (error) {
+            });        } catch (error) {
             let message = 'Erro ao criar conta';
             if (error.code === 'auth/email-already-in-use') message = 'E-mail já cadastrado';
             else if (error.code === 'auth/invalid-email') message = 'E-mail inválido';
@@ -1027,7 +860,8 @@
         const email = document.getElementById('new-contact-email').value.trim();
         const name = document.getElementById('new-contact-name').value.trim();
 
-        if (!email) {            alert('Digite o e-mail do contato');
+        if (!email) {
+            alert('Digite o e-mail do contato');
             return;
         }
 
@@ -1037,18 +871,20 @@
         }
 
         try {
+            // Verificar se o usuário existe
             const userDoc = await getDoc(doc(db, "usuarios", email.replace(/\./g, '_')));
             if (!userDoc.exists()) {
                 alert('Usuário não encontrado. Certifique-se de que a pessoa já está cadastrada.');
                 return;
             }
 
+            // Adicionar contato
             const contactData = {
-                email: email,
-                displayName: name || email.split('@')[0],
+                email: email,                displayName: name || email.split('@')[0],
                 addedAt: serverTimestamp()
             };
 
+            // Adicionar aos contatos do usuário atual
             await setDoc(doc(db, "contatos", `${currentUser.email.replace(/\./g, '_')}_${email.replace(/\./g, '_')}`), {
                 userEmail: currentUser.email,
                 contactEmail: email,
@@ -1056,6 +892,7 @@
                 addedAt: serverTimestamp()
             });
 
+            // Adicionar aos contatos do outro usuário (recíproco)
             await setDoc(doc(db, "contatos", `${email.replace(/\./g, '_')}_${currentUser.email.replace(/\./g, '_')}`), {
                 userEmail: email,
                 contactEmail: currentUser.email,
@@ -1076,7 +913,8 @@
         if (!currentUser) return;
 
         const contactsQuery = query(
-            collection(db, "contatos"),            where("userEmail", "==", currentUser.email)
+            collection(db, "contatos"),
+            where("userEmail", "==", currentUser.email)
         );
 
         onSnapshot(contactsQuery, async (snapshot) => {
@@ -1091,8 +929,7 @@
     // Funções de Conversa
     function loadConversations() {
         if (!currentUser || contacts.length === 0) {
-            conversationsList.innerHTML = `
-                <div class="no-conversations">
+            conversationsList.innerHTML = `                <div class="no-conversations">
                     <h3>Nenhuma conversa ainda</h3>
                     <p>Adicione contatos para começar a conversar!</p>
                 </div>
@@ -1112,6 +949,7 @@
 
             const itemDiv = document.createElement('div');
             itemDiv.className = 'conversation-item';
+            itemDiv.setAttribute('data-contact-email', contact.contactEmail);
             itemDiv.onclick = () => openChat(contact);
 
             const avatar = document.createElement('div');
@@ -1125,7 +963,8 @@
             nameDiv.className = 'conversation-name';
             nameDiv.textContent = contact.displayName;
 
-            const lastMsgDiv = document.createElement('div');            lastMsgDiv.className = 'conversation-last-message';
+            const lastMsgDiv = document.createElement('div');
+            lastMsgDiv.className = 'conversation-last-message';
             lastMsgDiv.textContent = 'Carregando...';
 
             infoDiv.appendChild(nameDiv);
@@ -1135,20 +974,36 @@
             itemDiv.appendChild(infoDiv);
             conversationsList.appendChild(itemDiv);
 
+            // Listener para última mensagem e notificações
+            if (messageListeners.has(contact.contactEmail)) {
+                messageListeners.get(contact.contactEmail)();
+            }
             const unsubscribe = onSnapshot(messagesQuery, (snapshot) => {
                 if (!snapshot.empty) {
                     const lastMsg = snapshot.docs[0].data();
-                    if (lastMsg.tipo === 'image') {
-                        lastMsgDiv.textContent = '📷 Foto';
-                    } else if (lastMsg.tipo === 'file') {
-                        lastMsgDiv.textContent = '📎 ' + (lastMsg.fileName || 'Arquivo');
-                    } else {
-                        lastMsgDiv.textContent = lastMsg.texto;
+                    let preview = lastMsg.texto || '';
+                    if (lastMsg.tipo === 'image') preview = '📷 Foto';
+                    else if (lastMsg.tipo === 'file') preview = '📎 ' + (lastMsg.fileName || 'Arquivo');
+                    
+                    lastMsgDiv.textContent = preview;
+
+                    // Verificar se é mensagem não lida (recebida de outro usuário)
+                    if (lastMsg.enviadoPor !== currentUser.email && currentChat?.contactEmail !== contact.contactEmail) {
+                        // Tocar som de notificação
+                        playNotificationSound();
+                        
+                        // Fazer o nome piscar
+                        nameDiv.classList.add('blinking');
+                        
+                        // Mostrar toast
+                        showToast(`💬 Nova mensagem de ${contact.displayName}`);
                     }
                 } else {
                     lastMsgDiv.textContent = 'Nenhuma mensagem ainda';
                 }
             });
+
+            messageListeners.set(contact.contactEmail, unsubscribe);
         });
     }
 
@@ -1160,13 +1015,18 @@
         document.getElementById('chat-contact-name').textContent = contact.displayName;
         document.getElementById('chat-contact-status').textContent = 'online';
 
+        // Remover animação de piscar
+        const contactItem = document.querySelector(`[data-contact-email="${contact.contactEmail}"] .conversation-name`);
+        if (contactItem) {
+            contactItem.classList.remove('blinking');
+        }
+
         mainScreen.classList.remove('active');
         chatScreen.classList.add('active');
 
         loadMessages();
         messageInput.focus();
     }
-
     function closeChat() {
         if (messagesListener) {
             messagesListener();
@@ -1174,8 +1034,8 @@
         }
         currentChat = null;
         chatScreen.classList.remove('active');
-        mainScreen.classList.add('active');        emojiPanel.classList.remove('active');
-        menuDropdown.classList.remove('active');
+        mainScreen.classList.add('active');
+        closeChatMenu();
     }
 
     function loadMessages() {
@@ -1202,28 +1062,42 @@
                 const messageDiv = document.createElement('div');
                 messageDiv.className = `message ${message.enviadoPor === currentUser.email ? 'sent' : 'received'}`;
 
+                // Renderizar conteúdo baseado no tipo
                 if (message.tipo === 'image') {
                     const img = document.createElement('img');
                     img.className = 'message-image';
-                    img.src = message.imageUrl;
+                    img.src = message.imageData;
+                    img.onclick = () => showImageModal(message.imageData);
                     messageDiv.appendChild(img);
                 } else if (message.tipo === 'file') {
-                    const fileDiv = document.createElement('div');
-                    fileDiv.className = 'message-file';
-                    fileDiv.innerHTML = `
-                        <div class="message-file-icon">📎</div>
-                        <div class="message-file-info">
-                            <div class="message-file-name">${message.fileName}</div>
-                            <div class="message-file-size">${formatFileSize(message.fileSize)}</div>
-                        </div>
-                    `;
-                    fileDiv.onclick = () => {
-                        const a = document.createElement('a');
-                        a.href = message.fileUrl;
-                        a.download = message.fileName;
-                        a.click();
-                    };
-                    messageDiv.appendChild(fileDiv);                } else {
+                    const fileLink = document.createElement('a');
+                    fileLink.className = 'message-file';
+                    fileLink.href = message.fileData;
+                    fileLink.download = message.fileName;
+                    
+                    const icon = document.createElement('div');
+                    icon.className = 'message-file-icon';                    icon.textContent = '📄';
+                    
+                    const info = document.createElement('div');
+                    info.className = 'message-file-info';
+                    
+                    const name = document.createElement('div');
+                    name.className = 'message-file-name';
+                    name.textContent = message.fileName;
+                    
+                    const size = document.createElement('div');
+                    size.className = 'message-file-size';
+                    size.textContent = formatFileSize(message.fileSize);
+                    
+                    info.appendChild(name);
+                    info.appendChild(size);
+                    
+                    fileLink.appendChild(icon);
+                    fileLink.appendChild(info);
+                    messageDiv.appendChild(fileLink);
+                }
+
+                if (message.texto) {
                     const textDiv = document.createElement('div');
                     textDiv.className = 'message-text';
                     textDiv.textContent = message.texto;
@@ -1234,8 +1108,8 @@
                 timeDiv.className = 'message-time';
                 const time = message.timestamp ? message.timestamp.toDate() : new Date();
                 timeDiv.textContent = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
                 messageDiv.appendChild(timeDiv);
+
                 messagesArea.appendChild(messageDiv);
             });
 
@@ -1251,10 +1125,9 @@
 
         try {
             await addDoc(collection(db, "conversas", conversationId, "mensagens"), {
-                texto: text,
+                texto: text,                tipo: 'text',
                 enviadoPor: currentUser.email,
-                timestamp: serverTimestamp(),
-                tipo: 'text'
+                timestamp: serverTimestamp()
             });
             messageInput.value = '';
         } catch (error) {
@@ -1263,190 +1136,181 @@
         }
     }
 
-    async function sendPhoto(file) {
-        if (!currentChat) return;
-
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            const conversationId = getConversationId(currentUser.email, currentChat.contactEmail);
-            try {
-                await addDoc(collection(db, "conversas", conversationId, "mensagens"), {
-                    imageUrl: e.target.result,
-                    enviadoPor: currentUser.email,                    timestamp: serverTimestamp(),
-                    tipo: 'image'
-                });
-            } catch (error) {
-                console.error('Erro ao enviar foto:', error);
-                alert('Erro ao enviar foto');
-            }
-        };
-        reader.readAsDataURL(file);
+    // Funções do Menu
+    function toggleChatMenu() {
+        chatMenuDropdown.classList.toggle('active');
     }
 
-    async function sendFile(file) {
-        if (!currentChat) return;
-
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            const conversationId = getConversationId(currentUser.email, currentChat.contactEmail);
-            try {
-                await addDoc(collection(db, "conversas", conversationId, "mensagens"), {
-                    fileUrl: e.target.result,
-                    fileName: file.name,
-                    fileSize: file.size,
-                    enviadoPor: currentUser.email,
-                    timestamp: serverTimestamp(),
-                    tipo: 'file'
-                });
-            } catch (error) {
-                console.error('Erro ao enviar arquivo:', error);
-                alert('Erro ao enviar arquivo');
-            }
-        };
-        reader.readAsDataURL(file);
+    function closeChatMenu() {
+        chatMenuDropdown.classList.remove('active');
     }
 
     async function clearMessages() {
         if (!currentChat) return;
 
-        if (!confirm('Tem certeza que deseja limpar todas as mensagens desta conversa?')) {
+        if (!confirm('Tem certeza que deseja apagar todas as mensagens desta conversa?')) {
             return;
         }
 
         const conversationId = getConversationId(currentUser.email, currentChat.contactEmail);
-        const messagesQuery = query(
-            collection(db, "conversas", conversationId, "mensagens")
-        );
 
         try {
+            const messagesQuery = query(
+                collection(db, "conversas", conversationId, "mensagens")
+            );
+
             const snapshot = await getDocs(messagesQuery);
-            const batch = [];
-            snapshot.forEach(doc => {                batch.push(deleteDoc(doc.ref));
+            
+            const deletePromises = [];
+            snapshot.forEach(doc => {
+                deletePromises.push(deleteDoc(doc.ref));
             });
-            await Promise.all(batch);
-            alert('Mensagens limpas com sucesso!');
+
+            await Promise.all(deletePromises);
+            showToast('✅ Mensagens apagadas com sucesso!');
+            closeChatMenu();
         } catch (error) {
             console.error('Erro ao limpar mensagens:', error);
             alert('Erro ao limpar mensagens');
         }
     }
+    // Funções de Foto
+    async function handlePhotoSelect(event) {
+        const file = event.target.files[0];
+        if (!file || !currentChat) return;
 
-    // Funções de Chamada
-    async function startCall(type) {
-        if (!currentChat) return;
+        if (!file.type.startsWith('image/')) {
+            alert('Selecione um arquivo de imagem válido');
+            return;
+        }
 
-        callType = type;
-        callScreen.classList.add('active');
-        document.getElementById('call-avatar').textContent = currentChat.displayName.charAt(0).toUpperCase();
-        document.getElementById('call-name').textContent = currentChat.displayName;
-        document.getElementById('call-status').textContent = 'Chamando...';
+        // Verificar tamanho (máx 5MB para base64)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Imagem muito grande. Máximo 5MB.');
+            return;
+        }
 
         try {
-            localStream = await navigator.mediaDevices.getUserMedia({
-                audio: true,
-                video: type === 'video'
-            });
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const imageData = e.target.result;
+                const conversationId = getConversationId(currentUser.email, currentChat.contactEmail);
 
-            if (type === 'video') {
-                document.getElementById('video-container').style.display = 'block';
-                document.getElementById('audio-call-ui').style.display = 'none';
-                document.getElementById('local-video').srcObject = localStream;
-            } else {
-                document.getElementById('video-container').style.display = 'none';
-                document.getElementById('audio-call-ui').style.display = 'block';
-            }
+                await addDoc(collection(db, "conversas", conversationId, "mensagens"), {
+                    tipo: 'image',
+                    imageData: imageData,
+                    enviadoPor: currentUser.email,
+                    timestamp: serverTimestamp()
+                });
 
-            peerConnection = new RTCPeerConnection(rtcConfig);
-            
-            localStream.getTracks().forEach(track => {
-                peerConnection.addTrack(track, localStream);
-            });
-
-            peerConnection.ontrack = (event) => {
-                remoteStream = event.streams[0];
-                if (type === 'video') {
-                    document.getElementById('remote-video').srcObject = remoteStream;
-                }
-                document.getElementById('call-status').textContent = 'Conectado';
+                showToast('📷 Foto enviada!');
+                closeChatMenu();
             };
-
-            const callId = getConversationId(currentUser.email, currentChat.contactEmail) + '_call';            const callRef = ref(rtdb, `calls/${callId}`);
-            
-            const offer = await peerConnection.createOffer();
-            await peerConnection.setLocalDescription(offer);
-
-            await set(callRef, {
-                caller: currentUser.email,
-                callee: currentChat.contactEmail,
-                type: type,
-                offer: offer,
-                timestamp: Date.now()
-            });
-
-            onValue(callRef, async (snapshot) => {
-                const data = snapshot.val();
-                if (data && data.answer && !peerConnection.currentRemoteDescription) {
-                    await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
-                }
-                if (data && data.iceCandidates) {
-                    for (const candidate of data.iceCandidates) {
-                        await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-                    }
-                }
-            });
-
-            peerConnection.onicecandidate = (event) => {
-                if (event.candidate) {
-                    const iceRef = ref(rtdb, `calls/${callId}/iceCandidates`);
-                    push(iceRef, event.candidate.toJSON());
-                }
-            };
-
+            reader.readAsDataURL(file);
         } catch (error) {
-            console.error('Erro ao iniciar chamada:', error);
-            alert('Erro ao iniciar chamada. Verifique as permissões do navegador.');
-            endCall();
+            console.error('Erro ao enviar foto:', error);
+            alert('Erro ao enviar foto');
+        }
+
+        event.target.value = '';
+    }
+
+    // Funções de Anexo
+    async function handleAttachmentSelect(event) {
+        const file = event.target.files[0];
+        if (!file || !currentChat) return;
+
+        // Verificar tamanho (máx 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+            alert('Arquivo muito grande. Máximo 10MB.');
+            return;        }
+
+        try {
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const fileData = e.target.result;
+                const conversationId = getConversationId(currentUser.email, currentChat.contactEmail);
+
+                await addDoc(collection(db, "conversas", conversationId, "mensagens"), {
+                    tipo: 'file',
+                    fileData: fileData,
+                    fileName: file.name,
+                    fileType: file.type,
+                    fileSize: file.size,
+                    enviadoPor: currentUser.email,
+                    timestamp: serverTimestamp()
+                });
+
+                showToast('📎 Arquivo enviado!');
+                closeChatMenu();
+            };
+            reader.readAsDataURL(file);
+        } catch (error) {
+            console.error('Erro ao enviar arquivo:', error);
+            alert('Erro ao enviar arquivo');
+        }
+
+        event.target.value = '';
+    }
+
+    // Funções de Som de Notificação
+    function handleSoundSelect(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('audio/')) {
+            alert('Selecione um arquivo de áudio válido');
+            return;
+        }
+
+        // Verificar tamanho (máx 3MB para localStorage)
+        if (file.size > 3 * 1024 * 1024) {
+            alert('Arquivo muito grande. Máximo 3MB.');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const audioData = e.target.result;
+            localStorage.setItem('notificationSound', audioData);            notificationSound = new Audio(audioData);
+            notificationSound.volume = 0.7;
+            showToast('🔔 Som de notificação atualizado!');
+            closeChatMenu();
+        };
+        reader.readAsDataURL(file);
+        event.target.value = '';
+    }
+
+    function loadNotificationSound() {
+        const savedSound = localStorage.getItem('notificationSound');
+        if (savedSound) {
+            notificationSound = new Audio(savedSound);
+            notificationSound.volume = 0.7;
+        } else {
+            // Som padrão (beep curto)
+            const defaultSound = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+            notificationSound = new Audio(defaultSound);
+            notificationSound.volume = 0.5;
         }
     }
 
-    function endCall() {
-        if (peerConnection) {
-            peerConnection.close();
-            peerConnection = null;
-        }
-        if (localStream) {
-            localStream.getTracks().forEach(track => track.stop());
-            localStream = null;
-        }
+    function playNotificationSound() {
+        if (!notificationSound) return;
         
-        const callId = getConversationId(currentUser.email, currentChat.contactEmail) + '_call';        remove(ref(rtdb, `calls/${callId}`));
-
-        callScreen.classList.remove('active');
-        document.getElementById('video-container').style.display = 'none';
-        document.getElementById('audio-call-ui').style.display = 'block';
-    }
-
-    function toggleMute() {
-        if (localStream) {
-            const audioTrack = localStream.getAudioTracks()[0];
-            if (audioTrack) {
-                audioTrack.enabled = !audioTrack.enabled;
-                isMuted = !audioTrack.enabled;
-                document.getElementById('mute-btn').textContent = isMuted ? '🔇' : '🎤';
-                document.getElementById('toggle-mute-btn').textContent = isMuted ? '🔇' : '🎤';
-            }
-        }
-    }
-
-    function toggleVideo() {
-        if (localStream) {
-            const videoTrack = localStream.getVideoTracks()[0];
-            if (videoTrack) {
-                videoTrack.enabled = !videoTrack.enabled;
-                isVideoOff = !videoTrack.enabled;
-                document.getElementById('toggle-video-btn').textContent = isVideoOff ? '📷' : '📹';
-            }
-        }
+        notificationSound.currentTime = 0;
+        notificationSound.play().catch(e => {
+            console.log('Autoplay bloqueado:', e);
+            // Tentar novamente após interação do usuário
+            const unlock = () => {
+                notificationSound.play().catch(() => {});
+                ['click', 'touchstart', 'keydown'].forEach(evt => 
+                    document.removeEventListener(evt, unlock)
+                );
+            };
+            ['click', 'touchstart', 'keydown'].forEach(evt => 
+                document.addEventListener(evt, unlock, { once: true })
+            );
+        });
     }
 
     // Funções auxiliares
@@ -1457,9 +1321,25 @@
     function formatFileSize(bytes) {
         if (bytes === 0) return '0 Bytes';
         const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];        const i = Math.floor(Math.log(bytes) / Math.log(k));
         return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    }
+
+    function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+
+    function showImageModal(imageSrc) {
+        imageModalImg.src = imageSrc;
+        imageModal.classList.add('active');
+    }
+
+    function closeImageModal() {
+        imageModal.classList.remove('active');
     }
 
     function showLoginScreen() {
@@ -1468,7 +1348,8 @@
         chatScreen.classList.remove('active');
     }
 
-    function showMainScreen() {        loginScreen.style.display = 'none';
+    function showMainScreen() {
+        loginScreen.style.display = 'none';
         mainScreen.classList.add('active');
         chatScreen.classList.remove('active');
     }
@@ -1483,90 +1364,35 @@
         document.getElementById('new-contact-name').value = '';
     }
 
-    function selectNotificationSound() {
-        soundInput.click();
-    }
-
-    function handleSoundFile(file) {
-        if (!file) return;
-        
-        if (!file.type.startsWith('audio/')) {
-            alert('Selecione um arquivo de áudio válido');
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            localStorage.setItem('notificationSound', e.target.result);
-            notificationSound = new Audio(e.target.result);
-            notificationSound.volume = 0.7;
-            alert('Som de notificação atualizado! 🔔');
-            notificationSound.play();
-        };
-        reader.readAsDataURL(file);
-    }
-
-    function loadNotificationSound() {
-        const savedSound = localStorage.getItem('notificationSound');
-        if (savedSound) {
-            notificationSound = new Audio(savedSound);
-            notificationSound.volume = 0.7;
-        }
-    }
-
     // Event Listeners
     loginBtn.onclick = login;
     registerBtn.onclick = register;
-    logoutBtn.onclick = logout;    addContactBtn.onclick = openAddContactModal;
+    logoutBtn.onclick = logout;
+    addContactBtn.onclick = openAddContactModal;
     backBtn.onclick = closeChat;
-    sendBtn.onclick = sendMessage;
-    cancelAddContact.onclick = closeAddContactModal;
+    sendBtn.onclick = sendMessage;    cancelAddContact.onclick = closeAddContactModal;
     confirmAddContact.onclick = addContact;
-    menuBtn.onclick = () => menuDropdown.classList.toggle('active');
-    clearMessagesBtn.onclick = clearMessages;
-    notificationSoundBtn.onclick = selectNotificationSound;
-    emojiBtn.onclick = () => emojiPanel.classList.toggle('active');
-    photoBtn.onclick = () => photoInput.click();
-    attachmentBtn.onclick = () => attachmentInput.click();
-    voiceCallBtn.onclick = () => startCall('audio');
-    videoCallBtn.onclick = () => startCall('video');
-    document.getElementById('end-call-btn').onclick = endCall;
-    document.getElementById('end-audio-call-btn').onclick = endCall;
-    document.getElementById('mute-btn').onclick = toggleMute;
-    document.getElementById('toggle-mute-btn').onclick = toggleMute;
-    document.getElementById('toggle-video-btn').onclick = toggleVideo;
+    chatMenuBtn.onclick = toggleChatMenu;
+    menuClearBtn.onclick = clearMessages;
+    imageModal.onclick = closeImageModal;
 
-    photoInput.onchange = (e) => {
-        if (e.target.files[0]) {
-            sendPhoto(e.target.files[0]);
-            e.target.value = '';
-        }
-    };
+    menuPhotoBtn.onclick = () => photoInput.click();
+    menuAttachmentBtn.onclick = () => attachmentInput.click();
+    menuSoundBtn.onclick = () => soundInput.click();
 
-    attachmentInput.onchange = (e) => {
-        if (e.target.files[0]) {
-            sendFile(e.target.files[0]);
-            e.target.value = '';
-        }
-    };
-
-    soundInput.onchange = (e) => {
-        if (e.target.files[0]) {
-            handleSoundFile(e.target.files[0]);
-            e.target.value = '';
-        }
-    };
+    photoInput.addEventListener('change', handlePhotoSelect);
+    attachmentInput.addEventListener('change', handleAttachmentSelect);
+    soundInput.addEventListener('change', handleSoundSelect);
 
     messageInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') sendMessage();
     });
 
+    // Fechar menu ao clicar fora
     document.addEventListener('click', (e) => {
-        if (!menuBtn.contains(e.target) && !menuDropdown.contains(e.target)) {
-            menuDropdown.classList.remove('active');
+        if (!chatMenuDropdown.contains(e.target) && e.target !== chatMenuBtn) {
+            closeChatMenu();
         }
-        if (!emojiBtn.contains(e.target) && !emojiPanel.contains(e.target)) {
-            emojiPanel.classList.remove('active');        }
     });
 
     // Monitorar estado de autenticação
@@ -1574,16 +1400,16 @@
         if (user) {
             currentUser = user;
             showMainScreen();
-            loadContacts();
             loadNotificationSound();
+            loadContacts();
         } else {
             currentUser = null;
             showLoginScreen();
+            // Limpar listeners
+            messageListeners.forEach(unsubscribe => unsubscribe());
+            messageListeners.clear();
         }
     });
-
-    // Inicializar
-    initEmojis();
 
     console.log('✅ WhatsApp Clone carregado com sucesso!');
 </script>
