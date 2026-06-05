@@ -1,531 +1,305 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<hea<link rel="icon" type="({type}" href="){src}">d>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Lanny Stilit | Catálogo Digital</title>
-    <!-- Google Fonts para sofisticação e Ícones -->
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    
-    <style>
-        /* ========== ESTILOS (MANTIDOS E ADAPTADOS PARA CARROSSEL) ========== */
-        :root {
-            --primary: #2c2c2c; 
-            --accent: #d4af37;  
-            --bg-light: #fff9f9; 
-            --card-bg: #ffffff;
-            --text-muted: #757575;
-            --whatsapp-color: #25d366;
-            --danger-color: #dc3545;
-            --edit-color: #0d6efd;
-            --success-color: #198754;
-            --gold-light: #fdf8e7;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
-        body { background-color: #f0f0f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .mobile-container { width: 100%; max-width: 450px; height: 850px; background: var(--bg-light); box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-radius: 30px; overflow: hidden; position: relative; display: flex; flex-direction: column; border: 8px solid #222; }
-        .screen { width: 100%; height: 100%; overflow-y: auto; display: none; flex-direction: column; }
-        .screen.active { display: flex; }
-        header { text-align: center; padding: 40px 20px 20px 20px; background: #ffffff; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
-        header h1 { font-family: 'Cormorant Garamond', serif; font-size: 2.3rem; font-weight: 400; letter-spacing: 2px; color: var(--primary); margin-bottom: 5px; }
-        header p { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); font-weight: 500; }
-        .fixed-buttons-container { position: fixed; bottom: 24px; right: 24px; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; z-index: 30; }
-        .settings-fixed-btn { background: var(--primary); color: white; width: 54px; height: 54px; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; border: none; cursor: pointer; box-shadow: 0 6px 18px rgba(0,0,0,0.25); transition: all 0.2s ease; }
-        .notification-bubble { background: var(--accent); color: #fff; padding: 8px 16px; border-radius: 40px; font-size: 0.7rem; font-weight: 700; box-shadow: 0 3px 12px rgba(212, 175, 55, 0.5); cursor: pointer; display: flex; align-items: center; gap: 8px; animation: pulseNotify 1.2s infinite alternate; }
-        @keyframes pulseNotify { from { transform: scale(1); opacity: 0.9; } to { transform: scale(1.05); opacity: 1; } }
-        .booking-fixed-btn { position: fixed; bottom: 24px; left: 24px; background: var(--accent); color: var(--primary); border: none; padding: 12px 22px; border-radius: 40px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; box-shadow: 0 6px 18px rgba(0,0,0,0.2); cursor: pointer; z-index: 30; display: flex; align-items: center; gap: 8px; }
-        .hidden-fixed { display: none !important; }
-        .tabs { display: flex; justify-content: space-around; background: #fff; position: sticky; top: 0; z-index: 5; border-bottom: 1px solid #eee; }
-        .tab-btn { background: none; border: none; padding: 15px 20px; font-size: 0.9rem; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; flex: 1; }
-        .tab-btn.active { color: var(--primary); border-bottom: 2px solid var(--accent); font-weight: 500; }
-        .catalog-content { padding: 20px; flex: 1; }
-        .catalog-section { display: none; }
-        .catalog-section.active { display: block; }
-        .section-title { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; text-align: center; margin-bottom: 25px; }
-        .grid { display: grid; grid-template-columns: 1fr; gap: 25px; }
-        .card { background: var(--card-bg); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.02); }
-        /* Carrossel */
-        .carousel-container { position: relative; width: 100%; height: 260px; background: #f5f5f5; overflow: hidden; }
-        .carousel-slides { display: flex; width: 100%; height: 100%; transition: transform 0.3s ease; }
-        .carousel-slide { min-width: 100%; height: 100%; }
-        .carousel-slide img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
-        .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2; font-size: 1rem; }
-        .carousel-btn.prev { left: 8px; }
-        .carousel-btn.next { right: 8px; }
-        .carousel-dots { position: absolute; bottom: 8px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; z-index: 2; }
-        .carousel-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.6); cursor: pointer; }
-        .carousel-dot.active { background: white; width: 8px; height: 8px; }
-        .card-info { padding: 15px; text-align: center; }
-        .card-title { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 600; }
-        .card-price { font-size: 0.95rem; color: var(--accent); font-weight: 500; }
-        .panel-header { padding: 20px; background: #fff; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 15px; }
-        .back-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; }
-        .panel-body { padding: 20px; flex: 1; overflow-y: auto; }
-        .horizontal-tabs { display: flex; gap: 5px; margin-bottom: 20px; background: #eee; padding: 4px; border-radius: 8px; flex-wrap: wrap; }
-        .panel-tab-btn { flex: 1; background: none; border: none; padding: 10px 3px; font-size: 0.75rem; font-weight: 500; color: var(--text-muted); cursor: pointer; border-radius: 6px; text-transform: uppercase; }
-        .panel-tab-btn.active { background: var(--card-bg); color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-        .panel-section { display: none; }
-        .panel-section.active { display: block; }
-        .appointment-card { background: #fff; border-left: 4px solid var(--accent); padding: 15px; border-radius: 8px; margin-bottom: 12px; }
-        .appointment-card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f0f0f0; padding-bottom: 6px; margin-bottom: 8px; flex-wrap: wrap; }
-        .appointment-badge { font-size: 0.65rem; padding: 3px 8px; border-radius: 20px; font-weight: 600; }
-        .badge-home { background: #fff3cd; color: #856404; }
-        .badge-studio { background: #d1ecf1; color: #0c5460; }
-        .appointment-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; justify-content: flex-end; }
-        .mini-btn { border: none; padding: 6px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; color: white; }
-        .btn-wa { background: var(--whatsapp-color); }
-        .btn-confirm { background: var(--success-color); }
-        .btn-edit-app { background: var(--edit-color); }
-        .btn-finish { background: var(--primary); }
-        .btn-add-photo { background: #6c757d; margin-bottom: 15px; width: 100%; justify-content: center; }
-        .finance-card { background: var(--gold-light); border: 1px solid var(--accent); border-radius: 16px; padding: 18px; margin-bottom: 20px; }
-        .finance-title { font-size: 1.3rem; font-weight: bold; color: var(--primary); border-left: 4px solid var(--accent); padding-left: 10px; margin-bottom: 15px; }
-        .sangria-box { background: white; border-radius: 12px; padding: 12px; margin: 15px 0; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-        .filter-box { display: flex; gap: 8px; margin: 10px 0; align-items: center; flex-wrap: wrap; }
-        .filter-box input, .filter-box select { padding: 8px; border-radius: 8px; border: 1px solid #ccc; flex: 1; }
-        .total-receita { font-size: 1.2rem; font-weight: bold; background: var(--primary); color: white; padding: 12px; border-radius: 12px; text-align: center; }
-        .completed-item { background: #f8f9fa; border-left: 3px solid var(--success-color); padding: 12px; border-radius: 8px; margin-bottom: 10px; }
-        .edit-modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:200; display:flex; justify-content:center; align-items:center; }
-        .edit-modal-box { background: white; width: 90%; max-width: 340px; border-radius: 20px; padding: 20px; }
-        .edit-card, .edit-modal-box { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #eee; }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 5px; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.85rem; }
-        .multi-img-group { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; align-items: center; }
-        .img-url-input { flex: 2; min-width: 120px; }
-        .upload-mini-btn { background: #6c757d; color: white; border: none; border-radius: 6px; padding: 6px 12px; font-size: 0.7rem; cursor: pointer; }
-        .save-btn { background: var(--primary); color: white; border: none; width: 100%; padding: 14px; border-radius: 6px; cursor: pointer; text-transform: uppercase; font-weight: 500; }
-        .footer-text { text-align: center; font-size: 0.7rem; color: var(--text-muted); margin: 20px 0 15px; }
-        .fullscreen-modal { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); z-index:100; display: none; justify-content: center; align-items: center; }
-        .fullscreen-modal img { max-width: 95%; max-height: 85%; object-fit: contain; }
-        .settings-menu { position: fixed; top:0; right:-100%; width:75%; max-width:320px; height:100%; background:#fff; z-index:25; transition:right 0.3s; padding:30px 20px; overflow-y:auto; }
-        .settings-menu.open { right:0; }
-        .overlay-drawer { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); z-index:18; display:none; }
-        .panel-trigger-btn { background: var(--bg-light); border: 1px solid var(--accent); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; cursor: pointer; margin-bottom: 12px; }
-        .whatsapp-trigger-btn { background: #e8f9ee; border: 1px solid var(--whatsapp-color); color: #128c7e; padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; text-decoration: none; margin-bottom: 12px; }
-        .manager-item { display: flex; gap: 8px; margin-bottom: 8px; background: #fff; padding: 8px; border-radius: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
-        .loading { text-align: center; padding: 20px; color: var(--text-muted); }
-        .sync-status { font-size: 0.7rem; color: var(--success-color); text-align: center; padding: 5px; background: #e8f5e9; border-radius: 20px; margin: 5px 10px; }
-        .login-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 300; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .login-modal-card { background: white; width: 90%; max-width: 340px; border-radius: 28px; padding: 28px 22px; text-align: center; box-shadow: 0 20px 35px rgba(0,0,0,0.3); border: 1px solid var(--accent); }
-        .login-modal-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; margin-bottom: 20px; color: var(--primary); }
-        .login-input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 40px; font-size: 0.9rem; }
-        .login-btn { background: var(--accent); color: var(--primary); border: none; width: 100%; padding: 12px; border-radius: 40px; font-weight: bold; margin-top: 15px; cursor: pointer; font-size: 1rem; }
-        .logout-btn { background: #ccc; color: #333; margin-top: 10px; }
-        .login-error { color: var(--danger-color); font-size: 0.75rem; margin-top: 10px; }
-        .user-status { font-size: 0.7rem; color: var(--success-color); margin-top: 8px; padding: 4px; background: #e9f5e9; border-radius: 20px; display: inline-block; }
-        .panel-access-btn { background: var(--primary); color: white; border: none; }
-    </style>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gerador de Favicon</title>
+  <link id="favicon" rel="icon" type="image/png" href="">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f0f1a;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      background: #1a1a2e;
+      border: 1px solid #2e2e50;
+      border-radius: 16px;
+      padding: 32px;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    h1 { font-size: 1.4rem; margin-bottom: 6px; color: #a78bfa; }
+    p.sub { font-size: 0.85rem; color: #888; margin-bottom: 28px; }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      color: #aaa;
+      margin-bottom: 6px;
+      margin-top: 18px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    input[type="url"] {
+      width: 100%;
+      padding: 10px 14px;
+      background: #0f0f1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: #e0e0e0;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border 0.2s;
+    }
+    input[type="url"]:focus { border-color: #a78bfa; }
+
+    .divider {
+      text-align: center;
+      color: #555;
+      font-size: 0.85rem;
+      margin: 20px 0;
+      position: relative;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 42%;
+      height: 1px;
+      background: #2e2e50;
+    }
+    .divider::before { left: 0; }
+    .divider::after { right: 0; }
+
+    .upload-box {
+      border: 2px dashed #333;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      background: #0f0f1a;
+    }
+    .upload-box:hover { border-color: #a78bfa; background: #1a1030; }
+    .upload-box input[type="file"] { display: none; }
+    .upload-box span { font-size: 0.9rem; color: #888; }
+    .upload-box .icon { font-size: 2rem; display: block; margin-bottom: 8px; }
+
+    .preview-area {
+      display: none;
+      align-items: center;
+      gap: 14px;
+      background: #0f0f1a;
+      border: 1px solid #2e2e50;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-top: 16px;
+    }
+    .preview-area.visible { display: flex; }
+    .preview-area img {
+      width: 40px; height: 40px;
+      border-radius: 6px;
+      object-fit: contain;
+      background: #fff;
+    }
+    .preview-area span { font-size: 0.85rem; color: #aaa; }
+
+    .btn {
+      width: 100%;
+      margin-top: 24px;
+      padding: 12px;
+      background: #7c3aed;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #6d28d9; }
+
+    .output-box { display: none; margin-top: 28px; }
+    .output-box.visible { display: block; }
+
+    .code-label {
+      font-size: 0.78rem;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .code-wrap { position: relative; }
+
+    textarea.code {
+      width: 100%;
+      background: #0a0a14;
+      border: 1px solid #2e2e50;
+      border-radius: 10px;
+      color: #a78bfa;
+      font-family: 'Courier New', monospace;
+      font-size: 0.82rem;
+      padding: 14px;
+      resize: none;
+      outline: none;
+      line-height: 1.6;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 10px; right: 10px;
+      background: #2e2e50;
+      border: none;
+      color: #ccc;
+      font-size: 0.78rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .copy-btn:hover { background: #7c3aed; color: #fff; }
+
+    .instructions {
+      margin-top: 20px;
+      background: #0f0f1a;
+      border: 1px solid #2e2e50;
+      border-radius: 10px;
+      padding: 16px;
+      font-size: 0.85rem;
+      color: #aaa;
+      line-height: 1.7;
+    }
+    .instructions strong { color: #a78bfa; }
+    .instructions ol { padding-left: 18px; margin-top: 8px; }
+    .instructions li { margin-bottom: 6px; }
+
+    code {
+      background: #1a1a2e;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      color: #c084fc;
+      font-size: 0.82rem;
+    }
+
+    .success-msg {
+      display: none;
+      color: #4ade80;
+      font-size: 0.82rem;
+      margin-top: 6px;
+      text-align: center;
+    }
+    .success-msg.visible { display: block; }
+  </style>
 </head>
 <body>
-<div class="mobile-container">
-    <div id="lightbox-modal" class="fullscreen-modal" onclick="closeFullscreen()"><img id="lightbox-img" src=""></div>
-    
-    <!-- TELA PRINCIPAL -->
-    <div id="main-screen" class="screen active">
-        <header><h1>Lanny Stilit</h1><p>Make-up & Hair Stylist</p></header>
-        <div class="tabs"><button class="tab-btn active" onclick="openTab(event, 'makeup')">Maquiagem</button><button class="tab-btn" onclick="openTab(event, 'hair')">Cabelo</button></div>
-        <div class="catalog-content"><div id="makeup" class="catalog-section active"><h2 class="section-title">A Arte da Maquiagem</h2><div class="grid" id="makeup-grid"><div class="loading">Carregando...</div></div></div>
-        <div id="hair" class="catalog-section"><h2 class="section-title">Penteados Exclusivos</h2><div class="grid" id="hair-grid"><div class="loading">Carregando...</div></div></div></div>
-        <p class="footer-text">© 2026 Lanny Stilit</p>
-    </div>
 
-    <!-- TELA AGENDAMENTO (mantida original) -->
-    <div id="booking-screen" class="screen"><div class="panel-header"><button class="back-btn" onclick="navigateToMainFromBooking()"><i class="fas fa-arrow-left"></i></button><h3 style="font-family: 'Cormorant Garamond'; font-size:1.5rem;">Solicitar Agendamento</h3></div>
-        <div class="panel-body"><div class="edit-card"><h4>Seus Dados</h4><div class="form-group"><label>Nome Completo *</label><input type="text" id="booking-name"></div><div class="form-group"><label>Data *</label><input type="date" id="booking-date"></div><div class="form-group"><label>Horário *</label><input type="time" id="booking-time"></div><div class="form-group"><label>WhatsApp *</label><div class="phone-input-container" style="display:flex; border:1px solid #ddd; border-radius:6px;"><span style="padding:10px;">+55</span><input type="tel" id="booking-phone" style="flex:1; border:none;" oninput="maskPhone(this)"></div></div>
-        <div class="form-group"><label>Tipo</label><select id="booking-type" onchange="toggleDeliveryFields()"><option value="studio">No Estúdio</option><option value="home">A Domicílio</option></select></div>
-        <div id="delivery-fields" style="display:none;"><div class="form-group"><label>Endereço</label><input type="text" id="booking-address"></div><div class="form-group"><label>Bairro</label><input type="text" id="booking-neighborhood"></div></div>
-        <div class="form-group"><label>Descrição</label><textarea id="booking-desc" rows="3"></textarea></div>
-        <button class="save-btn" style="background:var(--accent);" onclick="processBooking()">Agendar</button></div></div>
-    </div>
+<div class="card">
+  <h1>🎨 Troca de Favicon</h1>
+  <p class="sub">Gere o código para trocar o ícone da aba do seu site iPlay Store.</p>
 
-    <!-- TELA MINHA EMPRESA -->
-    <div id="aboutme-screen" class="screen"><div class="panel-header"><button class="back-btn" onclick="navigateToMainFromAbout()"><i class="fas fa-arrow-left"></i></button><h3>Minha Empresa</h3></div>
-        <div class="panel-body"><div class="profile-container"><div class="profile-img-wrapper"><img id="company-profile-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80" class="profile-img" onclick="openFullscreen(this.src)" style="width:100%; border-radius:20px;"></div><h2 class="profile-name">Lanny Stilit</h2><p class="profile-subtitle">Estética & Visagismo</p><div class="profile-bio-box"><p id="company-profile-desc">Seja bem-vinda ao meu catálogo! Sou especialista em realçar sua beleza natural...</p></div></div></div>
-    </div>
+  <label>Opção 1 — URL da imagem</label>
+  <input type="url" id="urlInput" placeholder="Cole aqui a URL da sua imagem" />
 
-    <!-- TELA PAINEL (modificada para múltiplas imagens) -->
-    <div id="panel-screen" class="screen"><div class="panel-header"><button class="back-btn" onclick="navigateToMain()"><i class="fas fa-arrow-left"></i></button><h3>Painel de Controle</h3><div style="margin-left:auto;"><span id="panel-user-email" class="user-status" style="background:#2c2c2c; color:white; padding:4px 8px;"></span></div></div>
-        <div class="panel-body">
-            <div class="horizontal-tabs">
-                <button class="panel-tab-btn active" onclick="switchPanelTab(event, 'panel-appointments')">Agenda</button>
-                <button class="panel-tab-btn" onclick="switchPanelTab(event, 'panel-make')">Make</button>
-                <button class="panel-tab-btn" onclick="switchPanelTab(event, 'panel-hair')">Cabelo</button>
-                <button class="panel-tab-btn" onclick="switchPanelTab(event, 'panel-company')">Empresa</button>
-                <button class="panel-tab-btn" onclick="switchPanelTab(event, 'panel-finance')">Financeiro</button>
-            </div>
-            <div id="panel-appointments" class="panel-section active"><div id="appointments-list"></div></div>
-            
-            <!-- PAINEL MAKE - com 4 imagens -->
-            <div id="panel-make" class="panel-section">
-                <div class="edit-card">
-                    <h4 id="form-make-title">Nova Postagem Maquiagem (até 4 fotos)</h4>
-                    <input type="hidden" id="edit-make-id">
-                    <div id="make-images-container"></div>
-                    <div class="form-group"><label>Título</label><input type="text" id="input-title-make1"></div>
-                    <div class="form-group"><label>Descrição</label><textarea id="input-desc-make1"></textarea></div>
-                    <div class="form-group"><label>Preço</label><input type="text" id="input-price-make1"></div>
-                    <button class="save-btn" onclick="saveMakeupChanges()">Salvar</button>
-                </div>
-                <h4>Postagens</h4>
-                <div id="manager-makeup-list"></div>
-            </div>
-            
-            <!-- PAINEL CABELO - com 4 imagens -->
-            <div id="panel-hair" class="panel-section">
-                <div class="edit-card">
-                    <h4>Nova Postagem Cabelo (até 4 fotos)</h4>
-                    <input type="hidden" id="edit-hair-id">
-                    <div id="hair-images-container"></div>
-                    <div class="form-group"><label>Título</label><input type="text" id="input-title-hair1"></div>
-                    <div class="form-group"><label>Descrição</label><textarea id="input-desc-hair1"></textarea></div>
-                    <div class="form-group"><label>Preço</label><input type="text" id="input-price-hair1"></div>
-                    <button class="save-btn" onclick="saveHairChanges()">Salvar</button>
-                </div>
-                <div id="manager-hair-list"></div>
-            </div>
-            
-            <!-- PAINEL EMPRESA -->
-            <div id="panel-company" class="panel-section">
-                <div class="edit-card"><h4>Editar Empresa</h4>
-                    <div class="form-group"><label>Foto URL</label><input type="text" id="input-img-company" value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80"></div>
-                    <button class="mini-btn btn-add-photo" onclick="uploadSingleCompanyImage()" style="background:#6c757d; width:100%; margin-bottom:15px;"><i class="fas fa-images"></i> 📸 Enviar Foto</button>
-                    <div class="form-group"><label>Biografia</label><textarea id="input-desc-company">Seja bem-vinda ao meu catálogo! Sou especialista em realçar sua beleza natural...</textarea></div>
-                    <button class="save-btn" onclick="saveCompanyChanges()">Salvar Empresa</button>
-                </div>
-            </div>
-            
-            <!-- PAINEL FINANCEIRO (original) -->
-            <div id="panel-finance" class="panel-section">
-                <div class="finance-card"><div class="finance-title">📊 Resumo Financeiro</div>
-                <div class="filter-box"><label>Filtrar Mês:</label><input type="month" id="finance-month-filter"><button class="mini-btn" style="background:var(--accent); color:#000;" onclick="renderFinanceiro()">Filtrar</button></div>
-                <div class="total-receita" id="total-receita-mes">Total do mês: R$ 0,00</div>
-                </div>
-                <div class="finance-card"><div class="finance-title">💰 Sangria (Retirada)</div>
-                <div class="sangria-box"><input type="number" id="sangria-valor" placeholder="Valor R$"><input type="text" id="sangria-desc" placeholder="Descrição"><button class="mini-btn" style="background:var(--danger-color);" onclick="registrarSangria()">Registrar Sangria</button></div>
-                <div id="lista-sangrias" style="margin-top:12px;"></div>
-                </div>
-                <div class="finance-card"><div class="finance-title">✅ Agenda Concluída (Pagamentos)</div>
-                <div id="completed-list-finance"></div>
-                </div>
-            </div>
-        </div>
-    </div>
+  <div class="divider">ou</div>
 
-    <button id="fixed-booking-btn" class="booking-fixed-btn" onclick="navigateToBooking()"><i class="fas fa-calendar-check"></i> Agendar Horário</button>
-    <div id="fixed-buttons-right" class="fixed-buttons-container"><div id="notification-bubble" class="notification-bubble hidden-fixed" onclick="dismissNotification(event)"><i class="fas fa-bell"></i> Novo Agendamento!</div><button id="fixed-settings-btn" class="settings-fixed-btn" onclick="toggleSettingsMenu()"><i class="fas fa-cog"></i></button></div>
-    <div id="drawer-overlay" class="overlay-drawer"></div>
-    <div id="settings-drawer" class="settings-menu"><button class="close-menu-btn" onclick="toggleSettingsMenu()" style="background:none; border:none; font-size:1.5rem; float:right;"><i class="fas fa-times"></i></button><h3>Ajustes</h3><a href="https://wa.me/558599415246?text=Ol%C3%A1" target="_blank" class="whatsapp-trigger-btn">WHATSAPP <i class="fab fa-whatsapp"></i></a><div class="panel-trigger-btn" onclick="navigateToAboutMe()">MINHA EMPRESA</div>
-        <div id="dynamic-login-logout"></div>
-    </div>
+  <label>Opção 2 — Fazer upload de imagem</label>
+  <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+    <span class="icon">📁</span>
+    <input type="file" id="fileInput" accept="image/*" onchange="handleFile(event)" />
+    <span>Clique para selecionar uma imagem<br>
+      <small style="color:#555">(PNG, JPG, ICO, SVG — recomendado 32×32 ou 64×64 px)</small>
+    </span>
+  </div>
 
-    <!-- MODAL LOGIN -->
-    <div id="login-modal" class="login-modal-overlay">
-        <div class="login-modal-card">
-            <h3>🔐 Acesso Restrito</h3>
-            <input type="email" id="login-email" class="login-input" placeholder="E-mail" autocomplete="email">
-            <input type="password" id="login-password" class="login-input" placeholder="Senha" autocomplete="current-password">
-            <button class="login-btn" onclick="loginFirebase()">Entrar no Painel</button>
-            <div id="login-error-msg" class="login-error"></div>
-        </div>
+  <div class="preview-area" id="previewArea">
+    <img id="previewImg" src="" alt="Preview"/>
+    <span id="previewLabel">Imagem carregada</span>
+  </div>
+
+  <button class="btn" onclick="generate()">⚡ Gerar Código</button>
+
+  <div class="output-box" id="outputBox">
+    <div class="code-label">Cole isso dentro do <code>&lt;head&gt;</code> do seu HTML:</div>
+    <div class="code-wrap">
+      <textarea class="code" id="codeOutput" rows="3" readonly></textarea>
+      <button class="copy-btn" onclick="copyCode()">Copiar</button>
     </div>
+    <div class="success-msg" id="successMsg">✅ Copiado!</div>
+
+    <div class="instructions">
+      <strong>Como aplicar no seu site (GitHub Pages):</strong>
+      <ol>
+        <li>Abra o <code>index.html</code> do repositório <strong>iPlay-Store</strong> no GitHub.</li>
+        <li>Clique no ✏️ para editar.</li>
+        <li>Localize o <code>&lt;head&gt;</code> e cole o código gerado logo abaixo.</li>
+        <li>Se já existir uma linha com <code>rel="icon"</code>, substitua-a.</li>
+        <li>Clique em <strong>Commit changes</strong> e aguarde ~1 min.</li>
+        <li>Recarregue a aba com <strong>Ctrl+Shift+R</strong> para ver o novo ícone.</li>
+      </ol>
+    </div>
+  </div>
 </div>
 
 <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyCWJPvkRuSQMuuVDhdfH6oyLrPPKeAm3n0",
-        authDomain: "catalog-lanny-stilit.firebaseapp.com",
-        projectId: "catalog-lanny-stilit",
-        storageBucket: "catalog-lanny-stilit.firebasestorage.app",
-        messagingSenderId: "53044575318",
-        appId: "1:53044575318:web:0e1f91217379c378a30ff7"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const auth = firebase.auth();
-    
-    let listMakeup = [], listHair = [], listAppointments = [], completedAppointments = [], sangrias = [], companyData = { img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80", bio: "Seja bem-vinda ao meu catálogo! Sou especialista em realçar sua beleza natural..." };
-    let currentUser = null;
+  let currentHref = '';
 
-    // ========== FUNÇÕES DE UI PARA MÚLTIPLAS IMAGENS ==========
-    function renderImageInputs(containerId, imagesArray, type) {
-        const container = document.getElementById(containerId);
-        if(!container) return;
-        container.innerHTML = '';
-        for(let i = 0; i < 4; i++) {
-            const value = imagesArray[i] || '';
-            container.innerHTML += `
-                <div class="multi-img-group">
-                    <input type="text" id="${type}_img_${i}" class="img-url-input" placeholder="URL da imagem ${i+1}" value="${escapeHtml(value)}">
-                    <button type="button" class="upload-mini-btn" onclick="uploadImageToInput('${type}', ${i})"><i class="fas fa-upload"></i></button>
-                </div>
-            `;
-        }
-    }
-    function getImagesFromInputs(prefix, count=4) {
-        let imgs = [];
-        for(let i=0;i<count;i++) {
-            let val = document.getElementById(`${prefix}_img_${i}`)?.value.trim();
-            if(val) imgs.push(val);
-        }
-        return imgs;
-    }
-    function uploadImageToInput(prefix, index) {
-        const inputFile = document.createElement('input');
-        inputFile.type = 'file';
-        inputFile.accept = 'image/*';
-        inputFile.onchange = (e) => {
-            const file = e.target.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = function(ev) {
-                    const targetInput = document.getElementById(`${prefix}_img_${index}`);
-                    if(targetInput) targetInput.value = ev.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        };
-        inputFile.click();
-    }
-    function uploadSingleCompanyImage() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.onchange = (e) => {
-            const file = e.target.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    document.getElementById('input-img-company').value = ev.target.result;
-                    document.getElementById('company-profile-img').src = ev.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        };
-        input.click();
-    }
-    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
-    
-    // ========== RENDER CARROSSEL NO CATÁLOGO ==========
-    function renderCarousel(images, onClickFullscreen) {
-        if(!images || images.length === 0) return `<div class="carousel-container"><img src="https://via.placeholder.com/400x260?text=Sem+Imagem" style="width:100%;height:100%;object-fit:cover;"></div>`;
-        let slidesHtml = '', dotsHtml = '';
-        images.forEach((img, idx) => {
-            slidesHtml += `<div class="carousel-slide"><img src="${img}" onclick="openFullscreen('${img}')"></div>`;
-            dotsHtml += `<span class="carousel-dot ${idx===0?'active':''}" data-index="${idx}"></span>`;
-        });
-        return `<div class="carousel-container" data-images-count="${images.length}">
-                    <div class="carousel-slides" style="transform: translateX(0%);">${slidesHtml}</div>
-                    <button class="carousel-btn prev" onclick="event.stopPropagation(); navigateCarousel(this.parentElement, -1)">‹</button>
-                    <button class="carousel-btn next" onclick="event.stopPropagation(); navigateCarousel(this.parentElement, 1)">›</button>
-                    <div class="carousel-dots">${dotsHtml}</div>
-                </div>`;
-    }
-    window.navigateCarousel = function(container, step) {
-        const slidesDiv = container.querySelector('.carousel-slides');
-        const slides = slidesDiv.children;
-        const total = slides.length;
-        if(total <= 1) return;
-        let currentIdx = parseInt(container.getAttribute('data-current') || '0');
-        let newIdx = currentIdx + step;
-        if(newIdx < 0) newIdx = total-1;
-        if(newIdx >= total) newIdx = 0;
-        slidesDiv.style.transform = `translateX(-${newIdx * 100}%)`;
-        container.setAttribute('data-current', newIdx);
-        const dots = container.querySelectorAll('.carousel-dot');
-        dots.forEach((dot, i) => { if(i === newIdx) dot.classList.add('active'); else dot.classList.remove('active'); });
+  function handleFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      currentHref = e.target.result;
+      showPreview(currentHref, file.name);
     };
-    function initCarousels() { setTimeout(() => { document.querySelectorAll('.carousel-container').forEach(c => { if(!c.getAttribute('data-current')) { c.setAttribute('data-current', '0'); const slidesDiv = c.querySelector('.carousel-slides'); if(slidesDiv) slidesDiv.style.transform = 'translateX(0%)'; } }); }, 100); }
-    
-    function renderMainGrid(gridId, items) {
-        const grid = document.getElementById(gridId);
-        if(!grid) return;
-        grid.innerHTML = '';
-        if(items.length === 0) { grid.innerHTML = '<div class="loading">Nenhum item encontrado</div>'; return; }
-        items.forEach(item => {
-            const imagesArray = item.images && item.images.length ? item.images : (item.img ? [item.img] : ['https://via.placeholder.com/400x260?text=Sem+Imagem']);
-            const carouselHtml = renderCarousel(imagesArray, true);
-            grid.innerHTML += `<div class="card">${carouselHtml}<div class="card-info"><h3>${item.title}</h3><p>${item.desc}</p><p class="card-price">${item.price}</p></div></div>`;
-        });
-        initCarousels();
+    reader.readAsDataURL(file);
+  }
+
+  function showPreview(src, label) {
+    document.getElementById('previewImg').src = src;
+    document.getElementById('previewLabel').textContent = label || 'Imagem carregada';
+    document.getElementById('previewArea').classList.add('visible');
+    document.getElementById('favicon').href = src;
+  }
+
+  function generate() {
+    const urlVal = document.getElementById('urlInput').value.trim();
+    const src = urlVal || currentHref;
+
+    if (!src) {
+      alert('Cole uma URL ou faça upload de uma imagem primeiro!');
+      return;
     }
-    
-    function renderManagerList(managerId, items, type) {
-        const list = document.getElementById(managerId);
-        if(!list) return;
-        list.innerHTML = '';
-        items.forEach(item => {
-            const firstImg = (item.images && item.images[0]) || (item.img) || 'https://via.placeholder.com/50';
-            list.innerHTML += `<div class="manager-item"><div style="display:flex; gap:8px; align-items:center;"><img src="${firstImg}" width="50" height="50" style="object-fit:cover; border-radius:8px;"><div><h5>${item.title}</h5><p>${item.price}</p><p style="font-size:10px;">${item.desc ? item.desc.substring(0,30) : ''}</p></div></div><div><button class="action-btn edit" style="background:var(--edit-color); border:none; color:white; padding:5px 10px; border-radius:20px; margin-right:5px;" onclick="startEdit('${type}','${item.id}')">Editar</button><button class="action-btn delete" style="background:var(--danger-color); border:none; color:white; padding:5px 10px; border-radius:20px;" onclick="deletePost('${type}','${item.id}')">Deletar</button></div></div>`;
-        });
+
+    if (urlVal) {
+      currentHref = urlVal;
+      showPreview(urlVal, urlVal);
     }
-    
-    // ========== DADOS ==========
-    async function loadPublicData() {
-        try {
-            const makeupSnap = await db.collection('makeup').orderBy('createdAt', 'desc').get();
-            listMakeup = [];
-            makeupSnap.forEach(doc => { let data = doc.data(); if(data.img && !data.images) data.images = [data.img]; else if(!data.images) data.images = []; listMakeup.push({ id: doc.id, ...data }); });
-            if(listMakeup.length === 0) { const defaultMake = { images: ["https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=500&q=80"], title: "Make Social Premium", desc: "Ideal para festas...", price: "Sob Consulta", createdAt: new Date() }; const ref = await db.collection('makeup').add(defaultMake); listMakeup.push({ id: ref.id, ...defaultMake }); }
-            const hairSnap = await db.collection('hair').orderBy('createdAt', 'desc').get();
-            listHair = [];
-            hairSnap.forEach(doc => { let data = doc.data(); if(data.img && !data.images) data.images = [data.img]; else if(!data.images) data.images = []; listHair.push({ id: doc.id, ...data }); });
-            if(listHair.length === 0) { const defaultHair = { images: ["https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=500&q=80"], title: "Coque Despojado", desc: "Do clássico ao moderno.", price: "Sob Consulta", createdAt: new Date() }; const ref = await db.collection('hair').add(defaultHair); listHair.push({ id: ref.id, ...defaultHair }); }
-            const companySnap = await db.collection('company').doc('profile').get();
-            if(companySnap.exists) { companyData = companySnap.data(); document.getElementById('company-profile-img').src = companyData.img; document.getElementById('company-profile-desc').innerText = companyData.bio; document.getElementById('input-img-company').value = companyData.img; document.getElementById('input-desc-company').value = companyData.bio; }
-            renderMainGrid('makeup-grid', listMakeup);
-            renderMainGrid('hair-grid', listHair);
-        } catch(e) { console.error(e); }
-    }
-    async function loadPrivateData() { if (!currentUser) return; try {
-        const appsSnap = await db.collection('appointments').where('status', '==', 'active').get(); listAppointments = []; appsSnap.forEach(doc => listAppointments.push({ id: doc.id, ...doc.data() }));
-        const compSnap = await db.collection('appointments').where('status', '==', 'completed').get(); completedAppointments = []; compSnap.forEach(doc => completedAppointments.push({ id: doc.id, ...doc.data() }));
-        const sangSnap = await db.collection('sangrias').orderBy('data', 'desc').get(); sangrias = []; sangSnap.forEach(doc => sangrias.push({ id: doc.id, ...doc.data() }));
-        if(document.getElementById('manager-makeup-list')) renderManagerList('manager-makeup-list', listMakeup, 'make');
-        if(document.getElementById('manager-hair-list')) renderManagerList('manager-hair-list', listHair, 'hair');
-    } catch(e) { console.error(e); } }
-    
-    // ========== CRUD MÚLTIPLAS IMAGENS ==========
-    async function saveMakeupChanges() { if(!currentUser){alert('Login necessário');return;} 
-        const id = document.getElementById('edit-make-id').value;
-        const images = getImagesFromInputs('make_img', 4);
-        const title = document.getElementById('input-title-make1').value;
-        const desc = document.getElementById('input-desc-make1').value;
-        let price = document.getElementById('input-price-make1').value;
-        if(!price.toLowerCase().includes('consulta') && !price.includes('R$')) price = "R$ " + price;
-        const data = { images, title, desc, price, updatedAt: new Date() };
-        if(id) { await db.collection('makeup').doc(id).update(data); const idx = listMakeup.findIndex(i => i.id === id); if(idx!==-1) listMakeup[idx] = { ...listMakeup[idx], ...data }; }
-        else { data.createdAt = new Date(); const ref = await db.collection('makeup').add(data); listMakeup.push({ id: ref.id, ...data }); }
-        document.getElementById('edit-make-id').value = '';
-        document.getElementById('input-title-make1').value = ''; document.getElementById('input-desc-make1').value = ''; document.getElementById('input-price-make1').value = '';
-        for(let i=0;i<4;i++) { let inp = document.getElementById(`make_img_${i}`); if(inp) inp.value = ''; }
-        renderMainGrid('makeup-grid', listMakeup); if(document.getElementById('manager-makeup-list')) renderManagerList('manager-makeup-list', listMakeup, 'make');
-        alert("Salvo"); navigateToMain();
-    }
-    async function saveHairChanges() { if(!currentUser){alert('Login necessário');return;} 
-        const id = document.getElementById('edit-hair-id').value;
-        const images = getImagesFromInputs('hair_img', 4);
-        const title = document.getElementById('input-title-hair1').value;
-        const desc = document.getElementById('input-desc-hair1').value;
-        let price = document.getElementById('input-price-hair1').value;
-        if(!price.toLowerCase().includes('consulta') && !price.includes('R$')) price = "R$ " + price;
-        const data = { images, title, desc, price, updatedAt: new Date() };
-        if(id) { await db.collection('hair').doc(id).update(data); const idx = listHair.findIndex(i => i.id === id); if(idx!==-1) listHair[idx] = { ...listHair[idx], ...data }; }
-        else { data.createdAt = new Date(); const ref = await db.collection('hair').add(data); listHair.push({ id: ref.id, ...data }); }
-        for(let i=0;i<4;i++) { let inp = document.getElementById(`hair_img_${i}`); if(inp) inp.value = ''; }
-        document.getElementById('edit-hair-id').value = ''; document.getElementById('input-title-hair1').value = ''; document.getElementById('input-desc-hair1').value = ''; document.getElementById('input-price-hair1').value = '';
-        renderMainGrid('hair-grid', listHair); if(document.getElementById('manager-hair-list')) renderManagerList('manager-hair-list', listHair, 'hair');
-        alert("Salvo"); navigateToMain();
-    }
-    function startEdit(type, id) {
-        if(type === 'make') {
-            const item = listMakeup.find(i => i.id === id);
-            document.getElementById('edit-make-id').value = item.id;
-            document.getElementById('input-title-make1').value = item.title;
-            document.getElementById('input-desc-make1').value = item.desc;
-            document.getElementById('input-price-make1').value = item.price.replace("R$ ", "");
-            const imgs = (item.images && item.images.length) ? item.images : (item.img ? [item.img] : []);
-            for(let i=0;i<4;i++) { let inp = document.getElementById(`make_img_${i}`); if(inp) inp.value = imgs[i] || ''; }
-            switchPanelTab({currentTarget: document.querySelector(".panel-tab-btn[onclick*='panel-make']")}, 'panel-make');
-        } else {
-            const item = listHair.find(i => i.id === id);
-            document.getElementById('edit-hair-id').value = item.id;
-            document.getElementById('input-title-hair1').value = item.title;
-            document.getElementById('input-desc-hair1').value = item.desc;
-            document.getElementById('input-price-hair1').value = item.price.replace("R$ ", "");
-            const imgs = (item.images && item.images.length) ? item.images : (item.img ? [item.img] : []);
-            for(let i=0;i<4;i++) { let inp = document.getElementById(`hair_img_${i}`); if(inp) inp.value = imgs[i] || ''; }
-            switchPanelTab({currentTarget: document.querySelector(".panel-tab-btn[onclick*='panel-hair']")}, 'panel-hair');
-        }
-    }
-    async function deletePost(type, id) { if(!currentUser){alert('Login necessário');return;} if(confirm("Deletar?")) { if(type === 'make') { await db.collection('makeup').doc(id).delete(); listMakeup = listMakeup.filter(i => i.id !== id); renderMainGrid('makeup-grid', listMakeup); renderManagerList('manager-makeup-list', listMakeup, 'make'); } else { await db.collection('hair').doc(id).delete(); listHair = listHair.filter(i => i.id !== id); renderMainGrid('hair-grid', listHair); renderManagerList('manager-hair-list', listHair, 'hair'); } } }
-    
-    // ========== DEMAIS FUNÇÕES (AGENDAMENTO, FINANCEIRO, AUTH) ==========
-    async function processBooking() { 
-        const name = document.getElementById('booking-name').value.trim();
-        const date = document.getElementById('booking-date').value;
-        const time = document.getElementById('booking-time').value;
-        const phone = document.getElementById('booking-phone').value.trim();
-        const type = document.getElementById('booking-type').value;
-        const address = document.getElementById('booking-address').value.trim();
-        const neighborhood = document.getElementById('booking-neighborhood').value.trim();
-        const desc = document.getElementById('booking-desc').value.trim();
-        if(!name || !date || !time || !phone) { alert("Preencha os obrigatórios"); return; }
-        if(type === 'home' && (!address || !neighborhood)) { alert("Endereço completo"); return; }
-        const newBooking = { name, date, time, phone, type, address, neighborhood, desc, valor: null, status: 'active', createdAt: new Date() };
-        const docRef = await db.collection('appointments').add(newBooking);
-        if(currentUser) { listAppointments.push({ id: docRef.id, ...newBooking }); renderAppointmentsList(); }
-        document.getElementById('booking-name').value = ''; document.getElementById('booking-date').value = ''; document.getElementById('booking-time').value = '';
-        document.getElementById('booking-phone').value = ''; document.getElementById('booking-type').value = 'studio'; document.getElementById('booking-address').value = ''; document.getElementById('booking-neighborhood').value = ''; document.getElementById('booking-desc').value = ''; document.getElementById('delivery-fields').style.display = 'none';
-        alert("Agendamento solicitado!");
-        if(currentUser) document.getElementById('notification-bubble').classList.remove('hidden-fixed');
-        document.getElementById('booking-screen').classList.remove('active');
-        document.getElementById('main-screen').classList.add('active');
-        toggleFixedButtonsVisibility(true);
-        window.open(`https://wa.me/558599415246?text=${encodeURIComponent("Olá Lanny, acabei de fazer um Agendamento no App!!")}`, '_blank');
-    }
-    function renderAppointmentsList() { 
-        const container = document.getElementById('appointments-list'); if(!container) return; if(!currentUser) { container.innerHTML = '<div>🔒 Faça login para visualizar os agendamentos.</div>'; return; }
-        if(listAppointments.length === 0) { container.innerHTML = '<div>Nenhum agendamento ativo.</div>'; return; }
-        listAppointments.sort((a,b) => new Date(a.date+'T'+a.time) - new Date(b.date+'T'+b.time));
-        container.innerHTML = '';
-        listAppointments.forEach(app => {
-            const formattedDate = app.date.split('-').reverse().join('/');
-            const locationHtml = (app.type === 'home') ? `<p>🏠 ${app.address} - ${app.neighborhood}</p>` : '';
-            const phoneClean = app.phone.replace(/\D/g,'');
-            const waLink = `https://wa.me/55${phoneClean}?text=Olá ${app.name}`;
-            container.innerHTML += `<div class="appointment-card"><div class="appointment-card-header"><h5>${app.name}</h5><span class="appointment-badge ${app.type==='home'?'badge-home':'badge-studio'}">${app.type==='home'?'Domicílio':'Estúdio'}</span></div><div><p>📅 ${formattedDate} às ${app.time}</p><p>📞 +55 ${app.phone}</p>${locationHtml}${app.desc?`<div class="appointment-notes">${app.desc}</div>`:''}</div><div class="appointment-actions"><button class="mini-btn btn-wa" onclick="window.open('${waLink}','_blank')"><i class="fab fa-whatsapp"></i> WhatsApp</button><button class="mini-btn btn-confirm" onclick="confirmarAgendamento('${app.id}')"><i class="fas fa-check-circle"></i> Confirmar</button><button class="mini-btn btn-edit-app" onclick="editarAgendamento('${app.id}')"><i class="fas fa-edit"></i> Editar</button><button class="mini-btn btn-finish" onclick="concluirAgendamento('${app.id}')"><i class="fas fa-dollar-sign"></i> Concluir</button></div></div>`;
-        });
-    }
-    async function confirmarAgendamento(id) { if(!currentUser) return; const app = listAppointments.find(a => a.id === id); if(!app) return; const formatted = app.date.split('-').reverse().join('/'); const msg = `Olá sou a Lanny, seu agendamento foi confirmado para o dia: ${formatted} / ${app.time}`; const phoneClean = app.phone.replace(/\D/g,''); window.open(`https://wa.me/55${phoneClean}?text=${encodeURIComponent(msg)}`, '_blank'); }
-    async function editarAgendamento(id) { if(!currentUser) return; const app = listAppointments.find(a => a.id === id); if(!app) return; const novoValor = prompt("Valor do serviço (R$):", app.valor || ""); if(novoValor !== null) app.valor = novoValor.replace(',','.'); const novoNome = prompt("Nome:", app.name); if(novoNome) app.name = novoNome; const novaData = prompt("Data (AAAA-MM-DD):", app.date); if(novaData) app.date = novaData; const novaHora = prompt("Horário:", app.time); if(novaHora) app.time = novaHora; const novoPhone = prompt("Telefone:", app.phone); if(novoPhone) app.phone = novoPhone; await db.collection('appointments').doc(id).update({ valor: app.valor, name: app.name, date: app.date, time: app.time, phone: app.phone }); renderAppointmentsList(); renderFinanceiro(); }
-    async function concluirAgendamento(id) { if(!currentUser) return; const app = listAppointments.find(a => a.id === id); if(!app) return; let valorFinal = app.valor ? parseFloat(app.valor) : 0; if(!valorFinal && app.valor === undefined) { const valorDigitado = prompt("Valor recebido (R$):", "0"); if(valorDigitado === null) return; valorFinal = parseFloat(valorDigitado.replace(',','.')) || 0; } else if(isNaN(valorFinal)) valorFinal = 0; const completed = { ...app, valor: valorFinal, dataConclusao: new Date().toISOString().slice(0,10), status: 'completed' }; await db.collection('appointments').doc(id).update({ status: 'completed', valor: valorFinal, dataConclusao: completed.dataConclusao }); completedAppointments.push(completed); listAppointments = listAppointments.filter(a => a.id !== id); renderAppointmentsList(); renderFinanceiro(); alert("Serviço concluído!"); }
-    async function registrarSangria() { if(!currentUser) return; const valor = parseFloat(document.getElementById('sangria-valor').value); const desc = document.getElementById('sangria-desc').value; if(isNaN(valor) || valor <= 0) { alert("Valor inválido"); return; } const newSangria = { valor, desc: desc || "Retirada", data: new Date().toISOString().slice(0,10) }; const docRef = await db.collection('sangrias').add(newSangria); sangrias.push({ id: docRef.id, ...newSangria }); document.getElementById('sangria-valor').value = ''; document.getElementById('sangria-desc').value = ''; renderFinanceiro(); }
-    async function deletarSangria(id) { if(!currentUser) return; if(confirm("Excluir?")) { await db.collection('sangrias').doc(id).delete(); sangrias = sangrias.filter(s => s.id !== id); renderFinanceiro(); } }
-    async function deletarConcluido(id) { if(!currentUser) return; if(confirm("Deletar serviço concluído?")) { await db.collection('appointments').doc(id).delete(); completedAppointments = completedAppointments.filter(c => c.id !== id); renderFinanceiro(); } }
-    function enviarComprovante(id) { const item = completedAppointments.find(c => c.id === id); if(!item) return; const dataFormat = item.date.split('-').reverse().join('/'); const msg = `🧾 *COMPROVANTE* 🧾\nCliente: ${item.name}\nData: ${dataFormat} às ${item.time}\nValor: R$ ${(item.valor || 0).toFixed(2)}`; const phoneClean = item.phone.replace(/\D/g,''); window.open(`https://wa.me/55${phoneClean}?text=${encodeURIComponent(msg)}`, '_blank'); }
-    function renderFinanceiro() { if(!currentUser) { const totalEl = document.getElementById('total-receita-mes'); if(totalEl) totalEl.innerHTML = '🔒 Faça login para ver o financeiro.'; return; } const monthFilter = document.getElementById('finance-month-filter')?.value || ''; let filteredCompleted = [...completedAppointments]; if(monthFilter) filteredCompleted = filteredCompleted.filter(c => c.date && c.date.startsWith(monthFilter)); let totalMes = filteredCompleted.reduce((sum,c) => sum + (c.valor || 0), 0); const sangriasFiltradas = sangrias.filter(s => s.data && (!monthFilter || s.data.startsWith(monthFilter))); const totalSangrias = sangriasFiltradas.reduce((s,item) => s + item.valor, 0); const saldoLiquido = totalMes - totalSangrias; const totalEl = document.getElementById('total-receita-mes'); if(totalEl) totalEl.innerHTML = `💰 Total Bruto: R$ ${totalMes.toFixed(2)} | 🧾 Sangrias: R$ ${totalSangrias.toFixed(2)}<br>📌 Saldo Líquido: R$ ${saldoLiquido.toFixed(2)}`; const sangriaDiv = document.getElementById('lista-sangrias'); if(sangriaDiv) { sangriaDiv.innerHTML = `<strong>Histórico Sangrias:</strong>`; sangriasFiltradas.forEach(s => { sangriaDiv.innerHTML += `<div style="background:#fff; margin:5px 0; padding:8px; border-radius:8px;">R$ ${s.valor.toFixed(2)} - ${s.desc || 'Sem desc'} (${s.data}) <button class="mini-btn" style="background:gray;" onclick="deletarSangria('${s.id}')">🗑️</button></div>`; }); } const completedDiv = document.getElementById('completed-list-finance'); if(completedDiv) { completedDiv.innerHTML = `<strong>Serviços finalizados (mês selecionado):</strong>`; filteredCompleted.forEach(c => { const dateBr = c.date.split('-').reverse().join('/'); completedDiv.innerHTML += `<div class="completed-item"><div><b>${c.name}</b> - ${dateBr} ${c.time}</div><div>💰 R$ ${(c.valor || 0).toFixed(2)}</div><div class="appointment-actions" style="margin-top:6px;"><button class="mini-btn btn-wa" onclick="enviarComprovante('${c.id}')"><i class="fas fa-receipt"></i> Comprovante</button><button class="mini-btn" style="background:red;" onclick="deletarConcluido('${c.id}')">Deletar</button></div></div>`; }); } }
-    async function saveCompanyChanges() { if(!currentUser){alert('Login necessário');return;} const img = document.getElementById('input-img-company').value; const bio = document.getElementById('input-desc-company').value; await db.collection('company').doc('profile').set({ img, bio }); companyData = { img, bio }; document.getElementById('company-profile-img').src = img; document.getElementById('company-profile-desc').innerText = bio; alert("Salvo!"); navigateToMain(); }
-    
-    // AUTH e navegação
-    auth.onAuthStateChanged(async (user) => { currentUser = user; updateLoginLogoutMenu(); const panelSpan = document.getElementById('panel-user-email'); if(user) { if(panelSpan) panelSpan.innerText = user.email; await loadPrivateData(); if(document.getElementById('panel-screen').classList.contains('active')) { renderAppointmentsList(); renderFinanceiro(); } } else { if(panelSpan) panelSpan.innerText = ''; listAppointments = []; completedAppointments = []; sangrias = []; if(document.getElementById('appointments-list')) document.getElementById('appointments-list').innerHTML = '<div>Faça login para ver os agendamentos.</div>'; if(document.getElementById('lista-sangrias')) document.getElementById('lista-sangrias').innerHTML = ''; if(document.getElementById('completed-list-finance')) document.getElementById('completed-list-finance').innerHTML = ''; if(document.getElementById('panel-screen').classList.contains('active')) navigateToMain(); } });
-    async function loginFirebase() { const email = document.getElementById('login-email').value.trim(); const password = document.getElementById('login-password').value.trim(); const errorDiv = document.getElementById('login-error-msg'); if(!email || !password) { errorDiv.innerText = 'Preencha e-mail e senha.'; return; } try { await auth.signInWithEmailAndPassword(email, password); document.getElementById('login-modal').style.display = 'none'; document.getElementById('login-email').value = ''; document.getElementById('login-password').value = ''; errorDiv.innerText = ''; toggleSettingsMenu(); navigateToPanel(); } catch(err) { errorDiv.innerText = 'Erro: ' + (err.message || 'Credenciais inválidas.'); } }
-    async function logoutFirebase() { await auth.signOut(); toggleSettingsMenu(); alert('Você saiu do painel.'); if(document.getElementById('panel-screen').classList.contains('active')) navigateToMain(); }
-    function abrirModalLogin() { toggleSettingsMenu(); const modal = document.getElementById('login-modal'); if(modal) modal.style.display = 'flex'; }
-    window.onclick = function(e) { const modal = document.getElementById('login-modal'); if(e.target === modal) modal.style.display = 'none'; }
-    function updateLoginLogoutMenu() { const container = document.getElementById('dynamic-login-logout'); if(!container) return; if(currentUser) { container.innerHTML = `<div class="panel-trigger-btn panel-access-btn" onclick="navigateToPanel()">👑 PAINEL DE CONTROLE</div><div class="panel-trigger-btn" onclick="logoutFirebase()">🚪 SAIR</div>`; } else { container.innerHTML = `<div class="panel-trigger-btn" id="login-trigger-btn" onclick="abrirModalLogin()">🔐 LOGIN</div>`; } }
-    function toggleFixedButtonsVisibility(show) { const b = document.getElementById('fixed-booking-btn'); const r = document.getElementById('fixed-buttons-right'); if(show) { b.classList.remove('hidden-fixed'); r.classList.remove('hidden-fixed'); } else { b.classList.add('hidden-fixed'); r.classList.add('hidden-fixed'); } }
-    function navigateToBooking() { document.getElementById('main-screen').classList.remove('active'); document.getElementById('booking-screen').classList.add('active'); toggleFixedButtonsVisibility(false); }
-    function navigateToMainFromBooking() { document.getElementById('booking-screen').classList.remove('active'); document.getElementById('main-screen').classList.add('active'); toggleFixedButtonsVisibility(true); }
-    function navigateToAboutMe() { toggleSettingsMenu(); document.getElementById('main-screen').classList.remove('active'); document.getElementById('aboutme-screen').classList.add('active'); toggleFixedButtonsVisibility(false); }
-    function navigateToMainFromAbout() { document.getElementById('aboutme-screen').classList.remove('active'); document.getElementById('main-screen').classList.add('active'); toggleFixedButtonsVisibility(true); }
-    function navigateToPanel() { if(!currentUser) { alert('Faça login no menu Ajustes (🔐 LOGIN) para acessar o painel.'); toggleSettingsMenu(); return; } document.getElementById('main-screen').classList.remove('active'); document.getElementById('panel-screen').classList.add('active'); toggleFixedButtonsVisibility(false); renderAppointmentsList(); renderFinanceiro(); }
-    function navigateToMain() { document.getElementById('panel-screen').classList.remove('active'); document.getElementById('main-screen').classList.add('active'); toggleFixedButtonsVisibility(true); }
-    function openTab(evt, tabName) { document.querySelectorAll('.catalog-section').forEach(s => s.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById(tabName).classList.add('active'); evt.currentTarget.classList.add('active'); }
-    function switchPanelTab(evt, sectionId) { document.querySelectorAll('.panel-section').forEach(s => s.classList.remove('active')); document.querySelectorAll('.panel-tab-btn').forEach(b => b.classList.remove('active')); document.getElementById(sectionId).classList.add('active'); evt.currentTarget.classList.add('active'); if(sectionId === 'panel-finance') renderFinanceiro(); if(sectionId === 'panel-make') renderImageInputs('make-images-container', [], 'make'); if(sectionId === 'panel-hair') renderImageInputs('hair-images-container', [], 'hair'); }
-    function toggleSettingsMenu() { document.getElementById('settings-drawer').classList.toggle('open'); const ov = document.getElementById('drawer-overlay'); ov.style.display = document.getElementById('settings-drawer').classList.contains('open') ? 'block' : 'none'; }
-    function closeMenuFromOverlay(e) { if(e.target === document.getElementById('drawer-overlay')) toggleSettingsMenu(); }
-    function maskPhone(input) { let v = input.value.replace(/\D/g,""); if(v.length > 11) v = v.substring(0,11); if(v.length > 6) input.value = `(${v.substring(0,2)}) ${v.substring(2,7)}-${v.substring(7,11)}`; else if(v.length > 2) input.value = `(${v.substring(0,2)}) ${v.substring(2)}`; else input.value = v; }
-    function toggleDeliveryFields() { document.getElementById('delivery-fields').style.display = document.getElementById('booking-type').value === 'home' ? 'block' : 'none'; }
-    function dismissNotification(e) { e.stopPropagation(); document.getElementById('notification-bubble').classList.add('hidden-fixed'); }
-    function openFullscreen(src) { const modal = document.getElementById('lightbox-modal'); document.getElementById('lightbox-img').src = src; modal.style.display = 'flex'; }
-    function closeFullscreen() { document.getElementById('lightbox-modal').style.display = 'none'; }
-    
-    window.onload = function() {
-        document.getElementById('drawer-overlay').addEventListener('click', closeMenuFromOverlay);
-        toggleFixedButtonsVisibility(true);
-        if(document.getElementById('finance-month-filter')) document.getElementById('finance-month-filter').value = new Date().toISOString().slice(0,7);
-        loadPublicData();
-        updateLoginLogoutMenu();
-        renderImageInputs('make-images-container', [], 'make');
-        renderImageInputs('hair-images-container', [], 'hair');
-    };
+
+    const type = src.startsWith('data:image/png')  ? 'image/png'
+               : src.startsWith('data:image/jpeg') ? 'image/jpeg'
+               : src.startsWith('data:image/svg')  ? 'image/svg+xml'
+               : src.endsWith('.ico')               ? 'image/x-icon'
+               : 'image/png';
+
+    const code = `<link rel="icon" type="\({type}" href="\){src}">`;
+    document.getElementById('codeOutput').value = code;
+    document.getElementById('codeOutput').rows = src.startsWith('data:') ? 5 : 3;
+    document.getElementById('outputBox').classList.add('visible');
+    document.getElementById('successMsg').classList.remove('visible');
+  }
+
+  function copyCode() {
+    const ta = document.getElementById('codeOutput');
+    ta.select();
+    navigator.clipboard.writeText(ta.value).then(() => {
+      document.getElementById('successMsg').classList.add('visible');
+      setTimeout(() => document.getElementById('successMsg').classList.remove('visible'), 2500);
+    }).catch(() => document.execCommand('copy'));
+  }
 </script>
+
 </body>
 </html>
