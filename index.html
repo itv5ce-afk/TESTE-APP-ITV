@@ -14,7 +14,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     
     <style>
-        /* ========== ESTILOS (MANTIDOS) ========== */
+        /* ========== ESTILOS (MANTIDOS E ADAPTADOS PARA CARROSSEL) ========== */
         :root {
             --primary: #2c2c2c; 
             --accent: #d4af37;  
@@ -47,23 +47,20 @@
         .catalog-content { padding: 20px; flex: 1; }
         .catalog-section { display: none; }
         .catalog-section.active { display: block; }
-        .section-title { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; text-align: center; margin-bottom: 25px; }        .grid { display: grid; grid-template-columns: 1fr; gap: 25px; }
+        .section-title { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; text-align: center; margin-bottom: 25px; }
+        .grid { display: grid; grid-template-columns: 1fr; gap: 25px; }
         .card { background: var(--card-bg); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.02); }
-        
-        /* ========== CARROSSEL DE IMAGENS ========== */
-        .card-carousel { position: relative; width: 100%; height: 260px; overflow: hidden; }
-        .carousel-track { display: flex; height: 100%; transition: transform 0.3s ease; }
-        .carousel-slide { min-width: 100%; height: 100%; position: relative; }
+        /* Carrossel */
+        .carousel-container { position: relative; width: 100%; height: 260px; background: #f5f5f5; overflow: hidden; }
+        .carousel-slides { display: flex; width: 100%; height: 100%; transition: transform 0.3s ease; }
+        .carousel-slide { min-width: 100%; height: 100%; }
         .carousel-slide img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
-        .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 0.9rem; z-index: 2; transition: all 0.2s; }
-        .carousel-btn:hover { background: rgba(0,0,0,0.7); }
-        .carousel-btn.prev { left: 10px; }
-        .carousel-btn.next { right: 10px; }
-        .carousel-dots { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 2; }
-        .carousel-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.5); cursor: pointer; transition: all 0.2s; }
-        .carousel-dot.active { background: var(--accent); width: 20px; border-radius: 4px; }
-        .carousel-counter { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; z-index: 2; }
-        
+        .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2; font-size: 1rem; }
+        .carousel-btn.prev { left: 8px; }
+        .carousel-btn.next { right: 8px; }
+        .carousel-dots { position: absolute; bottom: 8px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; z-index: 2; }
+        .carousel-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.6); cursor: pointer; }
+        .carousel-dot.active { background: white; width: 8px; height: 8px; }
         .card-info { padding: 15px; text-align: center; }
         .card-title { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 600; }
         .card-price { font-size: 0.95rem; color: var(--accent); font-weight: 500; }
@@ -96,9 +93,13 @@
         .completed-item { background: #f8f9fa; border-left: 3px solid var(--success-color); padding: 12px; border-radius: 8px; margin-bottom: 10px; }
         .edit-modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:200; display:flex; justify-content:center; align-items:center; }
         .edit-modal-box { background: white; width: 90%; max-width: 340px; border-radius: 20px; padding: 20px; }
-        .edit-card, .edit-modal-box { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #eee; }        .form-group { margin-bottom: 12px; }
+        .edit-card, .edit-modal-box { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #eee; }
+        .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 5px; }
         .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.85rem; }
+        .multi-img-group { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; align-items: center; }
+        .img-url-input { flex: 2; min-width: 120px; }
+        .upload-mini-btn { background: #6c757d; color: white; border: none; border-radius: 6px; padding: 6px 12px; font-size: 0.7rem; cursor: pointer; }
         .save-btn { background: var(--primary); color: white; border: none; width: 100%; padding: 14px; border-radius: 6px; cursor: pointer; text-transform: uppercase; font-weight: 500; }
         .footer-text { text-align: center; font-size: 0.7rem; color: var(--text-muted); margin: 20px 0 15px; }
         .fullscreen-modal { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); z-index:100; display: none; justify-content: center; align-items: center; }
@@ -120,15 +121,6 @@
         .login-error { color: var(--danger-color); font-size: 0.75rem; margin-top: 10px; }
         .user-status { font-size: 0.7rem; color: var(--success-color); margin-top: 8px; padding: 4px; background: #e9f5e9; border-radius: 20px; display: inline-block; }
         .panel-access-btn { background: var(--primary); color: white; border: none; }
-        
-        /* ========== ESTILOS PARA MÚLTIPLAS FOTOS NO PAINEL ========== */
-        .multi-image-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-        .image-input-wrapper { position: relative; }
-        .image-input-wrapper label { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 4px; display: block; }
-        .image-preview { width: 100%; height: 80px; border-radius: 6px; border: 1px solid #ddd; object-fit: cover; margin-bottom: 4px; background: #f5f5f5; display: flex; align-items: center; justify-content: center; color: #999; font-size: 0.7rem; }
-        .image-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
-        .image-input-wrapper input[type="text"] { font-size: 0.75rem; padding: 6px; }
-        .btn-add-photo-small { background: #6c757d; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; cursor: pointer; margin-top: 4px; width: 100%; }
     </style>
 </head>
 <body>
@@ -144,8 +136,9 @@
         <p class="footer-text">© 2026 Lanny Stilit</p>
     </div>
 
-    <!-- TELA AGENDAMENTO -->
-    <div id="booking-screen" class="screen"><div class="panel-header"><button class="back-btn" onclick="navigateToMainFromBooking()"><i class="fas fa-arrow-left"></i></button><h3 style="font-family: 'Cormorant Garamond'; font-size:1.5rem;">Solicitar Agendamento</h3></div>        <div class="panel-body"><div class="edit-card"><h4>Seus Dados</h4><div class="form-group"><label>Nome Completo *</label><input type="text" id="booking-name"></div><div class="form-group"><label>Data *</label><input type="date" id="booking-date"></div><div class="form-group"><label>Horário *</label><input type="time" id="booking-time"></div><div class="form-group"><label>WhatsApp *</label><div class="phone-input-container" style="display:flex; border:1px solid #ddd; border-radius:6px;"><span style="padding:10px;">+55</span><input type="tel" id="booking-phone" style="flex:1; border:none;" oninput="maskPhone(this)"></div></div>
+    <!-- TELA AGENDAMENTO (mantida original) -->
+    <div id="booking-screen" class="screen"><div class="panel-header"><button class="back-btn" onclick="navigateToMainFromBooking()"><i class="fas fa-arrow-left"></i></button><h3 style="font-family: 'Cormorant Garamond'; font-size:1.5rem;">Solicitar Agendamento</h3></div>
+        <div class="panel-body"><div class="edit-card"><h4>Seus Dados</h4><div class="form-group"><label>Nome Completo *</label><input type="text" id="booking-name"></div><div class="form-group"><label>Data *</label><input type="date" id="booking-date"></div><div class="form-group"><label>Horário *</label><input type="time" id="booking-time"></div><div class="form-group"><label>WhatsApp *</label><div class="phone-input-container" style="display:flex; border:1px solid #ddd; border-radius:6px;"><span style="padding:10px;">+55</span><input type="tel" id="booking-phone" style="flex:1; border:none;" oninput="maskPhone(this)"></div></div>
         <div class="form-group"><label>Tipo</label><select id="booking-type" onchange="toggleDeliveryFields()"><option value="studio">No Estúdio</option><option value="home">A Domicílio</option></select></div>
         <div id="delivery-fields" style="display:none;"><div class="form-group"><label>Endereço</label><input type="text" id="booking-address"></div><div class="form-group"><label>Bairro</label><input type="text" id="booking-neighborhood"></div></div>
         <div class="form-group"><label>Descrição</label><textarea id="booking-desc" rows="3"></textarea></div>
@@ -157,7 +150,7 @@
         <div class="panel-body"><div class="profile-container"><div class="profile-img-wrapper"><img id="company-profile-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80" class="profile-img" onclick="openFullscreen(this.src)" style="width:100%; border-radius:20px;"></div><h2 class="profile-name">Lanny Stilit</h2><p class="profile-subtitle">Estética & Visagismo</p><div class="profile-bio-box"><p id="company-profile-desc">Seja bem-vinda ao meu catálogo! Sou especialista em realçar sua beleza natural...</p></div></div></div>
     </div>
 
-    <!-- TELA PAINEL -->
+    <!-- TELA PAINEL (modificada para múltiplas imagens) -->
     <div id="panel-screen" class="screen"><div class="panel-header"><button class="back-btn" onclick="navigateToMain()"><i class="fas fa-arrow-left"></i></button><h3>Painel de Controle</h3><div style="margin-left:auto;"><span id="panel-user-email" class="user-status" style="background:#2c2c2c; color:white; padding:4px 8px;"></span></div></div>
         <div class="panel-body">
             <div class="horizontal-tabs">
@@ -169,39 +162,12 @@
             </div>
             <div id="panel-appointments" class="panel-section active"><div id="appointments-list"></div></div>
             
-            <!-- PAINEL MAKE -->
+            <!-- PAINEL MAKE - com 4 imagens -->
             <div id="panel-make" class="panel-section">
                 <div class="edit-card">
-                    <h4 id="form-make-title">Nova Postagem Maquiagem</h4>
+                    <h4 id="form-make-title">Nova Postagem Maquiagem (até 4 fotos)</h4>
                     <input type="hidden" id="edit-make-id">
-                    
-                    <label style="font-size:0.85rem; font-weight:600; margin-bottom:10px; display:block;">Imagens (até 4 fotos)</label>
-                    <div class="multi-image-group">
-                        <div class="image-input-wrapper">
-                            <label>Foto 1 *</label>
-                            <div class="image-preview" id="preview-make-1"><span>Sem imagem</span></div>
-                            <input type="text" id="input-img-make-1" placeholder="URL da imagem 1" oninput="updateImagePreview('make', 1)">
-                            <button class="btn-add-photo-small" onclick="abrirGaleria('make', 1)"><i class="fas fa-camera"></i> Galeria</button>
-                        </div>
-                        <div class="image-input-wrapper">
-                            <label>Foto 2</label>
-                            <div class="image-preview" id="preview-make-2"><span>Sem imagem</span></div>
-                            <input type="text" id="input-img-make-2" placeholder="URL da imagem 2" oninput="updateImagePreview('make', 2)">
-                            <button class="btn-add-photo-small" onclick="abrirGaleria('make', 2)"><i class="fas fa-camera"></i> Galeria</button>
-                        </div>
-                        <div class="image-input-wrapper">
-                            <label>Foto 3</label>
-                            <div class="image-preview" id="preview-make-3"><span>Sem imagem</span></div>
-                            <input type="text" id="input-img-make-3" placeholder="URL da imagem 3" oninput="updateImagePreview('make', 3)">
-                            <button class="btn-add-photo-small" onclick="abrirGaleria('make', 3)"><i class="fas fa-camera"></i> Galeria</button>
-                        </div>                        <div class="image-input-wrapper">
-                            <label>Foto 4</label>
-                            <div class="image-preview" id="preview-make-4"><span>Sem imagem</span></div>
-                            <input type="text" id="input-img-make-4" placeholder="URL da imagem 4" oninput="updateImagePreview('make', 4)">
-                            <button class="btn-add-photo-small" onclick="abrirGaleria('make', 4)"><i class="fas fa-camera"></i> Galeria</button>
-                        </div>
-                    </div>
-                    
+                    <div id="make-images-container"></div>
                     <div class="form-group"><label>Título</label><input type="text" id="input-title-make1"></div>
                     <div class="form-group"><label>Descrição</label><textarea id="input-desc-make1"></textarea></div>
                     <div class="form-group"><label>Preço</label><input type="text" id="input-price-make1"></div>
@@ -211,39 +177,12 @@
                 <div id="manager-makeup-list"></div>
             </div>
             
-            <!-- PAINEL CABELO -->
+            <!-- PAINEL CABELO - com 4 imagens -->
             <div id="panel-hair" class="panel-section">
                 <div class="edit-card">
-                    <h4>Nova Postagem Cabelo</h4>
+                    <h4>Nova Postagem Cabelo (até 4 fotos)</h4>
                     <input type="hidden" id="edit-hair-id">
-                    
-                    <label style="font-size:0.85rem; font-weight:600; margin-bottom:10px; display:block;">Imagens (até 4 fotos)</label>
-                    <div class="multi-image-group">
-                        <div class="image-input-wrapper">
-                            <label>Foto 1 *</label>
-                            <div class="image-preview" id="preview-hair-1"><span>Sem imagem</span></div>
-                            <input type="text" id="input-img-hair-1" placeholder="URL da imagem 1" oninput="updateImagePreview('hair', 1)">
-                            <button class="btn-add-photo-small" onclick="abrirGaleria('hair', 1)"><i class="fas fa-camera"></i> Galeria</button>
-                        </div>
-                        <div class="image-input-wrapper">
-                            <label>Foto 2</label>
-                            <div class="image-preview" id="preview-hair-2"><span>Sem imagem</span></div>
-                            <input type="text" id="input-img-hair-2" placeholder="URL da imagem 2" oninput="updateImagePreview('hair', 2)">
-                            <button class="btn-add-photo-small" onclick="abrirGaleria('hair', 2)"><i class="fas fa-camera"></i> Galeria</button>
-                        </div>
-                        <div class="image-input-wrapper">
-                            <label>Foto 3</label>
-                            <div class="image-preview" id="preview-hair-3"><span>Sem imagem</span></div>
-                            <input type="text" id="input-img-hair-3" placeholder="URL da imagem 3" oninput="updateImagePreview('hair', 3)">
-                            <button class="btn-add-photo-small" onclick="abrirGaleria('hair', 3)"><i class="fas fa-camera"></i> Galeria</button>
-                        </div>
-                        <div class="image-input-wrapper">
-                            <label>Foto 4</label>
-                            <div class="image-preview" id="preview-hair-4"><span>Sem imagem</span></div>
-                            <input type="text" id="input-img-hair-4" placeholder="URL da imagem 4" oninput="updateImagePreview('hair', 4)">
-                            <button class="btn-add-photo-small" onclick="abrirGaleria('hair', 4)"><i class="fas fa-camera"></i> Galeria</button>
-                        </div>
-                    </div>                    
+                    <div id="hair-images-container"></div>
                     <div class="form-group"><label>Título</label><input type="text" id="input-title-hair1"></div>
                     <div class="form-group"><label>Descrição</label><textarea id="input-desc-hair1"></textarea></div>
                     <div class="form-group"><label>Preço</label><input type="text" id="input-price-hair1"></div>
@@ -254,16 +193,15 @@
             
             <!-- PAINEL EMPRESA -->
             <div id="panel-company" class="panel-section">
-                <div class="edit-card">
-                    <h4>Editar Empresa</h4>
+                <div class="edit-card"><h4>Editar Empresa</h4>
                     <div class="form-group"><label>Foto URL</label><input type="text" id="input-img-company" value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80"></div>
-                    <button class="mini-btn btn-add-photo" onclick="abrirGaleria('company')" style="background:#6c757d; width:100%; margin-bottom:15px;"><i class="fas fa-images"></i> 📸 ADD FOTOS (Galeria)</button>
+                    <button class="mini-btn btn-add-photo" onclick="uploadSingleCompanyImage()" style="background:#6c757d; width:100%; margin-bottom:15px;"><i class="fas fa-images"></i> 📸 Enviar Foto</button>
                     <div class="form-group"><label>Biografia</label><textarea id="input-desc-company">Seja bem-vinda ao meu catálogo! Sou especialista em realçar sua beleza natural...</textarea></div>
                     <button class="save-btn" onclick="saveCompanyChanges()">Salvar Empresa</button>
                 </div>
             </div>
             
-            <!-- PAINEL FINANCEIRO -->
+            <!-- PAINEL FINANCEIRO (original) -->
             <div id="panel-finance" class="panel-section">
                 <div class="finance-card"><div class="finance-title">📊 Resumo Financeiro</div>
                 <div class="filter-box"><label>Filtrar Mês:</label><input type="month" id="finance-month-filter"><button class="mini-btn" style="background:var(--accent); color:#000;" onclick="renderFinanceiro()">Filtrar</button></div>
@@ -292,14 +230,14 @@
         <div class="login-modal-card">
             <h3>🔐 Acesso Restrito</h3>
             <input type="email" id="login-email" class="login-input" placeholder="E-mail" autocomplete="email">
-            <input type="password" id="login-password" class="login-input" placeholder="Senha" autocomplete="current-password">            <button class="login-btn" onclick="loginFirebase()">Entrar no Painel</button>
+            <input type="password" id="login-password" class="login-input" placeholder="Senha" autocomplete="current-password">
+            <button class="login-btn" onclick="loginFirebase()">Entrar no Painel</button>
             <div id="login-error-msg" class="login-error"></div>
         </div>
     </div>
 </div>
 
 <script>
-    // ==================== CONFIGURAÇÃO FIREBASE ====================
     const firebaseConfig = {
         apiKey: "AIzaSyCWJPvkRuSQMuuVDhdfH6oyLrPPKeAm3n0",
         authDomain: "catalog-lanny-stilit.firebaseapp.com",
@@ -308,297 +246,114 @@
         messagingSenderId: "53044575318",
         appId: "1:53044575318:web:0e1f91217379c378a30ff7"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const auth = firebase.auth();
     
-    // ==================== REGRAS DE SEGURANÇA (FIREBASE FIRESTORE) ====================
-    /*
-    Cole este bloco de regras no Firebase Console > Firestore > Regras:
-
-    rules_version = '2';
-    service cloud.firestore {
-      match /databases/{database}/documents {
-        // Função para verificar se o usuário está autenticado (admin)
-        function isAdmin() {
-          return request.auth != null;
-        }
-        
-        // Coleções públicas (leitura livre, escrita só admin)
-        match /makeup/{document} {
-          allow read: if true;
-          allow write: if isAdmin();
-        }
-        match /hair/{document} {
-          allow read: if true;
-          allow write: if isAdmin();
-        }
-        match /company/{document} {
-          allow read: if true;
-          allow write: if isAdmin();
-        }
-        
-        // Agendamentos: criação pública, mas leitura/edição/delete só admin
-        match /appointments/{document} {
-          allow create: if true;   // qualquer pessoa pode agendar          allow read, update, delete: if isAdmin();
-        }
-        
-        // Sangrias e outros dados sensíveis: só admin
-        match /sangrias/{document} {
-          allow read, write: if isAdmin();
-        }
-        
-        // (Opcional) Bloquear qualquer outra coleção não definida
-        match /{document=**} {
-          allow read, write: if false;
-        }
-      }
-    }
-    */
-    
-    // Variáveis globais
-    let listMakeup = [];
-    let listHair = [];
-    let listAppointments = [];
-    let completedAppointments = [];
-    let sangrias = [];
-    let companyData = { img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80", bio: "Seja bem-vinda ao meu catálogo! Sou especialista em realçar sua beleza natural..." };
+    let listMakeup = [], listHair = [], listAppointments = [], completedAppointments = [], sangrias = [], companyData = { img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80", bio: "Seja bem-vinda ao meu catálogo! Sou especialista em realçar sua beleza natural..." };
     let currentUser = null;
 
-    // Atualiza menu lateral dinamicamente baseado no login
-    function updateLoginLogoutMenu() {
-        const container = document.getElementById('dynamic-login-logout');
+    // ========== FUNÇÕES DE UI PARA MÚLTIPLAS IMAGENS ==========
+    function renderImageInputs(containerId, imagesArray, type) {
+        const container = document.getElementById(containerId);
         if(!container) return;
-        if(currentUser) {
-            container.innerHTML = `<div class="panel-trigger-btn panel-access-btn" onclick="navigateToPanel()">👑 PAINEL DE CONTROLE</div>
-                                   <div class="panel-trigger-btn" onclick="logoutFirebase()">🚪 SAIR</div>`;
-        } else {
-            container.innerHTML = `<div class="panel-trigger-btn" id="login-trigger-btn" onclick="abrirModalLogin()">🔐 LOGIN</div>`;
+        container.innerHTML = '';
+        for(let i = 0; i < 4; i++) {
+            const value = imagesArray[i] || '';
+            container.innerHTML += `
+                <div class="multi-img-group">
+                    <input type="text" id="${type}_img_${i}" class="img-url-input" placeholder="URL da imagem ${i+1}" value="${escapeHtml(value)}">
+                    <button type="button" class="upload-mini-btn" onclick="uploadImageToInput('${type}', ${i})"><i class="fas fa-upload"></i></button>
+                </div>
+            `;
         }
     }
-
-    // ---------- AUTH ----------
-    auth.onAuthStateChanged(async (user) => {
-        currentUser = user;
-        updateLoginLogoutMenu();
-        const panelUserSpan = document.getElementById('panel-user-email');
-        if(user) {
-            if(panelUserSpan) panelUserSpan.innerText = user.email || 'Logado';
-            // Carrega dados sensíveis (agendamentos, sangrias) apenas se logado
-            await loadPrivateData();
-            // Se o painel estiver ativo, renderiza
-            if(document.getElementById('panel-screen').classList.contains('active')) {
-                renderAppointmentsList();
-                renderFinanceiro();            }
-        } else {
-            if(panelUserSpan) panelUserSpan.innerText = '';
-            // Limpa dados sensíveis quando desloga
-            listAppointments = [];
-            completedAppointments = [];
-            sangrias = [];
-            if(document.getElementById('appointments-list')) document.getElementById('appointments-list').innerHTML = '<div>Faça login para ver os agendamentos.</div>';
-            if(document.getElementById('lista-sangrias')) document.getElementById('lista-sangrias').innerHTML = '';
-            if(document.getElementById('completed-list-finance')) document.getElementById('completed-list-finance').innerHTML = '';
-            // Se o painel estiver aberto, redireciona para main
-            if(document.getElementById('panel-screen').classList.contains('active')) {
-                navigateToMain();
-            }
+    function getImagesFromInputs(prefix, count=4) {
+        let imgs = [];
+        for(let i=0;i<count;i++) {
+            let val = document.getElementById(`${prefix}_img_${i}`)?.value.trim();
+            if(val) imgs.push(val);
         }
-    });
-
-    async function loginFirebase() {
-        const email = document.getElementById('login-email').value.trim();
-        const password = document.getElementById('login-password').value.trim();
-        const errorDiv = document.getElementById('login-error-msg');
-        if(!email || !password) {
-            errorDiv.innerText = 'Preencha e-mail e senha.';
-            return;
-        }
-        try {
-            await auth.signInWithEmailAndPassword(email, password);
-            document.getElementById('login-modal').style.display = 'none';
-            document.getElementById('login-email').value = '';
-            document.getElementById('login-password').value = '';
-            errorDiv.innerText = '';
-            toggleSettingsMenu();
-            navigateToPanel();
-        } catch(err) {
-            errorDiv.innerText = 'Erro: ' + (err.message || 'Credenciais inválidas.');
-        }
+        return imgs;
     }
-
-    async function logoutFirebase() {
-        await auth.signOut();
-        toggleSettingsMenu();
-        alert('Você saiu do painel.');
-        if(document.getElementById('panel-screen').classList.contains('active')) navigateToMain();
-    }
-
-    function abrirModalLogin() {
-        toggleSettingsMenu();
-        const modal = document.getElementById('login-modal');
-        if(modal) modal.style.display = 'flex';
-    }    window.onclick = function(e) {
-        const modal = document.getElementById('login-modal');
-        if(e.target === modal) modal.style.display = 'none';
-    }
-
-    // Carregar dados públicos (make, hair, company)
-    async function loadPublicData() {
-        try {
-            const makeupSnapshot = await db.collection('makeup').orderBy('createdAt', 'desc').get();
-            listMakeup = [];
-            makeupSnapshot.forEach(doc => { 
-                const data = doc.data();
-                // Migração: se tiver campo 'img' antigo, converte para array 'images'
-                if(data.img && !data.images) {
-                    data.images = [data.img];
-                } else if(!data.images) {
-                    data.images = [];
-                }
-                listMakeup.push({ id: doc.id, ...data }); 
-            });
-            if(listMakeup.length === 0) {
-                const defaultMake = { 
-                    images: ["https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=500&q=80"], 
-                    title: "Make Social Premium", 
-                    desc: "Ideal para festas, formaturas e eventos noturnos. Inclui cílios postiços.", 
-                    price: "Sob Consulta", 
-                    createdAt: new Date() 
+    function uploadImageToInput(prefix, index) {
+        const inputFile = document.createElement('input');
+        inputFile.type = 'file';
+        inputFile.accept = 'image/*';
+        inputFile.onchange = (e) => {
+            const file = e.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    const targetInput = document.getElementById(`${prefix}_img_${index}`);
+                    if(targetInput) targetInput.value = ev.target.result;
                 };
-                const docRef = await db.collection('makeup').add(defaultMake);
-                listMakeup.push({ id: docRef.id, ...defaultMake });
+                reader.readAsDataURL(file);
             }
-            const hairSnapshot = await db.collection('hair').orderBy('createdAt', 'desc').get();
-            listHair = [];
-            hairSnapshot.forEach(doc => { 
-                const data = doc.data();
-                // Migração: se tiver campo 'img' antigo, converte para array 'images'
-                if(data.img && !data.images) {
-                    data.images = [data.img];
-                } else if(!data.images) {
-                    data.images = [];
-                }
-                listHair.push({ id: doc.id, ...data }); 
-            });
-            if(listHair.length === 0) {
-                const defaultHair = { 
-                    images: ["https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=500&q=80"], 
-                    title: "Coque Despojado", 
-                    desc: "Do clássico atemporal ao moderno desconstruído.", 
-                    price: "Sob Consulta", 
-                    createdAt: new Date()                 };
-                const docRef = await db.collection('hair').add(defaultHair);
-                listHair.push({ id: docRef.id, ...defaultHair });
-            }
-            const companySnapshot = await db.collection('company').doc('profile').get();
-            if(companySnapshot.exists) {
-                companyData = companySnapshot.data();
-                document.getElementById('company-profile-img').src = companyData.img;
-                document.getElementById('company-profile-desc').innerText = companyData.bio;
-                if(document.getElementById('input-img-company')) document.getElementById('input-img-company').value = companyData.img;
-                if(document.getElementById('input-desc-company')) document.getElementById('input-desc-company').value = companyData.bio;
-            }
-            renderMainGrid('makeup-grid', listMakeup);
-            renderMainGrid('hair-grid', listHair);
-        } catch(error) { console.error("Erro ao carregar dados públicos:", error); }
+        };
+        inputFile.click();
     }
+    function uploadSingleCompanyImage() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    document.getElementById('input-img-company').value = ev.target.result;
+                    document.getElementById('company-profile-img').src = ev.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+        input.click();
+    }
+    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
     
-    // Carregar dados privados (agendamentos, sangrias) – apenas se logado
-    async function loadPrivateData() {
-        if (!currentUser) return;
-        try {
-            const appointmentsSnapshot = await db.collection('appointments').where('status', '==', 'active').get();
-            listAppointments = [];
-            appointmentsSnapshot.forEach(doc => { listAppointments.push({ id: doc.id, ...doc.data() }); });
-            const completedSnapshot = await db.collection('appointments').where('status', '==', 'completed').get();
-            completedAppointments = [];
-            completedSnapshot.forEach(doc => { completedAppointments.push({ id: doc.id, ...doc.data() }); });
-            const sangriaSnapshot = await db.collection('sangrias').orderBy('data', 'desc').get();
-            sangrias = [];
-            sangriaSnapshot.forEach(doc => { sangrias.push({ id: doc.id, ...doc.data() }); });
-            if(document.getElementById('manager-makeup-list')) renderManagerList('manager-makeup-list', listMakeup, 'make');
-            if(document.getElementById('manager-hair-list')) renderManagerList('manager-hair-list', listHair, 'hair');
-        } catch(error) { console.error("Erro ao carregar dados privados:", error); }
+    // ========== RENDER CARROSSEL NO CATÁLOGO ==========
+    function renderCarousel(images, onClickFullscreen) {
+        if(!images || images.length === 0) return `<div class="carousel-container"><img src="https://via.placeholder.com/400x260?text=Sem+Imagem" style="width:100%;height:100%;object-fit:cover;"></div>`;
+        let slidesHtml = '', dotsHtml = '';
+        images.forEach((img, idx) => {
+            slidesHtml += `<div class="carousel-slide"><img src="${img}" onclick="openFullscreen('${img}')"></div>`;
+            dotsHtml += `<span class="carousel-dot ${idx===0?'active':''}" data-index="${idx}"></span>`;
+        });
+        return `<div class="carousel-container" data-images-count="${images.length}">
+                    <div class="carousel-slides" style="transform: translateX(0%);">${slidesHtml}</div>
+                    <button class="carousel-btn prev" onclick="event.stopPropagation(); navigateCarousel(this.parentElement, -1)">‹</button>
+                    <button class="carousel-btn next" onclick="event.stopPropagation(); navigateCarousel(this.parentElement, 1)">›</button>
+                    <div class="carousel-dots">${dotsHtml}</div>
+                </div>`;
     }
+    window.navigateCarousel = function(container, step) {
+        const slidesDiv = container.querySelector('.carousel-slides');
+        const slides = slidesDiv.children;
+        const total = slides.length;
+        if(total <= 1) return;
+        let currentIdx = parseInt(container.getAttribute('data-current') || '0');
+        let newIdx = currentIdx + step;
+        if(newIdx < 0) newIdx = total-1;
+        if(newIdx >= total) newIdx = 0;
+        slidesDiv.style.transform = `translateX(-${newIdx * 100}%)`;
+        container.setAttribute('data-current', newIdx);
+        const dots = container.querySelectorAll('.carousel-dot');
+        dots.forEach((dot, i) => { if(i === newIdx) dot.classList.add('active'); else dot.classList.remove('active'); });
+    };
+    function initCarousels() { setTimeout(() => { document.querySelectorAll('.carousel-container').forEach(c => { if(!c.getAttribute('data-current')) { c.setAttribute('data-current', '0'); const slidesDiv = c.querySelector('.carousel-slides'); if(slidesDiv) slidesDiv.style.transform = 'translateX(0%)'; } }); }, 100); }
     
     function renderMainGrid(gridId, items) {
         const grid = document.getElementById(gridId);
         if(!grid) return;
         grid.innerHTML = '';
         if(items.length === 0) { grid.innerHTML = '<div class="loading">Nenhum item encontrado</div>'; return; }
-        items.forEach((item, index) => { 
-            const images = item.images || [];
-            const carouselId = `carousel-${gridId}-${index}`;
-            let slidesHtml = '';
-            let dotsHtml = '';
-            
-            images.forEach((img, imgIndex) => {
-                if(img) {
-                    slidesHtml += `<div class="carousel-slide"><img src="${img}" onclick="openFullscreen('${img}')"></div>`;
-                    dotsHtml += `<div class="carousel-dot ${imgIndex === 0 ? 'active' : ''}" onclick="goToSlide('${carouselId}', ${imgIndex})"></div>`;                }
-            });
-            
-            const hasMultipleImages = images.length > 1;
-            const counterHtml = images.length > 0 ? `<div class="carousel-counter">1/${images.length}</div>` : '';
-            
-            grid.innerHTML += `
-                <div class="card">
-                    <div class="card-carousel" id="${carouselId}" data-current-slide="0">
-                        <div class="carousel-track">${slidesHtml}</div>
-                        ${hasMultipleImages ? `
-                            <button class="carousel-btn prev" onclick="prevSlide('${carouselId}')"><i class="fas fa-chevron-left"></i></button>
-                            <button class="carousel-btn next" onclick="nextSlide('${carouselId}')"><i class="fas fa-chevron-right"></i></button>
-                            <div class="carousel-dots">${dotsHtml}</div>
-                            ${counterHtml}
-                        ` : ''}
-                    </div>
-                    <div class="card-info">
-                        <h3>${item.title}</h3>
-                        <p>${item.desc}</p>
-                        <p class="card-price">${item.price}</p>
-                    </div>
-                </div>
-            `;
+        items.forEach(item => {
+            const imagesArray = item.images && item.images.length ? item.images : (item.img ? [item.img] : ['https://via.placeholder.com/400x260?text=Sem+Imagem']);
+            const carouselHtml = renderCarousel(imagesArray, true);
+            grid.innerHTML += `<div class="card">${carouselHtml}<div class="card-info"><h3>${item.title}</h3><p>${item.desc}</p><p class="card-price">${item.price}</p></div></div>`;
         });
-    }
-    
-    // Funções do Carrossel
-    function goToSlide(carouselId, slideIndex) {
-        const carousel = document.getElementById(carouselId);
-        if(!carousel) return;
-        const track = carousel.querySelector('.carousel-track');
-        const slides = carousel.querySelectorAll('.carousel-slide');
-        const dots = carousel.querySelectorAll('.carousel-dot');
-        const counter = carousel.querySelector('.carousel-counter');
-        
-        if(slideIndex < 0) slideIndex = slides.length - 1;
-        if(slideIndex >= slides.length) slideIndex = 0;
-        
-        track.style.transform = `translateX(-${slideIndex * 100}%)`;
-        carousel.dataset.currentSlide = slideIndex;
-        
-        dots.forEach((dot, i) => {
-            dot.classList.toggle('active', i === slideIndex);
-        });
-        
-        if(counter) {
-            counter.textContent = `${slideIndex + 1}/${slides.length}`;
-        }
-    }    
-    function nextSlide(carouselId) {
-        const carousel = document.getElementById(carouselId);
-        if(!carousel) return;
-        const currentSlide = parseInt(carousel.dataset.currentSlide || 0);
-        goToSlide(carouselId, currentSlide + 1);
-    }
-    
-    function prevSlide(carouselId) {
-        const carousel = document.getElementById(carouselId);
-        if(!carousel) return;
-        const currentSlide = parseInt(carousel.dataset.currentSlide || 0);
-        goToSlide(carouselId, currentSlide - 1);
+        initCarousels();
     }
     
     function renderManagerList(managerId, items, type) {
@@ -606,92 +361,92 @@
         if(!list) return;
         list.innerHTML = '';
         items.forEach(item => {
-            const firstImage = (item.images && item.images[0]) || item.img || '';
-            const imageCount = item.images ? item.images.filter(img => img).length : 0;
-            list.innerHTML += `
-                <div class="manager-item">
-                    <div style="display:flex; gap:8px; align-items:center;">
-                        <img src="${firstImage}" width="50" height="50" style="object-fit:cover; border-radius:8px;">
-                        <div>
-                            <h5>${item.title}</h5>
-                            <p>${item.price}</p>
-                            <p style="font-size:10px; color:var(--accent);">${imageCount} foto(s)</p>
-                        </div>
-                    </div>
-                    <div>
-                        <button class="action-btn edit" style="background:var(--edit-color); border:none; color:white; padding:5px 10px; border-radius:20px; margin-right:5px;" onclick="startEdit('${type}','${item.id}')">Editar</button>
-                        <button class="action-btn delete" style="background:var(--danger-color); border:none; color:white; padding:5px 10px; border-radius:20px;" onclick="deletePost('${type}','${item.id}')">Deletar</button>
-                    </div>
-                </div>
-            `;
+            const firstImg = (item.images && item.images[0]) || (item.img) || 'https://via.placeholder.com/50';
+            list.innerHTML += `<div class="manager-item"><div style="display:flex; gap:8px; align-items:center;"><img src="${firstImg}" width="50" height="50" style="object-fit:cover; border-radius:8px;"><div><h5>${item.title}</h5><p>${item.price}</p><p style="font-size:10px;">${item.desc ? item.desc.substring(0,30) : ''}</p></div></div><div><button class="action-btn edit" style="background:var(--edit-color); border:none; color:white; padding:5px 10px; border-radius:20px; margin-right:5px;" onclick="startEdit('${type}','${item.id}')">Editar</button><button class="action-btn delete" style="background:var(--danger-color); border:none; color:white; padding:5px 10px; border-radius:20px;" onclick="deletePost('${type}','${item.id}')">Deletar</button></div></div>`;
         });
     }
     
-    function renderAppointmentsList() { 
-        const container = document.getElementById('appointments-list');
-        if(!container) return;
-        if(!currentUser) {
-            container.innerHTML = '<div>🔒 Faça login para visualizar os agendamentos.</div>';
-            return;
+    // ========== DADOS ==========
+    async function loadPublicData() {
+        try {
+            const makeupSnap = await db.collection('makeup').orderBy('createdAt', 'desc').get();
+            listMakeup = [];
+            makeupSnap.forEach(doc => { let data = doc.data(); if(data.img && !data.images) data.images = [data.img]; else if(!data.images) data.images = []; listMakeup.push({ id: doc.id, ...data }); });
+            if(listMakeup.length === 0) { const defaultMake = { images: ["https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=500&q=80"], title: "Make Social Premium", desc: "Ideal para festas...", price: "Sob Consulta", createdAt: new Date() }; const ref = await db.collection('makeup').add(defaultMake); listMakeup.push({ id: ref.id, ...defaultMake }); }
+            const hairSnap = await db.collection('hair').orderBy('createdAt', 'desc').get();
+            listHair = [];
+            hairSnap.forEach(doc => { let data = doc.data(); if(data.img && !data.images) data.images = [data.img]; else if(!data.images) data.images = []; listHair.push({ id: doc.id, ...data }); });
+            if(listHair.length === 0) { const defaultHair = { images: ["https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=500&q=80"], title: "Coque Despojado", desc: "Do clássico ao moderno.", price: "Sob Consulta", createdAt: new Date() }; const ref = await db.collection('hair').add(defaultHair); listHair.push({ id: ref.id, ...defaultHair }); }
+            const companySnap = await db.collection('company').doc('profile').get();
+            if(companySnap.exists) { companyData = companySnap.data(); document.getElementById('company-profile-img').src = companyData.img; document.getElementById('company-profile-desc').innerText = companyData.bio; document.getElementById('input-img-company').value = companyData.img; document.getElementById('input-desc-company').value = companyData.bio; }
+            renderMainGrid('makeup-grid', listMakeup);
+            renderMainGrid('hair-grid', listHair);
+        } catch(e) { console.error(e); }
+    }
+    async function loadPrivateData() { if (!currentUser) return; try {
+        const appsSnap = await db.collection('appointments').where('status', '==', 'active').get(); listAppointments = []; appsSnap.forEach(doc => listAppointments.push({ id: doc.id, ...doc.data() }));
+        const compSnap = await db.collection('appointments').where('status', '==', 'completed').get(); completedAppointments = []; compSnap.forEach(doc => completedAppointments.push({ id: doc.id, ...doc.data() }));
+        const sangSnap = await db.collection('sangrias').orderBy('data', 'desc').get(); sangrias = []; sangSnap.forEach(doc => sangrias.push({ id: doc.id, ...doc.data() }));
+        if(document.getElementById('manager-makeup-list')) renderManagerList('manager-makeup-list', listMakeup, 'make');
+        if(document.getElementById('manager-hair-list')) renderManagerList('manager-hair-list', listHair, 'hair');
+    } catch(e) { console.error(e); } }
+    
+    // ========== CRUD MÚLTIPLAS IMAGENS ==========
+    async function saveMakeupChanges() { if(!currentUser){alert('Login necessário');return;} 
+        const id = document.getElementById('edit-make-id').value;
+        const images = getImagesFromInputs('make_img', 4);
+        const title = document.getElementById('input-title-make1').value;
+        const desc = document.getElementById('input-desc-make1').value;
+        let price = document.getElementById('input-price-make1').value;
+        if(!price.toLowerCase().includes('consulta') && !price.includes('R$')) price = "R$ " + price;
+        const data = { images, title, desc, price, updatedAt: new Date() };
+        if(id) { await db.collection('makeup').doc(id).update(data); const idx = listMakeup.findIndex(i => i.id === id); if(idx!==-1) listMakeup[idx] = { ...listMakeup[idx], ...data }; }
+        else { data.createdAt = new Date(); const ref = await db.collection('makeup').add(data); listMakeup.push({ id: ref.id, ...data }); }
+        document.getElementById('edit-make-id').value = '';
+        document.getElementById('input-title-make1').value = ''; document.getElementById('input-desc-make1').value = ''; document.getElementById('input-price-make1').value = '';
+        for(let i=0;i<4;i++) { let inp = document.getElementById(`make_img_${i}`); if(inp) inp.value = ''; }
+        renderMainGrid('makeup-grid', listMakeup); if(document.getElementById('manager-makeup-list')) renderManagerList('manager-makeup-list', listMakeup, 'make');
+        alert("Salvo"); navigateToMain();
+    }
+    async function saveHairChanges() { if(!currentUser){alert('Login necessário');return;} 
+        const id = document.getElementById('edit-hair-id').value;
+        const images = getImagesFromInputs('hair_img', 4);
+        const title = document.getElementById('input-title-hair1').value;
+        const desc = document.getElementById('input-desc-hair1').value;
+        let price = document.getElementById('input-price-hair1').value;
+        if(!price.toLowerCase().includes('consulta') && !price.includes('R$')) price = "R$ " + price;
+        const data = { images, title, desc, price, updatedAt: new Date() };
+        if(id) { await db.collection('hair').doc(id).update(data); const idx = listHair.findIndex(i => i.id === id); if(idx!==-1) listHair[idx] = { ...listHair[idx], ...data }; }
+        else { data.createdAt = new Date(); const ref = await db.collection('hair').add(data); listHair.push({ id: ref.id, ...data }); }
+        for(let i=0;i<4;i++) { let inp = document.getElementById(`hair_img_${i}`); if(inp) inp.value = ''; }
+        document.getElementById('edit-hair-id').value = ''; document.getElementById('input-title-hair1').value = ''; document.getElementById('input-desc-hair1').value = ''; document.getElementById('input-price-hair1').value = '';
+        renderMainGrid('hair-grid', listHair); if(document.getElementById('manager-hair-list')) renderManagerList('manager-hair-list', listHair, 'hair');
+        alert("Salvo"); navigateToMain();
+    }
+    function startEdit(type, id) {
+        if(type === 'make') {
+            const item = listMakeup.find(i => i.id === id);
+            document.getElementById('edit-make-id').value = item.id;
+            document.getElementById('input-title-make1').value = item.title;
+            document.getElementById('input-desc-make1').value = item.desc;
+            document.getElementById('input-price-make1').value = item.price.replace("R$ ", "");
+            const imgs = (item.images && item.images.length) ? item.images : (item.img ? [item.img] : []);
+            for(let i=0;i<4;i++) { let inp = document.getElementById(`make_img_${i}`); if(inp) inp.value = imgs[i] || ''; }
+            switchPanelTab({currentTarget: document.querySelector(".panel-tab-btn[onclick*='panel-make']")}, 'panel-make');
+        } else {
+            const item = listHair.find(i => i.id === id);
+            document.getElementById('edit-hair-id').value = item.id;
+            document.getElementById('input-title-hair1').value = item.title;
+            document.getElementById('input-desc-hair1').value = item.desc;
+            document.getElementById('input-price-hair1').value = item.price.replace("R$ ", "");
+            const imgs = (item.images && item.images.length) ? item.images : (item.img ? [item.img] : []);
+            for(let i=0;i<4;i++) { let inp = document.getElementById(`hair_img_${i}`); if(inp) inp.value = imgs[i] || ''; }
+            switchPanelTab({currentTarget: document.querySelector(".panel-tab-btn[onclick*='panel-hair']")}, 'panel-hair');
         }
-        if(listAppointments.length === 0) { container.innerHTML = '<div>Nenhum agendamento ativo.</div>'; return; }
-        listAppointments.sort((a,b) => new Date(a.date+'T'+a.time) - new Date(b.date+'T'+b.time));        container.innerHTML = '';
-        listAppointments.forEach(app => {
-            const formattedDate = app.date.split('-').reverse().join('/');
-            let locationHtml = (app.type === 'home') ? `<p>🏠 ${app.address} - ${app.neighborhood}</p>` : '';
-            const phoneClean = app.phone.replace(/\D/g,'');
-            const waLink = `https://wa.me/55${phoneClean}?text=Olá ${app.name}`;
-            container.innerHTML += `<div class="appointment-card"><div class="appointment-card-header"><h5>${app.name}</h5><span class="appointment-badge ${app.type==='home'?'badge-home':'badge-studio'}">${app.type==='home'?'Domicílio':'Estúdio'}</span></div><div><p>📅 ${formattedDate} às ${app.time}</p><p>📞 +55 ${app.phone}</p>${locationHtml}${app.desc?`<div class="appointment-notes">${app.desc}</div>`:''}</div><div class="appointment-actions"><button class="mini-btn btn-wa" onclick="window.open('${waLink}','_blank')"><i class="fab fa-whatsapp"></i> WhatsApp</button><button class="mini-btn btn-confirm" onclick="confirmarAgendamento('${app.id}')"><i class="fas fa-check-circle"></i> Confirmar</button><button class="mini-btn btn-edit-app" onclick="editarAgendamento('${app.id}')"><i class="fas fa-edit"></i> Editar</button><button class="mini-btn btn-finish" onclick="concluirAgendamento('${app.id}')"><i class="fas fa-dollar-sign"></i> Concluir</button></div></div>`;
-        });
     }
+    async function deletePost(type, id) { if(!currentUser){alert('Login necessário');return;} if(confirm("Deletar?")) { if(type === 'make') { await db.collection('makeup').doc(id).delete(); listMakeup = listMakeup.filter(i => i.id !== id); renderMainGrid('makeup-grid', listMakeup); renderManagerList('manager-makeup-list', listMakeup, 'make'); } else { await db.collection('hair').doc(id).delete(); listHair = listHair.filter(i => i.id !== id); renderMainGrid('hair-grid', listHair); renderManagerList('manager-hair-list', listHair, 'hair'); } } }
     
-    async function confirmarAgendamento(id) {
-        if(!currentUser) { alert('Login necessário.'); return; }
-        const app = listAppointments.find(a => a.id === id);
-        if(!app) return;
-        const formatted = app.date.split('-').reverse().join('/');
-        const msg = `Olá sou a Lanny, vim avisar que seu agendamento foi confirmado para o dia: ${formatted} / ${app.time}`;
-        const phoneClean = app.phone.replace(/\D/g,'');
-        window.open(`https://wa.me/55${phoneClean}?text=${encodeURIComponent(msg)}`, '_blank');
-    }
-    
-    async function editarAgendamento(id) {
-        if(!currentUser){ alert('Login necessário para editar.'); return; }
-        const app = listAppointments.find(a => a.id === id);
-        if(!app) return;
-        const novoValor = prompt("Informe o VALOR do serviço (R$):", app.valor || "");
-        if(novoValor !== null) app.valor = novoValor.replace(',','.');
-        const novoNome = prompt("Editar nome:", app.name);
-        if(novoNome) app.name = novoNome;
-        const novaData = prompt("Editar data (AAAA-MM-DD):", app.date);
-        if(novaData) app.date = novaData;
-        const novaHora = prompt("Editar horário:", app.time);
-        if(novaHora) app.time = novaHora;
-        const novoPhone = prompt("Editar telefone:", app.phone);
-        if(novoPhone) app.phone = novoPhone;
-        await db.collection('appointments').doc(id).update({ valor: app.valor, name: app.name, date: app.date, time: app.time, phone: app.phone });
-        renderAppointmentsList();
-        renderFinanceiro();
-    }
-    
-    async function concluirAgendamento(id) {
-        if(!currentUser){ alert('Login necessário.'); return; }
-        const app = listAppointments.find(a => a.id === id);
-        if(!app) return;
-        let valorFinal = app.valor ? parseFloat(app.valor) : 0;
-        if(!valorFinal && app.valor === undefined) {
-            const valorDigitado = prompt("Informe o valor recebido para este serviço (R$):", "0");
-            if(valorDigitado === null) return;
-            valorFinal = parseFloat(valorDigitado.replace(',','.')) || 0;
-        } else if(isNaN(valorFinal)) valorFinal = 0;
-        const completed = { ...app, valor: valorFinal, dataConclusao: new Date().toISOString().slice(0,10), status: 'completed' };        await db.collection('appointments').doc(id).update({ status: 'completed', valor: valorFinal, dataConclusao: completed.dataConclusao });
-        completedAppointments.push(completed);
-        listAppointments = listAppointments.filter(a => a.id !== id);
-        renderAppointmentsList();
-        renderFinanceiro();
-        alert("Serviço concluído e registrado no financeiro!");
-    }
-    
+    // ========== DEMAIS FUNÇÕES (AGENDAMENTO, FINANCEIRO, AUTH) ==========
     async function processBooking() { 
         const name = document.getElementById('booking-name').value.trim();
         const date = document.getElementById('booking-date').value;
@@ -705,285 +460,55 @@
         if(type === 'home' && (!address || !neighborhood)) { alert("Endereço completo"); return; }
         const newBooking = { name, date, time, phone, type, address, neighborhood, desc, valor: null, status: 'active', createdAt: new Date() };
         const docRef = await db.collection('appointments').add(newBooking);
-        // Se o admin estiver logado, atualiza a lista local
-        if(currentUser) {
-            listAppointments.push({ id: docRef.id, ...newBooking });
-            renderAppointmentsList();
-        }
+        if(currentUser) { listAppointments.push({ id: docRef.id, ...newBooking }); renderAppointmentsList(); }
         document.getElementById('booking-name').value = ''; document.getElementById('booking-date').value = ''; document.getElementById('booking-time').value = '';
         document.getElementById('booking-phone').value = ''; document.getElementById('booking-type').value = 'studio'; document.getElementById('booking-address').value = ''; document.getElementById('booking-neighborhood').value = ''; document.getElementById('booking-desc').value = ''; document.getElementById('delivery-fields').style.display = 'none';
         alert("Agendamento solicitado!");
-        // Só mostra notificação se tiver admin logado (para ele saber)
-        if(currentUser) {
-            const notif = document.getElementById('notification-bubble');
-            notif.classList.remove('hidden-fixed');
-        }
+        if(currentUser) document.getElementById('notification-bubble').classList.remove('hidden-fixed');
         document.getElementById('booking-screen').classList.remove('active');
         document.getElementById('main-screen').classList.add('active');
         toggleFixedButtonsVisibility(true);
         window.open(`https://wa.me/558599415246?text=${encodeURIComponent("Olá Lanny, acabei de fazer um Agendamento no App!!")}`, '_blank');
     }
-    
-    async function saveMakeupChanges() { 
-        if(!currentUser){alert('Login necessário');return;} 
-        const id = document.getElementById('edit-make-id').value;
-        
-        // Coleta as 4 imagens
-        const images = [];
-        for(let i = 1; i <= 4; i++) {
-            const imgValue = document.getElementById(`input-img-make-${i}`).value.trim();
-            if(imgValue) images.push(imgValue);
-        }        
-        const title = document.getElementById('input-title-make1').value;
-        const desc = document.getElementById('input-desc-make1').value;
-        let price = document.getElementById('input-price-make1').value;
-        if(!price.toLowerCase().includes('consulta') && !price.includes('R$')) price = "R$ " + price;
-        
-        if(images.length === 0) {
-            alert('Adicione pelo menos uma imagem!');
-            return;
-        }
-        
-        if(id) { 
-            await db.collection('makeup').doc(id).update({ images, title, desc, price }); 
-            const item = listMakeup.find(i => i.id === id); 
-            if(item) { 
-                item.images = images; 
-                item.title = title; 
-                item.desc = desc; 
-                item.price = price; 
-            } 
-        } else { 
-            const newItem = { images, title, desc, price, createdAt: new Date() }; 
-            const docRef = await db.collection('makeup').add(newItem); 
-            listMakeup.push({ id: docRef.id, ...newItem }); 
-        }
-        
-        document.getElementById('edit-make-id').value = ''; 
-        clearMakeFields(); 
-        renderMainGrid('makeup-grid', listMakeup); 
-        renderManagerList('manager-makeup-list', listMakeup, 'make'); 
-        alert("Salvo"); 
-        navigateToMain();
+    function renderAppointmentsList() { 
+        const container = document.getElementById('appointments-list'); if(!container) return; if(!currentUser) { container.innerHTML = '<div>🔒 Faça login para visualizar os agendamentos.</div>'; return; }
+        if(listAppointments.length === 0) { container.innerHTML = '<div>Nenhum agendamento ativo.</div>'; return; }
+        listAppointments.sort((a,b) => new Date(a.date+'T'+a.time) - new Date(b.date+'T'+b.time));
+        container.innerHTML = '';
+        listAppointments.forEach(app => {
+            const formattedDate = app.date.split('-').reverse().join('/');
+            const locationHtml = (app.type === 'home') ? `<p>🏠 ${app.address} - ${app.neighborhood}</p>` : '';
+            const phoneClean = app.phone.replace(/\D/g,'');
+            const waLink = `https://wa.me/55${phoneClean}?text=Olá ${app.name}`;
+            container.innerHTML += `<div class="appointment-card"><div class="appointment-card-header"><h5>${app.name}</h5><span class="appointment-badge ${app.type==='home'?'badge-home':'badge-studio'}">${app.type==='home'?'Domicílio':'Estúdio'}</span></div><div><p>📅 ${formattedDate} às ${app.time}</p><p>📞 +55 ${app.phone}</p>${locationHtml}${app.desc?`<div class="appointment-notes">${app.desc}</div>`:''}</div><div class="appointment-actions"><button class="mini-btn btn-wa" onclick="window.open('${waLink}','_blank')"><i class="fab fa-whatsapp"></i> WhatsApp</button><button class="mini-btn btn-confirm" onclick="confirmarAgendamento('${app.id}')"><i class="fas fa-check-circle"></i> Confirmar</button><button class="mini-btn btn-edit-app" onclick="editarAgendamento('${app.id}')"><i class="fas fa-edit"></i> Editar</button><button class="mini-btn btn-finish" onclick="concluirAgendamento('${app.id}')"><i class="fas fa-dollar-sign"></i> Concluir</button></div></div>`;
+        });
     }
+    async function confirmarAgendamento(id) { if(!currentUser) return; const app = listAppointments.find(a => a.id === id); if(!app) return; const formatted = app.date.split('-').reverse().join('/'); const msg = `Olá sou a Lanny, seu agendamento foi confirmado para o dia: ${formatted} / ${app.time}`; const phoneClean = app.phone.replace(/\D/g,''); window.open(`https://wa.me/55${phoneClean}?text=${encodeURIComponent(msg)}`, '_blank'); }
+    async function editarAgendamento(id) { if(!currentUser) return; const app = listAppointments.find(a => a.id === id); if(!app) return; const novoValor = prompt("Valor do serviço (R$):", app.valor || ""); if(novoValor !== null) app.valor = novoValor.replace(',','.'); const novoNome = prompt("Nome:", app.name); if(novoNome) app.name = novoNome; const novaData = prompt("Data (AAAA-MM-DD):", app.date); if(novaData) app.date = novaData; const novaHora = prompt("Horário:", app.time); if(novaHora) app.time = novaHora; const novoPhone = prompt("Telefone:", app.phone); if(novoPhone) app.phone = novoPhone; await db.collection('appointments').doc(id).update({ valor: app.valor, name: app.name, date: app.date, time: app.time, phone: app.phone }); renderAppointmentsList(); renderFinanceiro(); }
+    async function concluirAgendamento(id) { if(!currentUser) return; const app = listAppointments.find(a => a.id === id); if(!app) return; let valorFinal = app.valor ? parseFloat(app.valor) : 0; if(!valorFinal && app.valor === undefined) { const valorDigitado = prompt("Valor recebido (R$):", "0"); if(valorDigitado === null) return; valorFinal = parseFloat(valorDigitado.replace(',','.')) || 0; } else if(isNaN(valorFinal)) valorFinal = 0; const completed = { ...app, valor: valorFinal, dataConclusao: new Date().toISOString().slice(0,10), status: 'completed' }; await db.collection('appointments').doc(id).update({ status: 'completed', valor: valorFinal, dataConclusao: completed.dataConclusao }); completedAppointments.push(completed); listAppointments = listAppointments.filter(a => a.id !== id); renderAppointmentsList(); renderFinanceiro(); alert("Serviço concluído!"); }
+    async function registrarSangria() { if(!currentUser) return; const valor = parseFloat(document.getElementById('sangria-valor').value); const desc = document.getElementById('sangria-desc').value; if(isNaN(valor) || valor <= 0) { alert("Valor inválido"); return; } const newSangria = { valor, desc: desc || "Retirada", data: new Date().toISOString().slice(0,10) }; const docRef = await db.collection('sangrias').add(newSangria); sangrias.push({ id: docRef.id, ...newSangria }); document.getElementById('sangria-valor').value = ''; document.getElementById('sangria-desc').value = ''; renderFinanceiro(); }
+    async function deletarSangria(id) { if(!currentUser) return; if(confirm("Excluir?")) { await db.collection('sangrias').doc(id).delete(); sangrias = sangrias.filter(s => s.id !== id); renderFinanceiro(); } }
+    async function deletarConcluido(id) { if(!currentUser) return; if(confirm("Deletar serviço concluído?")) { await db.collection('appointments').doc(id).delete(); completedAppointments = completedAppointments.filter(c => c.id !== id); renderFinanceiro(); } }
+    function enviarComprovante(id) { const item = completedAppointments.find(c => c.id === id); if(!item) return; const dataFormat = item.date.split('-').reverse().join('/'); const msg = `🧾 *COMPROVANTE* 🧾\nCliente: ${item.name}\nData: ${dataFormat} às ${item.time}\nValor: R$ ${(item.valor || 0).toFixed(2)}`; const phoneClean = item.phone.replace(/\D/g,''); window.open(`https://wa.me/55${phoneClean}?text=${encodeURIComponent(msg)}`, '_blank'); }
+    function renderFinanceiro() { if(!currentUser) { const totalEl = document.getElementById('total-receita-mes'); if(totalEl) totalEl.innerHTML = '🔒 Faça login para ver o financeiro.'; return; } const monthFilter = document.getElementById('finance-month-filter')?.value || ''; let filteredCompleted = [...completedAppointments]; if(monthFilter) filteredCompleted = filteredCompleted.filter(c => c.date && c.date.startsWith(monthFilter)); let totalMes = filteredCompleted.reduce((sum,c) => sum + (c.valor || 0), 0); const sangriasFiltradas = sangrias.filter(s => s.data && (!monthFilter || s.data.startsWith(monthFilter))); const totalSangrias = sangriasFiltradas.reduce((s,item) => s + item.valor, 0); const saldoLiquido = totalMes - totalSangrias; const totalEl = document.getElementById('total-receita-mes'); if(totalEl) totalEl.innerHTML = `💰 Total Bruto: R$ ${totalMes.toFixed(2)} | 🧾 Sangrias: R$ ${totalSangrias.toFixed(2)}<br>📌 Saldo Líquido: R$ ${saldoLiquido.toFixed(2)}`; const sangriaDiv = document.getElementById('lista-sangrias'); if(sangriaDiv) { sangriaDiv.innerHTML = `<strong>Histórico Sangrias:</strong>`; sangriasFiltradas.forEach(s => { sangriaDiv.innerHTML += `<div style="background:#fff; margin:5px 0; padding:8px; border-radius:8px;">R$ ${s.valor.toFixed(2)} - ${s.desc || 'Sem desc'} (${s.data}) <button class="mini-btn" style="background:gray;" onclick="deletarSangria('${s.id}')">🗑️</button></div>`; }); } const completedDiv = document.getElementById('completed-list-finance'); if(completedDiv) { completedDiv.innerHTML = `<strong>Serviços finalizados (mês selecionado):</strong>`; filteredCompleted.forEach(c => { const dateBr = c.date.split('-').reverse().join('/'); completedDiv.innerHTML += `<div class="completed-item"><div><b>${c.name}</b> - ${dateBr} ${c.time}</div><div>💰 R$ ${(c.valor || 0).toFixed(2)}</div><div class="appointment-actions" style="margin-top:6px;"><button class="mini-btn btn-wa" onclick="enviarComprovante('${c.id}')"><i class="fas fa-receipt"></i> Comprovante</button><button class="mini-btn" style="background:red;" onclick="deletarConcluido('${c.id}')">Deletar</button></div></div>`; }); } }
+    async function saveCompanyChanges() { if(!currentUser){alert('Login necessário');return;} const img = document.getElementById('input-img-company').value; const bio = document.getElementById('input-desc-company').value; await db.collection('company').doc('profile').set({ img, bio }); companyData = { img, bio }; document.getElementById('company-profile-img').src = img; document.getElementById('company-profile-desc').innerText = bio; alert("Salvo!"); navigateToMain(); }
     
-    async function saveHairChanges() { 
-        if(!currentUser){alert('Login necessário');return;} 
-        const id = document.getElementById('edit-hair-id').value;
-        
-        // Coleta as 4 imagens
-        const images = [];
-        for(let i = 1; i <= 4; i++) {
-            const imgValue = document.getElementById(`input-img-hair-${i}`).value.trim();
-            if(imgValue) images.push(imgValue);
-        }
-        
-        const title = document.getElementById('input-title-hair1').value;
-        const desc = document.getElementById('input-desc-hair1').value;
-        let price = document.getElementById('input-price-hair1').value;
-        if(!price.toLowerCase().includes('consulta') && !price.includes('R$')) price = "R$ " + price;
-                if(images.length === 0) {
-            alert('Adicione pelo menos uma imagem!');
-            return;
-        }
-        
-        if(id) { 
-            await db.collection('hair').doc(id).update({ images, title, desc, price }); 
-            const item = listHair.find(i => i.id === id); 
-            if(item) { 
-                item.images = images; 
-                item.title = title; 
-                item.desc = desc; 
-                item.price = price; 
-            } 
-        } else { 
-            const newItem = { images, title, desc, price, createdAt: new Date() }; 
-            const docRef = await db.collection('hair').add(newItem); 
-            listHair.push({ id: docRef.id, ...newItem }); 
-        }
-        
-        clearHairFields(); 
-        renderMainGrid('hair-grid', listHair); 
-        renderManagerList('manager-hair-list', listHair, 'hair'); 
-        alert("Salvo"); 
-        navigateToMain();
-    }
-    
-    async function saveCompanyChanges() { if(!currentUser){alert('Login necessário');return;} 
-        const img = document.getElementById('input-img-company').value;
-        const bio = document.getElementById('input-desc-company').value;
-        await db.collection('company').doc('profile').set({ img, bio });
-        companyData = { img, bio };
-        document.getElementById('company-profile-img').src = img;
-        document.getElementById('company-profile-desc').innerText = bio;
-        alert("Salvo!"); navigateToMain();
-    }
-    
-    async function deletePost(type, id) { 
-        if(!currentUser){alert('Login necessário');return;} 
-        if(confirm("Deletar?")) { 
-            if(type === 'make') { 
-                await db.collection('makeup').doc(id).delete(); 
-                listMakeup = listMakeup.filter(i => i.id !== id); 
-                renderMainGrid('makeup-grid', listMakeup); 
-                renderManagerList('manager-makeup-list', listMakeup, 'make'); 
-            } else { 
-                await db.collection('hair').doc(id).delete(); 
-                listHair = listHair.filter(i => i.id !== id); 
-                renderMainGrid('hair-grid', listHair); 
-                renderManagerList('manager-hair-list', listHair, 'hair');             } 
-        } 
-    }
-    
-    async function registrarSangria() { if(!currentUser){alert('Login necessário');return;} const valor = parseFloat(document.getElementById('sangria-valor').value); const desc = document.getElementById('sangria-desc').value; if(isNaN(valor) || valor <= 0) { alert("Valor inválido"); return; } const newSangria = { valor, desc: desc || "Retirada", data: new Date().toISOString().slice(0,10) }; const docRef = await db.collection('sangrias').add(newSangria); sangrias.push({ id: docRef.id, ...newSangria }); document.getElementById('sangria-valor').value = ''; document.getElementById('sangria-desc').value = ''; renderFinanceiro(); }
-    async function deletarSangria(id) { if(!currentUser){alert('Login necessário');return;} if(confirm("Excluir sangria?")) { await db.collection('sangrias').doc(id).delete(); sangrias = sangrias.filter(s => s.id !== id); renderFinanceiro(); } }
-    async function deletarConcluido(id) { if(!currentUser){alert('Login necessário');return;} if(confirm("Deletar este serviço concluído?")) { await db.collection('appointments').doc(id).delete(); completedAppointments = completedAppointments.filter(c => c.id !== id); renderFinanceiro(); } }
-    
-    function renderFinanceiro() { 
-        if(!currentUser) {
-            const totalEl = document.getElementById('total-receita-mes');
-            if(totalEl) totalEl.innerHTML = '🔒 Faça login para ver o financeiro.';
-            return;
-        }
-        const monthFilter = document.getElementById('finance-month-filter')?.value || '';
-        let filteredCompleted = [...completedAppointments];
-        if(monthFilter) filteredCompleted = filteredCompleted.filter(c => c.date && c.date.startsWith(monthFilter));
-        let totalMes = filteredCompleted.reduce((sum,c) => sum + (c.valor || 0), 0);
-        const sangriasFiltradas = sangrias.filter(s => s.data && (!monthFilter || s.data.startsWith(monthFilter)));
-        const totalSangrias = sangriasFiltradas.reduce((s,item) => s + item.valor, 0);
-        const saldoLiquido = totalMes - totalSangrias;
-        const totalEl = document.getElementById('total-receita-mes'); if(totalEl) totalEl.innerHTML = `💰 Total Bruto: R$ ${totalMes.toFixed(2)} | 🧾 Sangrias: R$ ${totalSangrias.toFixed(2)}<br>📌 Saldo Líquido: R$ ${saldoLiquido.toFixed(2)}`;
-        const sangriaDiv = document.getElementById('lista-sangrias'); if(sangriaDiv) { sangriaDiv.innerHTML = `<strong>Histórico Sangrias:</strong>`; sangriasFiltradas.forEach(s => { sangriaDiv.innerHTML += `<div style="background:#fff; margin:5px 0; padding:8px; border-radius:8px;">R$ ${s.valor.toFixed(2)} - ${s.desc || 'Sem desc'} (${s.data}) <button class="mini-btn" style="background:gray;" onclick="deletarSangria('${s.id}')">🗑️</button></div>`; }); }
-        const completedDiv = document.getElementById('completed-list-finance'); if(completedDiv) { completedDiv.innerHTML = `<strong>Serviços finalizados (mês selecionado):</strong>`; filteredCompleted.forEach(c => { const dateBr = c.date.split('-').reverse().join('/'); completedDiv.innerHTML += `<div class="completed-item"><div><b>${c.name}</b> - ${dateBr} ${c.time}</div><div>💰 R$ ${(c.valor || 0).toFixed(2)}</div><div class="appointment-actions" style="margin-top:6px;"><button class="mini-btn btn-wa" onclick="enviarComprovante('${c.id}')"><i class="fas fa-receipt"></i> Comprovante</button><button class="mini-btn" style="background:red;" onclick="deletarConcluido('${c.id}')">Deletar</button></div></div>`; }); }
-    }
-    
-    function enviarComprovante(id) { const item = completedAppointments.find(c => c.id === id); if(!item) return; const dataFormat = item.date.split('-').reverse().join('/'); const msg = `🧾 *COMPROVANTE DE SERVIÇO* 🧾\nCliente: ${item.name}\nData: ${dataFormat} às ${item.time}\nServiço: ${item.desc || 'Maquiagem/Penteado'}\nValor Pago: R$ ${(item.valor || 0).toFixed(2)}\nAgradecemos pela preferência! 💄✨`; const phoneClean = item.phone.replace(/\D/g,''); window.open(`https://wa.me/55${phoneClean}?text=${encodeURIComponent(msg)}`, '_blank'); }
-    
-    function startEdit(type, id) { 
-        if(type === 'make') { 
-            const item = listMakeup.find(i => i.id === id); 
-            document.getElementById('edit-make-id').value = item.id; 
-            
-            // Limpa todos os campos de imagem primeiro
-            for(let i = 1; i <= 4; i++) {
-                document.getElementById(`input-img-make-${i}`).value = '';
-                const preview = document.getElementById(`preview-make-${i}`);
-                if(preview) preview.innerHTML = '<span>Sem imagem</span>';
-            }
-            
-            // Preenche as imagens existentes
-            const images = item.images || [];
-            images.forEach((img, index) => {
-                if(index < 4 && img) {
-                    document.getElementById(`input-img-make-${index + 1}`).value = img;
-                    updateImagePreview('make', index + 1);
-                }
-            });
-            
-            document.getElementById('input-title-make1').value = item.title;             document.getElementById('input-desc-make1').value = item.desc; 
-            document.getElementById('input-price-make1').value = item.price.replace("R$ ", ""); 
-            switchPanelTab({currentTarget: document.querySelector(".panel-tab-btn[onclick*='panel-make']")}, 'panel-make'); 
-        } else { 
-            const item = listHair.find(i => i.id === id); 
-            document.getElementById('edit-hair-id').value = item.id; 
-            
-            // Limpa todos os campos de imagem primeiro
-            for(let i = 1; i <= 4; i++) {
-                document.getElementById(`input-img-hair-${i}`).value = '';
-                const preview = document.getElementById(`preview-hair-${i}`);
-                if(preview) preview.innerHTML = '<span>Sem imagem</span>';
-            }
-            
-            // Preenche as imagens existentes
-            const images = item.images || [];
-            images.forEach((img, index) => {
-                if(index < 4 && img) {
-                    document.getElementById(`input-img-hair-${index + 1}`).value = img;
-                    updateImagePreview('hair', index + 1);
-                }
-            });
-            
-            document.getElementById('input-title-hair1').value = item.title; 
-            document.getElementById('input-desc-hair1').value = item.desc; 
-            document.getElementById('input-price-hair1').value = item.price.replace("R$ ", ""); 
-            switchPanelTab({currentTarget: document.querySelector(".panel-tab-btn[onclick*='panel-hair']")}, 'panel-hair'); 
-        } 
-    }
-    
-    function updateImagePreview(type, index) {
-        const inputId = `input-img-${type}-${index}`;
-        const previewId = `preview-${type}-${index}`;
-        const input = document.getElementById(inputId);
-        const preview = document.getElementById(previewId);
-        
-        if(!input || !preview) return;
-        
-        const value = input.value.trim();
-        if(value) {
-            preview.innerHTML = `<img src="${value}" onerror="this.parentElement.innerHTML='<span>URL inválida</span>'">`;
-        } else {
-            preview.innerHTML = '<span>Sem imagem</span>';
-        }
-    }
-    
-    function abrirGaleria(tipo, imageIndex = null) {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';        input.removeAttribute('capture');
-        input.onchange = function(e) {
-            const file = e.target.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const imagemDataURL = event.target.result;
-                    if(tipo === 'make' && imageIndex) {
-                        document.getElementById(`input-img-make-${imageIndex}`).value = imagemDataURL;
-                        updateImagePreview('make', imageIndex);
-                    } else if(tipo === 'hair' && imageIndex) {
-                        document.getElementById(`input-img-hair-${imageIndex}`).value = imagemDataURL;
-                        updateImagePreview('hair', imageIndex);
-                    } else if(tipo === 'company') {
-                        document.getElementById('input-img-company').value = imagemDataURL;
-                        const previewImg = document.getElementById('company-profile-img');
-                        if(previewImg) previewImg.src = imagemDataURL;
-                    }
-                };
-                reader.readAsDataURL(file);
-            }
-        };
-        input.click();
-    }
-    
-    function clearMakeFields() { 
-        for(let i = 1; i <= 4; i++) {
-            document.getElementById(`input-img-make-${i}`).value = '';
-            const preview = document.getElementById(`preview-make-${i}`);
-            if(preview) preview.innerHTML = '<span>Sem imagem</span>';
-        }
-        document.getElementById('input-title-make1').value = ''; 
-        document.getElementById('input-desc-make1').value = ''; 
-        document.getElementById('input-price-make1').value = ''; 
-    }
-    
-    function clearHairFields() { 
-        for(let i = 1; i <= 4; i++) {
-            document.getElementById(`input-img-hair-${i}`).value = '';
-            const preview = document.getElementById(`preview-hair-${i}`);
-            if(preview) preview.innerHTML = '<span>Sem imagem</span>';
-        }
-        document.getElementById('input-title-hair1').value = ''; 
-        document.getElementById('input-desc-hair1').value = ''; 
-        document.getElementById('input-price-hair1').value = ''; 
-    }
-    
+    // AUTH e navegação
+    auth.onAuthStateChanged(async (user) => { currentUser = user; updateLoginLogoutMenu(); const panelSpan = document.getElementById('panel-user-email'); if(user) { if(panelSpan) panelSpan.innerText = user.email; await loadPrivateData(); if(document.getElementById('panel-screen').classList.contains('active')) { renderAppointmentsList(); renderFinanceiro(); } } else { if(panelSpan) panelSpan.innerText = ''; listAppointments = []; completedAppointments = []; sangrias = []; if(document.getElementById('appointments-list')) document.getElementById('appointments-list').innerHTML = '<div>Faça login para ver os agendamentos.</div>'; if(document.getElementById('lista-sangrias')) document.getElementById('lista-sangrias').innerHTML = ''; if(document.getElementById('completed-list-finance')) document.getElementById('completed-list-finance').innerHTML = ''; if(document.getElementById('panel-screen').classList.contains('active')) navigateToMain(); } });
+    async function loginFirebase() { const email = document.getElementById('login-email').value.trim(); const password = document.getElementById('login-password').value.trim(); const errorDiv = document.getElementById('login-error-msg'); if(!email || !password) { errorDiv.innerText = 'Preencha e-mail e senha.'; return; } try { await auth.signInWithEmailAndPassword(email, password); document.getElementById('login-modal').style.display = 'none'; document.getElementById('login-email').value = ''; document.getElementById('login-password').value = ''; errorDiv.innerText = ''; toggleSettingsMenu(); navigateToPanel(); } catch(err) { errorDiv.innerText = 'Erro: ' + (err.message || 'Credenciais inválidas.'); } }
+    async function logoutFirebase() { await auth.signOut(); toggleSettingsMenu(); alert('Você saiu do painel.'); if(document.getElementById('panel-screen').classList.contains('active')) navigateToMain(); }
+    function abrirModalLogin() { toggleSettingsMenu(); const modal = document.getElementById('login-modal'); if(modal) modal.style.display = 'flex'; }
+    window.onclick = function(e) { const modal = document.getElementById('login-modal'); if(e.target === modal) modal.style.display = 'none'; }
+    function updateLoginLogoutMenu() { const container = document.getElementById('dynamic-login-logout'); if(!container) return; if(currentUser) { container.innerHTML = `<div class="panel-trigger-btn panel-access-btn" onclick="navigateToPanel()">👑 PAINEL DE CONTROLE</div><div class="panel-trigger-btn" onclick="logoutFirebase()">🚪 SAIR</div>`; } else { container.innerHTML = `<div class="panel-trigger-btn" id="login-trigger-btn" onclick="abrirModalLogin()">🔐 LOGIN</div>`; } }
     function toggleFixedButtonsVisibility(show) { const b = document.getElementById('fixed-booking-btn'); const r = document.getElementById('fixed-buttons-right'); if(show) { b.classList.remove('hidden-fixed'); r.classList.remove('hidden-fixed'); } else { b.classList.add('hidden-fixed'); r.classList.add('hidden-fixed'); } }
     function navigateToBooking() { document.getElementById('main-screen').classList.remove('active'); document.getElementById('booking-screen').classList.add('active'); toggleFixedButtonsVisibility(false); }
-    function navigateToMainFromBooking() { document.getElementById('booking-screen').classList.remove('active'); document.getElementById('main-screen').classList.add('active'); toggleFixedButtonsVisibility(true); }    function navigateToAboutMe() { toggleSettingsMenu(); document.getElementById('main-screen').classList.remove('active'); document.getElementById('aboutme-screen').classList.add('active'); toggleFixedButtonsVisibility(false); }
+    function navigateToMainFromBooking() { document.getElementById('booking-screen').classList.remove('active'); document.getElementById('main-screen').classList.add('active'); toggleFixedButtonsVisibility(true); }
+    function navigateToAboutMe() { toggleSettingsMenu(); document.getElementById('main-screen').classList.remove('active'); document.getElementById('aboutme-screen').classList.add('active'); toggleFixedButtonsVisibility(false); }
     function navigateToMainFromAbout() { document.getElementById('aboutme-screen').classList.remove('active'); document.getElementById('main-screen').classList.add('active'); toggleFixedButtonsVisibility(true); }
     function navigateToPanel() { if(!currentUser) { alert('Faça login no menu Ajustes (🔐 LOGIN) para acessar o painel.'); toggleSettingsMenu(); return; } document.getElementById('main-screen').classList.remove('active'); document.getElementById('panel-screen').classList.add('active'); toggleFixedButtonsVisibility(false); renderAppointmentsList(); renderFinanceiro(); }
     function navigateToMain() { document.getElementById('panel-screen').classList.remove('active'); document.getElementById('main-screen').classList.add('active'); toggleFixedButtonsVisibility(true); }
     function openTab(evt, tabName) { document.querySelectorAll('.catalog-section').forEach(s => s.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById(tabName).classList.add('active'); evt.currentTarget.classList.add('active'); }
-    function switchPanelTab(evt, sectionId) { document.querySelectorAll('.panel-section').forEach(s => s.classList.remove('active')); document.querySelectorAll('.panel-tab-btn').forEach(b => b.classList.remove('active')); document.getElementById(sectionId).classList.add('active'); evt.currentTarget.classList.add('active'); if(sectionId === 'panel-finance') renderFinanceiro(); }
+    function switchPanelTab(evt, sectionId) { document.querySelectorAll('.panel-section').forEach(s => s.classList.remove('active')); document.querySelectorAll('.panel-tab-btn').forEach(b => b.classList.remove('active')); document.getElementById(sectionId).classList.add('active'); evt.currentTarget.classList.add('active'); if(sectionId === 'panel-finance') renderFinanceiro(); if(sectionId === 'panel-make') renderImageInputs('make-images-container', [], 'make'); if(sectionId === 'panel-hair') renderImageInputs('hair-images-container', [], 'hair'); }
     function toggleSettingsMenu() { document.getElementById('settings-drawer').classList.toggle('open'); const ov = document.getElementById('drawer-overlay'); ov.style.display = document.getElementById('settings-drawer').classList.contains('open') ? 'block' : 'none'; }
     function closeMenuFromOverlay(e) { if(e.target === document.getElementById('drawer-overlay')) toggleSettingsMenu(); }
     function maskPhone(input) { let v = input.value.replace(/\D/g,""); if(v.length > 11) v = v.substring(0,11); if(v.length > 6) input.value = `(${v.substring(0,2)}) ${v.substring(2,7)}-${v.substring(7,11)}`; else if(v.length > 2) input.value = `(${v.substring(0,2)}) ${v.substring(2)}`; else input.value = v; }
@@ -996,8 +521,10 @@
         document.getElementById('drawer-overlay').addEventListener('click', closeMenuFromOverlay);
         toggleFixedButtonsVisibility(true);
         if(document.getElementById('finance-month-filter')) document.getElementById('finance-month-filter').value = new Date().toISOString().slice(0,7);
-        loadPublicData();  // carrega catálogo e perfil público
+        loadPublicData();
         updateLoginLogoutMenu();
+        renderImageInputs('make-images-container', [], 'make');
+        renderImageInputs('hair-images-container', [], 'hair');
     };
 </script>
 </body>
