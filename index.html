@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <link rel="icon" type="image/png" href="https://github.com/itv5ce-afk/LOGO_LANNY_STILIT/raw/refs/heads/main/makeup-artist-applies-eye-shadow-260nw-2698447743.ico">
+    <title>Lanny Stilit | Catálogo Digital</title>
     <!-- Google Fonts para sofisticação e Ícones -->
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -47,8 +47,7 @@
         .catalog-content { padding: 20px; flex: 1; }
         .catalog-section { display: none; }
         .catalog-section.active { display: block; }
-        .section-title { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; text-align: center; margin-bottom: 25px; }
-        .grid { display: grid; grid-template-columns: 1fr; gap: 25px; }
+        .section-title { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; text-align: center; margin-bottom: 25px; }        .grid { display: grid; grid-template-columns: 1fr; gap: 25px; }
         .card { background: var(--card-bg); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.02); }
         .card img { width: 100%; height: 260px; object-fit: cover; cursor: pointer; }
         .card-info { padding: 15px; text-align: center; }
@@ -97,8 +96,7 @@
         .panel-trigger-btn { background: var(--bg-light); border: 1px solid var(--accent); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; cursor: pointer; margin-bottom: 12px; }
         .whatsapp-trigger-btn { background: #e8f9ee; border: 1px solid var(--whatsapp-color); color: #128c7e; padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; text-decoration: none; margin-bottom: 12px; }
         .manager-item { display: flex; gap: 8px; margin-bottom: 8px; background: #fff; padding: 8px; border-radius: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
-        .loading { text-align: center; padding: 20px; color: var(--text-muted); }
-        .sync-status { font-size: 0.7rem; color: var(--success-color); text-align: center; padding: 5px; background: #e8f5e9; border-radius: 20px; margin: 5px 10px; }
+        .loading { text-align: center; padding: 20px; color: var(--text-muted); }        .sync-status { font-size: 0.7rem; color: var(--success-color); text-align: center; padding: 5px; background: #e8f5e9; border-radius: 20px; margin: 5px 10px; }
         .login-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 300; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .login-modal-card { background: white; width: 90%; max-width: 340px; border-radius: 28px; padding: 28px 22px; text-align: center; box-shadow: 0 20px 35px rgba(0,0,0,0.3); border: 1px solid var(--accent); }
         .login-modal-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; margin-bottom: 20px; color: var(--primary); }
@@ -108,6 +106,17 @@
         .login-error { color: var(--danger-color); font-size: 0.75rem; margin-top: 10px; }
         .user-status { font-size: 0.7rem; color: var(--success-color); margin-top: 8px; padding: 4px; background: #e9f5e9; border-radius: 20px; display: inline-block; }
         .panel-access-btn { background: var(--primary); color: white; border: none; }
+
+        /* ========== NOVOS ESTILOS - GALERIA 4 FOTOS ========== */
+        .card-gallery { position: relative; background: #000; }
+        .card-gallery > img { transition: opacity 0.3s ease; display: block; }
+        .thumbnails { display: flex; gap: 6px; padding: 8px 10px; background: linear-gradient(to bottom, rgba(0,0,0,0.05), rgba(0,0,0,0.15)); justify-content: center; }
+        .thumbnails img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: all 0.25s ease; opacity: 0.75; }
+        .thumbnails img.active-thumb, .thumbnails img:hover { border-color: var(--accent); transform: scale(1.08); opacity: 1; box-shadow: 0 2px 8px rgba(212,175,55,0.4); }
+        .image-group { border: 1px dashed #d4af37; padding: 12px; border-radius: 12px; margin-bottom: 12px; background: linear-gradient(135deg, #fffdf5, #fff9e6); }
+        .image-group label { font-weight: 600; color: var(--accent); font-size: 0.8rem; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+        .image-group .mini-btn { margin-top: 8px; }
+        .photo-counter { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; z-index: 2; backdrop-filter: blur(4px); }
     </style>
 </head>
 <body>
@@ -136,7 +145,6 @@
     <div id="aboutme-screen" class="screen"><div class="panel-header"><button class="back-btn" onclick="navigateToMainFromAbout()"><i class="fas fa-arrow-left"></i></button><h3>Minha Empresa</h3></div>
         <div class="panel-body"><div class="profile-container"><div class="profile-img-wrapper"><img id="company-profile-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80" class="profile-img" onclick="openFullscreen(this.src)" style="width:100%; border-radius:20px;"></div><h2 class="profile-name">Lanny Stilit</h2><p class="profile-subtitle">Estética & Visagismo</p><div class="profile-bio-box"><p id="company-profile-desc">Seja bem-vinda ao meu catálogo! Sou especialista em realçar sua beleza natural...</p></div></div></div>
     </div>
-
     <!-- TELA PAINEL -->
     <div id="panel-screen" class="screen"><div class="panel-header"><button class="back-btn" onclick="navigateToMain()"><i class="fas fa-arrow-left"></i></button><h3>Painel de Controle</h3><div style="margin-left:auto;"><span id="panel-user-email" class="user-status" style="background:#2c2c2c; color:white; padding:4px 8px;"></span></div></div>
         <div class="panel-body">
@@ -154,8 +162,28 @@
                 <div class="edit-card">
                     <h4 id="form-make-title">Nova Postagem Maquiagem</h4>
                     <input type="hidden" id="edit-make-id">
-                    <div class="form-group"><label>Imagem URL</label><input type="text" id="input-img-make1" placeholder="Cole URL da imagem ou use o botão abaixo"></div>
-                    <button class="mini-btn btn-add-photo" onclick="abrirGaleria('make')" style="background:#6c757d; width:100%; margin-bottom:15px;"><i class="fas fa-images"></i> 📸 ADD FOTOS (Galeria)</button>
+                    
+                    <div class="image-group">
+                        <label><i class="fas fa-image"></i> Foto 1 (Principal)</label>
+                        <input type="text" id="input-img-make1" placeholder="Cole URL da imagem 1">
+                        <button class="mini-btn btn-add-photo" onclick="abrirGaleria('make', 1)" style="background:#6c757d; width:100%; margin-top:8px; margin-bottom:0;"><i class="fas fa-images"></i> 📸 Foto 1 (Galeria)</button>
+                    </div>
+                    <div class="image-group">
+                        <label><i class="fas fa-image"></i> Foto 2</label>
+                        <input type="text" id="input-img-make2" placeholder="Cole URL da imagem 2">
+                        <button class="mini-btn btn-add-photo" onclick="abrirGaleria('make', 2)" style="background:#6c757d; width:100%; margin-top:8px; margin-bottom:0;"><i class="fas fa-images"></i> 📸 Foto 2 (Galeria)</button>
+                    </div>
+                    <div class="image-group">
+                        <label><i class="fas fa-image"></i> Foto 3</label>
+                        <input type="text" id="input-img-make3" placeholder="Cole URL da imagem 3">
+                        <button class="mini-btn btn-add-photo" onclick="abrirGaleria('make', 3)" style="background:#6c757d; width:100%; margin-top:8px; margin-bottom:0;"><i class="fas fa-images"></i> 📸 Foto 3 (Galeria)</button>
+                    </div>
+                    <div class="image-group">
+                        <label><i class="fas fa-image"></i> Foto 4</label>
+                        <input type="text" id="input-img-make4" placeholder="Cole URL da imagem 4">
+                        <button class="mini-btn btn-add-photo" onclick="abrirGaleria('make', 4)" style="background:#6c757d; width:100%; margin-top:8px; margin-bottom:0;"><i class="fas fa-images"></i> 📸 Foto 4 (Galeria)</button>
+                    </div>
+
                     <div class="form-group"><label>Título</label><input type="text" id="input-title-make1"></div>
                     <div class="form-group"><label>Descrição</label><textarea id="input-desc-make1"></textarea></div>
                     <div class="form-group"><label>Preço</label><input type="text" id="input-price-make1"></div>
@@ -166,12 +194,31 @@
             </div>
             
             <!-- PAINEL CABELO -->
-            <div id="panel-hair" class="panel-section">
-                <div class="edit-card">
+            <div id="panel-hair" class="panel-section">                <div class="edit-card">
                     <h4>Nova Postagem Cabelo</h4>
                     <input type="hidden" id="edit-hair-id">
-                    <div class="form-group"><label>Imagem URL</label><input type="text" id="input-img-hair1" placeholder="Cole URL da imagem ou use o botão abaixo"></div>
-                    <button class="mini-btn btn-add-photo" onclick="abrirGaleria('hair')" style="background:#6c757d; width:100%; margin-bottom:15px;"><i class="fas fa-images"></i> 📸 ADD FOTOS (Galeria)</button>
+                    
+                    <div class="image-group">
+                        <label><i class="fas fa-image"></i> Foto 1 (Principal)</label>
+                        <input type="text" id="input-img-hair1" placeholder="Cole URL da imagem 1">
+                        <button class="mini-btn btn-add-photo" onclick="abrirGaleria('hair', 1)" style="background:#6c757d; width:100%; margin-top:8px; margin-bottom:0;"><i class="fas fa-images"></i> 📸 Foto 1 (Galeria)</button>
+                    </div>
+                    <div class="image-group">
+                        <label><i class="fas fa-image"></i> Foto 2</label>
+                        <input type="text" id="input-img-hair2" placeholder="Cole URL da imagem 2">
+                        <button class="mini-btn btn-add-photo" onclick="abrirGaleria('hair', 2)" style="background:#6c757d; width:100%; margin-top:8px; margin-bottom:0;"><i class="fas fa-images"></i> 📸 Foto 2 (Galeria)</button>
+                    </div>
+                    <div class="image-group">
+                        <label><i class="fas fa-image"></i> Foto 3</label>
+                        <input type="text" id="input-img-hair3" placeholder="Cole URL da imagem 3">
+                        <button class="mini-btn btn-add-photo" onclick="abrirGaleria('hair', 3)" style="background:#6c757d; width:100%; margin-top:8px; margin-bottom:0;"><i class="fas fa-images"></i> 📸 Foto 3 (Galeria)</button>
+                    </div>
+                    <div class="image-group">
+                        <label><i class="fas fa-image"></i> Foto 4</label>
+                        <input type="text" id="input-img-hair4" placeholder="Cole URL da imagem 4">
+                        <button class="mini-btn btn-add-photo" onclick="abrirGaleria('hair', 4)" style="background:#6c757d; width:100%; margin-top:8px; margin-bottom:0;"><i class="fas fa-images"></i> 📸 Foto 4 (Galeria)</button>
+                    </div>
+
                     <div class="form-group"><label>Título</label><input type="text" id="input-title-hair1"></div>
                     <div class="form-group"><label>Descrição</label><textarea id="input-desc-hair1"></textarea></div>
                     <div class="form-group"><label>Preço</label><input type="text" id="input-price-hair1"></div>
@@ -196,8 +243,7 @@
                 <div class="finance-card"><div class="finance-title">📊 Resumo Financeiro</div>
                 <div class="filter-box"><label>Filtrar Mês:</label><input type="month" id="finance-month-filter"><button class="mini-btn" style="background:var(--accent); color:#000;" onclick="renderFinanceiro()">Filtrar</button></div>
                 <div class="total-receita" id="total-receita-mes">Total do mês: R$ 0,00</div>
-                </div>
-                <div class="finance-card"><div class="finance-title">💰 Sangria (Retirada)</div>
+                </div>                <div class="finance-card"><div class="finance-title">💰 Sangria (Retirada)</div>
                 <div class="sangria-box"><input type="number" id="sangria-valor" placeholder="Valor R$"><input type="text" id="sangria-desc" placeholder="Descrição"><button class="mini-btn" style="background:var(--danger-color);" onclick="registrarSangria()">Registrar Sangria</button></div>
                 <div id="lista-sangrias" style="margin-top:12px;"></div>
                 </div>
@@ -242,57 +288,11 @@
     const db = firebase.firestore();
     const auth = firebase.auth();
     
-    // ==================== REGRAS DE SEGURANÇA (FIREBASE FIRESTORE) ====================
-    /*
-    Cole este bloco de regras no Firebase Console > Firestore > Regras:
-
-    rules_version = '2';
-    service cloud.firestore {
-      match /databases/{database}/documents {
-        // Função para verificar se o usuário está autenticado (admin)
-        function isAdmin() {
-          return request.auth != null;
-        }
-        
-        // Coleções públicas (leitura livre, escrita só admin)
-        match /makeup/{document} {
-          allow read: if true;
-          allow write: if isAdmin();
-        }
-        match /hair/{document} {
-          allow read: if true;
-          allow write: if isAdmin();
-        }
-        match /company/{document} {
-          allow read: if true;
-          allow write: if isAdmin();
-        }
-        
-        // Agendamentos: criação pública, mas leitura/edição/delete só admin
-        match /appointments/{document} {
-          allow create: if true;   // qualquer pessoa pode agendar
-          allow read, update, delete: if isAdmin();
-        }
-        
-        // Sangrias e outros dados sensíveis: só admin
-        match /sangrias/{document} {
-          allow read, write: if isAdmin();
-        }
-        
-        // (Opcional) Bloquear qualquer outra coleção não definida
-        match /{document=**} {
-          allow read, write: if false;
-        }
-      }
-    }
-    */
-    
     // Variáveis globais
     let listMakeup = [];
     let listHair = [];
     let listAppointments = [];
-    let completedAppointments = [];
-    let sangrias = [];
+    let completedAppointments = [];    let sangrias = [];
     let companyData = { img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80", bio: "Seja bem-vinda ao meu catálogo! Sou especialista em realçar sua beleza natural..." };
     let currentUser = null;
 
@@ -315,23 +315,19 @@
         const panelUserSpan = document.getElementById('panel-user-email');
         if(user) {
             if(panelUserSpan) panelUserSpan.innerText = user.email || 'Logado';
-            // Carrega dados sensíveis (agendamentos, sangrias) apenas se logado
             await loadPrivateData();
-            // Se o painel estiver ativo, renderiza
             if(document.getElementById('panel-screen').classList.contains('active')) {
                 renderAppointmentsList();
                 renderFinanceiro();
             }
         } else {
             if(panelUserSpan) panelUserSpan.innerText = '';
-            // Limpa dados sensíveis quando desloga
             listAppointments = [];
             completedAppointments = [];
             sangrias = [];
             if(document.getElementById('appointments-list')) document.getElementById('appointments-list').innerHTML = '<div>Faça login para ver os agendamentos.</div>';
             if(document.getElementById('lista-sangrias')) document.getElementById('lista-sangrias').innerHTML = '';
             if(document.getElementById('completed-list-finance')) document.getElementById('completed-list-finance').innerHTML = '';
-            // Se o painel estiver aberto, redireciona para main
             if(document.getElementById('panel-screen').classList.contains('active')) {
                 navigateToMain();
             }
@@ -345,8 +341,7 @@
         if(!email || !password) {
             errorDiv.innerText = 'Preencha e-mail e senha.';
             return;
-        }
-        try {
+        }        try {
             await auth.signInWithEmailAndPassword(email, password);
             document.getElementById('login-modal').style.display = 'none';
             document.getElementById('login-email').value = '';
@@ -376,22 +371,67 @@
         if(e.target === modal) modal.style.display = 'none';
     }
 
+    // ========== FUNÇÃO AUXILIAR: Normalizar imagens (migração de dados antigos) ==========
+    function normalizeImages(data) {
+        // Se tem o formato antigo (img) mas não tem img1, migra
+        if(data.img && !data.img1) {
+            data.img1 = data.img;
+            data.img2 = data.img2 || '';
+            data.img3 = data.img3 || '';
+            data.img4 = data.img4 || '';
+        }
+        // Garante que os 4 campos existam
+        data.img1 = data.img1 || '';
+        data.img2 = data.img2 || '';
+        data.img3 = data.img3 || '';
+        data.img4 = data.img4 || '';
+        return data;
+    }
+
+    // ========== FUNÇÃO AUXILIAR: Pegar array de imagens válidas ==========
+    function getImagesArray(item) {
+        return [item.img1, item.img2, item.img3, item.img4].filter(img => img && img.trim() !== '');    }
+
     // Carregar dados públicos (make, hair, company)
     async function loadPublicData() {
         try {
             const makeupSnapshot = await db.collection('makeup').orderBy('createdAt', 'desc').get();
             listMakeup = [];
-            makeupSnapshot.forEach(doc => { listMakeup.push({ id: doc.id, ...doc.data() }); });
+            makeupSnapshot.forEach(doc => { 
+                const data = normalizeImages(doc.data());
+                listMakeup.push({ id: doc.id, ...data }); 
+            });
             if(listMakeup.length === 0) {
-                const defaultMake = { img: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=500&q=80", title: "Make Social Premium", desc: "Ideal para festas, formaturas e eventos noturnos. Inclui cílios postiços.", price: "Sob Consulta", createdAt: new Date() };
+                const defaultMake = { 
+                    img1: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=500&q=80", 
+                    img2: "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?auto=format&fit=crop&w=500&q=80",
+                    img3: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=500&q=80",
+                    img4: "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=500&q=80",
+                    title: "Make Social Premium", 
+                    desc: "Ideal para festas, formaturas e eventos noturnos. Inclui cílios postiços.", 
+                    price: "Sob Consulta", 
+                    createdAt: new Date() 
+                };
                 const docRef = await db.collection('makeup').add(defaultMake);
                 listMakeup.push({ id: docRef.id, ...defaultMake });
             }
             const hairSnapshot = await db.collection('hair').orderBy('createdAt', 'desc').get();
             listHair = [];
-            hairSnapshot.forEach(doc => { listHair.push({ id: doc.id, ...doc.data() }); });
+            hairSnapshot.forEach(doc => { 
+                const data = normalizeImages(doc.data());
+                listHair.push({ id: doc.id, ...data }); 
+            });
             if(listHair.length === 0) {
-                const defaultHair = { img: "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=500&q=80", title: "Coque Despojado", desc: "Do clássico atemporal ao moderno desconstruído.", price: "Sob Consulta", createdAt: new Date() };
+                const defaultHair = { 
+                    img1: "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=500&q=80", 
+                    img2: "https://images.unsplash.com/photo-1522337055103-2337b2316e85?auto=format&fit=crop&w=500&q=80",
+                    img3: "https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?auto=format&fit=crop&w=500&q=80",
+                    img4: "https://images.unsplash.com/photo-1560869713-7d0a29430803?auto=format&fit=crop&w=500&q=80",
+                    title: "Coque Despojado", 
+                    desc: "Do clássico atemporal ao moderno desconstruído.", 
+                    price: "Sob Consulta", 
+                    createdAt: new Date() 
+                };
                 const docRef = await db.collection('hair').add(defaultHair);
                 listHair.push({ id: docRef.id, ...defaultHair });
             }
@@ -399,8 +439,7 @@
             if(companySnapshot.exists) {
                 companyData = companySnapshot.data();
                 document.getElementById('company-profile-img').src = companyData.img;
-                document.getElementById('company-profile-desc').innerText = companyData.bio;
-                if(document.getElementById('input-img-company')) document.getElementById('input-img-company').value = companyData.img;
+                document.getElementById('company-profile-desc').innerText = companyData.bio;                if(document.getElementById('input-img-company')) document.getElementById('input-img-company').value = companyData.img;
                 if(document.getElementById('input-desc-company')) document.getElementById('input-desc-company').value = companyData.bio;
             }
             renderMainGrid('makeup-grid', listMakeup);
@@ -426,12 +465,57 @@
         } catch(error) { console.error("Erro ao carregar dados privados:", error); }
     }
     
+    // ========== RENDERIZAR GRID PRINCIPAL COM GALERIA DE 4 FOTOS ==========
     function renderMainGrid(gridId, items) {
         const grid = document.getElementById(gridId);
         if(!grid) return;
         grid.innerHTML = '';
         if(items.length === 0) { grid.innerHTML = '<div class="loading">Nenhum item encontrado</div>'; return; }
-        items.forEach(item => { grid.innerHTML += `<div class="card"><img src="${item.img}" onclick="openFullscreen('${item.img}')"><div class="card-info"><h3>${item.title}</h3><p>${item.desc}</p><p class="card-price">${item.price}</p></div></div>`; });
+        items.forEach(item => { 
+            const images = getImagesArray(item);
+            const mainImg = images[0] || '';
+            const totalPhotos = images.length;
+            
+            let thumbnailsHtml = '';
+            if(totalPhotos > 1) {
+                thumbnailsHtml = `<div class="thumbnails">`;
+                images.forEach((img, idx) => {
+                    thumbnailsHtml += `<img src="${img}" onclick="swapImage(event, '${item.id}', ${idx}, this.src)" class="${idx === 0 ? 'active-thumb' : ''}">`;
+                });
+                thumbnailsHtml += `</div>`;
+            }
+            
+            const counterHtml = totalPhotos > 1 ? `<div class="photo-counter"><i class="fas fa-images"></i> ${totalPhotos} fotos</div>` : '';
+            
+            grid.innerHTML += `
+                <div class="card">                    <div class="card-gallery">
+                        ${counterHtml}
+                        <img id="main-img-${item.id}" src="${mainImg}" onclick="openFullscreen(this.src)">
+                        ${thumbnailsHtml}
+                    </div>
+                    <div class="card-info">
+                        <h3>${item.title}</h3>
+                        <p>${item.desc}</p>
+                        <p class="card-price">${item.price}</p>
+                    </div>
+                </div>`; 
+        });
+    }
+    
+    // ========== TROCAR IMAGEM PRINCIPAL VIA THUMBNAIL ==========
+    function swapImage(event, itemId, idx, src) {
+        event.stopPropagation();
+        const mainImg = document.getElementById(`main-img-${itemId}`);
+        if(!mainImg) return;
+        mainImg.style.opacity = '0.5';
+        setTimeout(() => {
+            mainImg.src = src;
+            mainImg.style.opacity = '1';
+        }, 150);
+        const card = mainImg.closest('.card');
+        const thumbs = card.querySelectorAll('.thumbnails img');
+        thumbs.forEach(t => t.classList.remove('active-thumb'));
+        event.currentTarget.classList.add('active-thumb');
     }
     
     function renderManagerList(managerId, items, type) {
@@ -439,7 +523,21 @@
         if(!list) return;
         list.innerHTML = '';
         items.forEach(item => {
-            list.innerHTML += `<div class="manager-item"><div style="display:flex; gap:8px; align-items:center;"><img src="${item.img}" width="50" height="50" style="object-fit:cover; border-radius:8px;"><div><h5>${item.title}</h5><p>${item.price}</p><p style="font-size:10px;">${item.desc ? item.desc.substring(0,30) : ''}</p></div></div><div><button class="action-btn edit" style="background:var(--edit-color); border:none; color:white; padding:5px 10px; border-radius:20px; margin-right:5px;" onclick="startEdit('${type}','${item.id}')">Editar</button><button class="action-btn delete" style="background:var(--danger-color); border:none; color:white; padding:5px 10px; border-radius:20px;" onclick="deletePost('${type}','${item.id}')">Deletar</button></div></div>`;
+            const mainImg = item.img1 || item.img || '';
+            const totalPhotos = getImagesArray(item).length;
+            list.innerHTML += `<div class="manager-item">
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <img src="${mainImg}" width="50" height="50" style="object-fit:cover; border-radius:8px;">
+                    <div>
+                        <h5>${item.title}</h5>
+                        <p>${item.price}</p>
+                        <p style="font-size:10px; color:var(--accent);"><i class="fas fa-images"></i> ${totalPhotos} foto(s)</p>
+                    </div>
+                </div>
+                <div>
+                    <button class="action-btn edit" style="background:var(--edit-color); border:none; color:white; padding:5px 10px; border-radius:20px; margin-right:5px;" onclick="startEdit('${type}','${item.id}')">Editar</button>
+                    <button class="action-btn delete" style="background:var(--danger-color); border:none; color:white; padding:5px 10px; border-radius:20px;" onclick="deletePost('${type}','${item.id}')">Deletar</button>
+                </div>            </div>`;
         });
     }
     
@@ -488,8 +586,7 @@
         if(novoPhone) app.phone = novoPhone;
         await db.collection('appointments').doc(id).update({ valor: app.valor, name: app.name, date: app.date, time: app.time, phone: app.phone });
         renderAppointmentsList();
-        renderFinanceiro();
-    }
+        renderFinanceiro();    }
     
     async function concluirAgendamento(id) {
         if(!currentUser){ alert('Login necessário.'); return; }
@@ -523,7 +620,6 @@
         if(type === 'home' && (!address || !neighborhood)) { alert("Endereço completo"); return; }
         const newBooking = { name, date, time, phone, type, address, neighborhood, desc, valor: null, status: 'active', createdAt: new Date() };
         const docRef = await db.collection('appointments').add(newBooking);
-        // Se o admin estiver logado, atualiza a lista local
         if(currentUser) {
             listAppointments.push({ id: docRef.id, ...newBooking });
             renderAppointmentsList();
@@ -531,7 +627,6 @@
         document.getElementById('booking-name').value = ''; document.getElementById('booking-date').value = ''; document.getElementById('booking-time').value = '';
         document.getElementById('booking-phone').value = ''; document.getElementById('booking-type').value = 'studio'; document.getElementById('booking-address').value = ''; document.getElementById('booking-neighborhood').value = ''; document.getElementById('booking-desc').value = ''; document.getElementById('delivery-fields').style.display = 'none';
         alert("Agendamento solicitado!");
-        // Só mostra notificação se tiver admin logado (para ele saber)
         if(currentUser) {
             const notif = document.getElementById('notification-bubble');
             notif.classList.remove('hidden-fixed');
@@ -540,30 +635,79 @@
         document.getElementById('main-screen').classList.add('active');
         toggleFixedButtonsVisibility(true);
         window.open(`https://wa.me/558599415246?text=${encodeURIComponent("Olá Lanny, acabei de fazer um Agendamento no App!!")}`, '_blank');
-    }
-    
-    async function saveMakeupChanges() { if(!currentUser){alert('Login necessário');return;} 
+    }    
+    // ========== SALVAR MAKEUP COM 4 FOTOS ==========
+    async function saveMakeupChanges() { 
+        if(!currentUser){alert('Login necessário');return;} 
         const id = document.getElementById('edit-make-id').value;
-        const img = document.getElementById('input-img-make1').value;
+        const img1 = document.getElementById('input-img-make1').value.trim();
+        const img2 = document.getElementById('input-img-make2').value.trim();
+        const img3 = document.getElementById('input-img-make3').value.trim();
+        const img4 = document.getElementById('input-img-make4').value.trim();
         const title = document.getElementById('input-title-make1').value;
         const desc = document.getElementById('input-desc-make1').value;
         let price = document.getElementById('input-price-make1').value;
+        
+        if(!img1) { alert('A Foto 1 (Principal) é obrigatória!'); return; }
+        if(!title) { alert('O título é obrigatório!'); return; }
+        
         if(!price.toLowerCase().includes('consulta') && !price.includes('R$')) price = "R$ " + price;
-        if(id) { await db.collection('makeup').doc(id).update({ img, title, desc, price }); const item = listMakeup.find(i => i.id === id); if(item) { item.img = img; item.title = title; item.desc = desc; item.price = price; } }
-        else { const newItem = { img, title, desc, price, createdAt: new Date() }; const docRef = await db.collection('makeup').add(newItem); listMakeup.push({ id: docRef.id, ...newItem }); }
-        document.getElementById('edit-make-id').value = ''; clearMakeFields(); renderMainGrid('makeup-grid', listMakeup); renderManagerList('manager-makeup-list', listMakeup, 'make'); alert("Salvo"); navigateToMain();
+        
+        if(id) { 
+            await db.collection('makeup').doc(id).update({ img1, img2, img3, img4, title, desc, price }); 
+            const item = listMakeup.find(i => i.id === id); 
+            if(item) { 
+                item.img1 = img1; item.img2 = img2; item.img3 = img3; item.img4 = img4; 
+                item.title = title; item.desc = desc; item.price = price; 
+            } 
+        } else { 
+            const newItem = { img1, img2, img3, img4, title, desc, price, createdAt: new Date() }; 
+            const docRef = await db.collection('makeup').add(newItem); 
+            listMakeup.push({ id: docRef.id, ...newItem }); 
+        }
+        document.getElementById('edit-make-id').value = ''; 
+        clearMakeFields(); 
+        renderMainGrid('makeup-grid', listMakeup); 
+        renderManagerList('manager-makeup-list', listMakeup, 'make'); 
+        alert("✅ Postagem salva com 4 fotos!"); 
+        navigateToMain();
     }
-    async function saveHairChanges() { if(!currentUser){alert('Login necessário');return;} 
+
+    // ========== SALVAR HAIR COM 4 FOTOS ==========
+    async function saveHairChanges() { 
+        if(!currentUser){alert('Login necessário');return;} 
         const id = document.getElementById('edit-hair-id').value;
-        const img = document.getElementById('input-img-hair1').value;
+        const img1 = document.getElementById('input-img-hair1').value.trim();
+        const img2 = document.getElementById('input-img-hair2').value.trim();
+        const img3 = document.getElementById('input-img-hair3').value.trim();
+        const img4 = document.getElementById('input-img-hair4').value.trim();
         const title = document.getElementById('input-title-hair1').value;
         const desc = document.getElementById('input-desc-hair1').value;
         let price = document.getElementById('input-price-hair1').value;
+                if(!img1) { alert('A Foto 1 (Principal) é obrigatória!'); return; }
+        if(!title) { alert('O título é obrigatório!'); return; }
+        
         if(!price.toLowerCase().includes('consulta') && !price.includes('R$')) price = "R$ " + price;
-        if(id) { await db.collection('hair').doc(id).update({ img, title, desc, price }); const item = listHair.find(i => i.id === id); if(item) { item.img = img; item.title = title; item.desc = desc; item.price = price; } }
-        else { const newItem = { img, title, desc, price, createdAt: new Date() }; const docRef = await db.collection('hair').add(newItem); listHair.push({ id: docRef.id, ...newItem }); }
-        clearHairFields(); renderMainGrid('hair-grid', listHair); renderManagerList('manager-hair-list', listHair, 'hair'); alert("Salvo"); navigateToMain();
+        
+        if(id) { 
+            await db.collection('hair').doc(id).update({ img1, img2, img3, img4, title, desc, price }); 
+            const item = listHair.find(i => i.id === id); 
+            if(item) { 
+                item.img1 = img1; item.img2 = img2; item.img3 = img3; item.img4 = img4; 
+                item.title = title; item.desc = desc; item.price = price; 
+            } 
+        } else { 
+            const newItem = { img1, img2, img3, img4, title, desc, price, createdAt: new Date() }; 
+            const docRef = await db.collection('hair').add(newItem); 
+            listHair.push({ id: docRef.id, ...newItem }); 
+        }
+        clearHairFields(); 
+        renderMainGrid('hair-grid', listHair); 
+        renderManagerList('manager-hair-list', listHair, 'hair'); 
+        alert("✅ Postagem salva com 4 fotos!"); 
+        navigateToMain();
     }
+
     async function saveCompanyChanges() { if(!currentUser){alert('Login necessário');return;} 
         const img = document.getElementById('input-img-company').value;
         const bio = document.getElementById('input-desc-company').value;
@@ -573,10 +717,27 @@
         document.getElementById('company-profile-desc').innerText = bio;
         alert("Salvo!"); navigateToMain();
     }
-    async function deletePost(type, id) { if(!currentUser){alert('Login necessário');return;} if(confirm("Deletar?")) { if(type === 'make') { await db.collection('makeup').doc(id).delete(); listMakeup = listMakeup.filter(i => i.id !== id); renderMainGrid('makeup-grid', listMakeup); renderManagerList('manager-makeup-list', listMakeup, 'make'); } else { await db.collection('hair').doc(id).delete(); listHair = listHair.filter(i => i.id !== id); renderMainGrid('hair-grid', listHair); renderManagerList('manager-hair-list', listHair, 'hair'); } } }
+
+    async function deletePost(type, id) { 
+        if(!currentUser){alert('Login necessário');return;} 
+        if(confirm("Deletar?")) { 
+            if(type === 'make') { 
+                await db.collection('makeup').doc(id).delete(); 
+                listMakeup = listMakeup.filter(i => i.id !== id); 
+                renderMainGrid('makeup-grid', listMakeup); 
+                renderManagerList('manager-makeup-list', listMakeup, 'make'); 
+            } else { 
+                await db.collection('hair').doc(id).delete(); 
+                listHair = listHair.filter(i => i.id !== id); 
+                renderMainGrid('hair-grid', listHair); 
+                renderManagerList('manager-hair-list', listHair, 'hair'); 
+            } 
+        } 
+    }
     async function registrarSangria() { if(!currentUser){alert('Login necessário');return;} const valor = parseFloat(document.getElementById('sangria-valor').value); const desc = document.getElementById('sangria-desc').value; if(isNaN(valor) || valor <= 0) { alert("Valor inválido"); return; } const newSangria = { valor, desc: desc || "Retirada", data: new Date().toISOString().slice(0,10) }; const docRef = await db.collection('sangrias').add(newSangria); sangrias.push({ id: docRef.id, ...newSangria }); document.getElementById('sangria-valor').value = ''; document.getElementById('sangria-desc').value = ''; renderFinanceiro(); }
     async function deletarSangria(id) { if(!currentUser){alert('Login necessário');return;} if(confirm("Excluir sangria?")) { await db.collection('sangrias').doc(id).delete(); sangrias = sangrias.filter(s => s.id !== id); renderFinanceiro(); } }
     async function deletarConcluido(id) { if(!currentUser){alert('Login necessário');return;} if(confirm("Deletar este serviço concluído?")) { await db.collection('appointments').doc(id).delete(); completedAppointments = completedAppointments.filter(c => c.id !== id); renderFinanceiro(); } }
+    
     function renderFinanceiro() { 
         if(!currentUser) {
             const totalEl = document.getElementById('total-receita-mes');
@@ -594,10 +755,37 @@
         const sangriaDiv = document.getElementById('lista-sangrias'); if(sangriaDiv) { sangriaDiv.innerHTML = `<strong>Histórico Sangrias:</strong>`; sangriasFiltradas.forEach(s => { sangriaDiv.innerHTML += `<div style="background:#fff; margin:5px 0; padding:8px; border-radius:8px;">R$ ${s.valor.toFixed(2)} - ${s.desc || 'Sem desc'} (${s.data}) <button class="mini-btn" style="background:gray;" onclick="deletarSangria('${s.id}')">🗑️</button></div>`; }); }
         const completedDiv = document.getElementById('completed-list-finance'); if(completedDiv) { completedDiv.innerHTML = `<strong>Serviços finalizados (mês selecionado):</strong>`; filteredCompleted.forEach(c => { const dateBr = c.date.split('-').reverse().join('/'); completedDiv.innerHTML += `<div class="completed-item"><div><b>${c.name}</b> - ${dateBr} ${c.time}</div><div>💰 R$ ${(c.valor || 0).toFixed(2)}</div><div class="appointment-actions" style="margin-top:6px;"><button class="mini-btn btn-wa" onclick="enviarComprovante('${c.id}')"><i class="fas fa-receipt"></i> Comprovante</button><button class="mini-btn" style="background:red;" onclick="deletarConcluido('${c.id}')">Deletar</button></div></div>`; }); }
     }
+
     function enviarComprovante(id) { const item = completedAppointments.find(c => c.id === id); if(!item) return; const dataFormat = item.date.split('-').reverse().join('/'); const msg = `🧾 *COMPROVANTE DE SERVIÇO* 🧾\nCliente: ${item.name}\nData: ${dataFormat} às ${item.time}\nServiço: ${item.desc || 'Maquiagem/Penteado'}\nValor Pago: R$ ${(item.valor || 0).toFixed(2)}\nAgradecemos pela preferência! 💄✨`; const phoneClean = item.phone.replace(/\D/g,''); window.open(`https://wa.me/55${phoneClean}?text=${encodeURIComponent(msg)}`, '_blank'); }
-    function startEdit(type, id) { if(type === 'make') { const item = listMakeup.find(i => i.id === id); document.getElementById('edit-make-id').value = item.id; document.getElementById('input-img-make1').value = item.img; document.getElementById('input-title-make1').value = item.title; document.getElementById('input-desc-make1').value = item.desc; document.getElementById('input-price-make1').value = item.price.replace("R$ ", ""); switchPanelTab({currentTarget: document.querySelector(".panel-tab-btn[onclick*='panel-make']")}, 'panel-make'); } else { const item = listHair.find(i => i.id === id); document.getElementById('edit-hair-id').value = item.id; document.getElementById('input-img-hair1').value = item.img; document.getElementById('input-title-hair1').value = item.title; document.getElementById('input-desc-hair1').value = item.desc; document.getElementById('input-price-hair1').value = item.price.replace("R$ ", ""); switchPanelTab({currentTarget: document.querySelector(".panel-tab-btn[onclick*='panel-hair']")}, 'panel-hair'); } }
+
+    // ========== START EDIT CARREGA AS 4 FOTOS ==========
+    function startEdit(type, id) { 
+        if(type === 'make') { 
+            const item = listMakeup.find(i => i.id === id); 
+            document.getElementById('edit-make-id').value = item.id; 
+            document.getElementById('input-img-make1').value = item.img1 || '';
+            document.getElementById('input-img-make2').value = item.img2 || '';
+            document.getElementById('input-img-make3').value = item.img3 || '';
+            document.getElementById('input-img-make4').value = item.img4 || '';
+            document.getElementById('input-title-make1').value = item.title; 
+            document.getElementById('input-desc-make1').value = item.desc; 
+            document.getElementById('input-price-make1').value = item.price.replace("R$ ", ""); 
+            switchPanelTab({currentTarget: document.querySelector(".panel-tab-btn[onclick*='panel-make']")}, 'panel-make'); 
+        } else { 
+            const item = listHair.find(i => i.id === id); 
+            document.getElementById('edit-hair-id').value = item.id; 
+            document.getElementById('input-img-hair1').value = item.img1 || '';
+            document.getElementById('input-img-hair2').value = item.img2 || '';
+            document.getElementById('input-img-hair3').value = item.img3 || '';
+            document.getElementById('input-img-hair4').value = item.img4 || '';
+            document.getElementById('input-title-hair1').value = item.title; 
+            document.getElementById('input-desc-hair1').value = item.desc; 
+            document.getElementById('input-price-hair1').value = item.price.replace("R$ ", ""); 
+            switchPanelTab({currentTarget: document.querySelector(".panel-tab-btn[onclick*='panel-hair']")}, 'panel-hair'); 
+        }     }
     
-    function abrirGaleria(tipo) {
+    // ========== ABRIR GALERIA ACEITA NÚMERO DA FOTO ==========
+    function abrirGaleria(tipo, numFoto) {
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = 'image/*';
@@ -605,13 +793,18 @@
         input.onchange = function(e) {
             const file = e.target.files[0];
             if(file) {
+                // Verifica tamanho (max 2MB para não estourar Firestore)
+                if(file.size > 2 * 1024 * 1024) {
+                    alert('⚠️ Imagem muito grande! Máximo 2MB. Use uma imagem menor.');
+                    return;
+                }
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     const imagemDataURL = event.target.result;
                     if(tipo === 'make') {
-                        document.getElementById('input-img-make1').value = imagemDataURL;
+                        document.getElementById(`input-img-make${numFoto}`).value = imagemDataURL;
                     } else if(tipo === 'hair') {
-                        document.getElementById('input-img-hair1').value = imagemDataURL;
+                        document.getElementById(`input-img-hair${numFoto}`).value = imagemDataURL;
                     } else if(tipo === 'company') {
                         document.getElementById('input-img-company').value = imagemDataURL;
                         const previewImg = document.getElementById('company-profile-img');
@@ -624,8 +817,25 @@
         input.click();
     }
     
-    function clearMakeFields() { document.getElementById('input-img-make1').value = ''; document.getElementById('input-title-make1').value = ''; document.getElementById('input-desc-make1').value = ''; document.getElementById('input-price-make1').value = ''; }
-    function clearHairFields() { document.getElementById('input-img-hair1').value = ''; document.getElementById('input-title-hair1').value = ''; document.getElementById('input-desc-hair1').value = ''; document.getElementById('input-price-hair1').value = ''; }
+    // ========== LIMPAR CAMPOS - 4 FOTOS ==========
+    function clearMakeFields() { 
+        document.getElementById('input-img-make1').value = ''; 
+        document.getElementById('input-img-make2').value = ''; 
+        document.getElementById('input-img-make3').value = ''; 
+        document.getElementById('input-img-make4').value = ''; 
+        document.getElementById('input-title-make1').value = ''; 
+        document.getElementById('input-desc-make1').value = ''; 
+        document.getElementById('input-price-make1').value = ''; 
+    }
+    function clearHairFields() { 
+        document.getElementById('input-img-hair1').value = ''; 
+        document.getElementById('input-img-hair2').value = ''; 
+        document.getElementById('input-img-hair3').value = ''; 
+        document.getElementById('input-img-hair4').value = '';         document.getElementById('input-title-hair1').value = ''; 
+        document.getElementById('input-desc-hair1').value = ''; 
+        document.getElementById('input-price-hair1').value = ''; 
+    }
+
     function toggleFixedButtonsVisibility(show) { const b = document.getElementById('fixed-booking-btn'); const r = document.getElementById('fixed-buttons-right'); if(show) { b.classList.remove('hidden-fixed'); r.classList.remove('hidden-fixed'); } else { b.classList.add('hidden-fixed'); r.classList.add('hidden-fixed'); } }
     function navigateToBooking() { document.getElementById('main-screen').classList.remove('active'); document.getElementById('booking-screen').classList.add('active'); toggleFixedButtonsVisibility(false); }
     function navigateToMainFromBooking() { document.getElementById('booking-screen').classList.remove('active'); document.getElementById('main-screen').classList.add('active'); toggleFixedButtonsVisibility(true); }
@@ -647,9 +857,9 @@
         document.getElementById('drawer-overlay').addEventListener('click', closeMenuFromOverlay);
         toggleFixedButtonsVisibility(true);
         if(document.getElementById('finance-month-filter')) document.getElementById('finance-month-filter').value = new Date().toISOString().slice(0,7);
-        loadPublicData();  // carrega catálogo e perfil público
+        loadPublicData();
         updateLoginLogoutMenu();
     };
 </script>
 </body>
-</html>
+                                                                                                                                                             </html>
