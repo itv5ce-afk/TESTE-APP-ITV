@@ -82,7 +82,7 @@
         .total-receita { font-size: 1.2rem; font-weight: bold; background: var(--primary); color: white; padding: 12px; border-radius: 12px; text-align: center; }
         .completed-item { background: #f8f9fa; border-left: 3px solid var(--success-color); padding: 12px; border-radius: 8px; margin-bottom: 10px; }
         .edit-modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:200; display:flex; justify-content:center; align-items:center; }
-        .edit-modal-box { background: white; width: 90%; max-width: 340px; border-radius: 20px; padding: 20px; }
+        .edit-modal-box { background: white; width: 90%; max-width: 400px; border-radius: 20px; padding: 20px; max-height: 90vh; overflow-y: auto; }
         .edit-card, .edit-modal-box { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #eee; }
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 5px; }
@@ -118,13 +118,8 @@
         .image-group label { font-weight: 600; color: var(--accent); font-size: 0.8rem; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
         .image-group .mini-btn { margin-top: 8px; }
         .photo-counter { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; z-index: 2; backdrop-filter: blur(4px); }
-        
-        /* estilos cashback */
-        .cashback-screen { background: #fff; }
-        .cashback-card { background: var(--gold-light); border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--accent); }
-        .saldo-disponivel { font-size: 1.8rem; font-weight: bold; color: var(--primary); }
-        .resgate-btn { background: var(--success-color); border: none; }
-        .atividade-item { border-bottom: 1px solid #eee; padding: 10px 0; }
+        .completed-details { margin-top: 8px; font-size: 0.75rem; color: #444; }
+        .cashback-highlight { color: var(--success-color); font-weight: bold; }
     </style>
 </head>
 <body>
@@ -140,16 +135,12 @@
         <p class="footer-text">© 2026 Lanny Stilit</p>
     </div>
 
-    <!-- TELA AGENDAMENTO (com CPF) -->
+    <!-- TELA AGENDAMENTO -->
     <div id="booking-screen" class="screen"><div class="panel-header"><button class="back-btn" onclick="navigateToMainFromBooking()"><i class="fas fa-arrow-left"></i></button><h3 style="font-family: 'Cormorant Garamond'; font-size:1.5rem;">Solicitar Agendamento</h3></div>
-        <div class="panel-body"><div class="edit-card"><h4>Seus Dados</h4><div class="form-group"><label>Nome Completo *</label><input type="text" id="booking-name"></div>
-        <div class="form-group"><label>CPF/CASHBACK</label><input type="text" id="booking-cpf" placeholder="000.000.000-00" oninput="mascaraCPF(this)"></div>
-        <div class="form-group"><label>Data *</label><input type="date" id="booking-date"></div>
-        <div class="form-group"><label>Horário *</label><input type="time" id="booking-time"></div>
-        <div class="form-group"><label>WhatsApp *</label><div class="phone-input-container" style="display:flex; border:1px solid #ddd; border-radius:6px;"><span style="padding:10px;">+55</span><input type="tel" id="booking-phone" style="flex:1; border:none;" oninput="maskPhone(this)"></div></div>
+        <div class="panel-body"><div class="edit-card"><h4>Seus Dados</h4><div class="form-group"><label>Nome Completo *</label><input type="text" id="booking-name"></div><div class="form-group"><label>Data *</label><input type="date" id="booking-date"></div><div class="form-group"><label>Horário *</label><input type="time" id="booking-time"></div><div class="form-group"><label>WhatsApp *</label><div class="phone-input-container" style="display:flex; border:1px solid #ddd; border-radius:6px;"><span style="padding:10px;">+55</span><input type="tel" id="booking-phone" style="flex:1; border:none;" oninput="maskPhone(this)"></div></div>
         <div class="form-group"><label>Tipo</label><select id="booking-type" onchange="toggleDeliveryFields()"><option value="studio">No Estúdio</option><option value="home">A Domicílio</option></select></div>
         <div id="delivery-fields" style="display:none;"><div class="form-group"><label>Endereço</label><input type="text" id="booking-address"></div><div class="form-group"><label>Bairro</label><input type="text" id="booking-neighborhood"></div></div>
-        <div class="form-group"><label>Descrição do serviço desejado</label><textarea id="booking-desc" rows="3"></textarea></div>
+        <div class="form-group"><label>Descrição</label><textarea id="booking-desc" rows="3"></textarea></div>
         <button class="save-btn" style="background:var(--accent);" onclick="processBooking()">Agendar</button></div></div>
     </div>
 
@@ -157,7 +148,6 @@
     <div id="aboutme-screen" class="screen"><div class="panel-header"><button class="back-btn" onclick="navigateToMainFromAbout()"><i class="fas fa-arrow-left"></i></button><h3>Minha Empresa</h3></div>
         <div class="panel-body"><div class="profile-container"><div class="profile-img-wrapper"><img id="company-profile-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80" class="profile-img" onclick="openFullscreen(this.src)" style="width:100%; border-radius:20px;"></div><h2 class="profile-name">Lanny Stilit</h2><p class="profile-subtitle">Estética & Visagismo</p><div class="profile-bio-box"><p id="company-profile-desc">Seja bem-vinda ao meu catálogo! Sou especialista em realçar sua beleza natural...</p></div></div></div>
     </div>
-    
     <!-- TELA PAINEL -->
     <div id="panel-screen" class="screen"><div class="panel-header"><button class="back-btn" onclick="navigateToMain()"><i class="fas fa-arrow-left"></i></button><h3>Painel de Controle</h3><div style="margin-left:auto;"><span id="panel-user-email" class="user-status" style="background:#2c2c2c; color:white; padding:4px 8px;"></span></div></div>
         <div class="panel-body">
@@ -169,22 +159,121 @@
                 <button class="panel-tab-btn" onclick="switchPanelTab(event, 'panel-finance')">Financeiro</button>
             </div>
             <div id="panel-appointments" class="panel-section active"><div id="appointments-list"></div></div>
-            <div id="panel-make" class="panel-section"><!-- conteúdo existente --><div class="edit-card"><h4 id="form-make-title">Nova Postagem Maquiagem</h4><input type="hidden" id="edit-make-id"><div class="image-group"><label><i class="fas fa-image"></i> Foto 1 (Principal)</label><input type="text" id="input-img-make1" placeholder="Cole URL da imagem 1"><button class="mini-btn btn-add-photo" onclick="abrirGaleria('make', 1)" style="background:#6c757d; width:100%; margin-top:8px;"><i class="fas fa-images"></i> 📸 Foto 1 (Galeria)</button></div><div class="image-group"><label>Foto 2</label><input type="text" id="input-img-make2"><button class="mini-btn btn-add-photo" onclick="abrirGaleria('make', 2)" style="background:#6c757d; width:100%; margin-top:8px;">📸 Foto 2</button></div><div class="image-group"><label>Foto 3</label><input type="text" id="input-img-make3"><button class="mini-btn btn-add-photo" onclick="abrirGaleria('make', 3)">📸 Foto 3</button></div><div class="image-group"><label>Foto 4</label><input type="text" id="input-img-make4"><button class="mini-btn btn-add-photo" onclick="abrirGaleria('make', 4)">📸 Foto 4</button></div><div class="form-group"><label>Título</label><input type="text" id="input-title-make1"></div><div class="form-group"><label>Descrição</label><textarea id="input-desc-make1"></textarea></div><div class="form-group"><label>Preço</label><input type="text" id="input-price-make1"></div><button class="save-btn" onclick="saveMakeupChanges()">Salvar</button></div><div id="manager-makeup-list"></div></div>
-            <div id="panel-hair" class="panel-section"><div class="edit-card"><h4>Nova Postagem Cabelo</h4><input type="hidden" id="edit-hair-id"><div class="image-group"><label>Foto 1</label><input type="text" id="input-img-hair1"><button class="mini-btn btn-add-photo" onclick="abrirGaleria('hair', 1)">📸 Foto 1</button></div><div class="image-group"><label>Foto 2</label><input type="text" id="input-img-hair2"><button class="mini-btn btn-add-photo" onclick="abrirGaleria('hair', 2)">📸 Foto 2</button></div><div class="image-group"><label>Foto 3</label><input type="text" id="input-img-hair3"><button class="mini-btn btn-add-photo" onclick="abrirGaleria('hair', 3)">📸 Foto 3</button></div><div class="image-group"><label>Foto 4</label><input type="text" id="input-img-hair4"><button class="mini-btn btn-add-photo" onclick="abrirGaleria('hair', 4)">📸 Foto 4</button></div><div class="form-group"><label>Título</label><input type="text" id="input-title-hair1"></div><div class="form-group"><label>Descrição</label><textarea id="input-desc-hair1"></textarea></div><div class="form-group"><label>Preço</label><input type="text" id="input-price-hair1"></div><button class="save-btn" onclick="saveHairChanges()">Salvar</button></div><div id="manager-hair-list"></div></div>
-            <div id="panel-company" class="panel-section"><div class="edit-card"><h4>Editar Empresa</h4><div class="form-group"><label>Foto URL</label><input type="text" id="input-img-company" value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80"></div><button class="mini-btn btn-add-photo" onclick="abrirGaleria('company')" style="background:#6c757d; width:100%; margin-bottom:15px;">📸 ADD FOTO (Galeria)</button><div class="form-group"><label>Biografia</label><textarea id="input-desc-company">Seja bem-vinda ao meu catálogo! Sou especialista em realçar sua beleza natural...</textarea></div><button class="save-btn" onclick="saveCompanyChanges()">Salvar Empresa</button></div></div>
-            <div id="panel-finance" class="panel-section"><div class="finance-card"><div class="finance-title">📊 Resumo Financeiro</div><div class="filter-box"><label>Filtrar Mês:</label><input type="month" id="finance-month-filter"><button class="mini-btn" style="background:var(--accent); color:#000;" onclick="renderFinanceiro()">Filtrar</button></div><div class="total-receita" id="total-receita-mes">Total do mês: R$ 0,00</div></div><div class="finance-card"><div class="finance-title">💰 Sangria (Retirada)</div><div class="sangria-box"><input type="number" id="sangria-valor" placeholder="Valor R$"><input type="text" id="sangria-desc" placeholder="Descrição"><button class="mini-btn" style="background:var(--danger-color);" onclick="registrarSangria()">Registrar Sangria</button></div><div id="lista-sangrias"></div></div><div class="finance-card"><div class="finance-title">✅ Agenda Concluída (Pagamentos)</div><div id="completed-list-finance"></div></div></div>
+            
+            <!-- PAINEL MAKE -->
+            <div id="panel-make" class="panel-section">
+                <div class="edit-card">
+                    <h4 id="form-make-title">Nova Postagem Maquiagem</h4>
+                    <input type="hidden" id="edit-make-id">
+                    
+                    <div class="image-group">
+                        <label><i class="fas fa-image"></i> Foto 1 (Principal)</label>
+                        <input type="text" id="input-img-make1" placeholder="Cole URL da imagem 1">
+                        <button class="mini-btn btn-add-photo" onclick="abrirGaleria('make', 1)" style="background:#6c757d; width:100%; margin-top:8px; margin-bottom:0;"><i class="fas fa-images"></i> 📸 Foto 1 (Galeria)</button>
+                    </div>
+                    <div class="image-group">
+                        <label><i class="fas fa-image"></i> Foto 2</label>
+                        <input type="text" id="input-img-make2" placeholder="Cole URL da imagem 2">
+                        <button class="mini-btn btn-add-photo" onclick="abrirGaleria('make', 2)" style="background:#6c757d; width:100%; margin-top:8px; margin-bottom:0;"><i class="fas fa-images"></i> 📸 Foto 2 (Galeria)</button>
+                    </div>
+                    <div class="image-group">
+                        <label><i class="fas fa-image"></i> Foto 3</label>
+                        <input type="text" id="input-img-make3" placeholder="Cole URL da imagem 3">
+                        <button class="mini-btn btn-add-photo" onclick="abrirGaleria('make', 3)" style="background:#6c757d; width:100%; margin-top:8px; margin-bottom:0;"><i class="fas fa-images"></i> 📸 Foto 3 (Galeria)</button>
+                    </div>
+                    <div class="image-group">
+                        <label><i class="fas fa-image"></i> Foto 4</label>
+                        <input type="text" id="input-img-make4" placeholder="Cole URL da imagem 4">
+                        <button class="mini-btn btn-add-photo" onclick="abrirGaleria('make', 4)" style="background:#6c757d; width:100%; margin-top:8px; margin-bottom:0;"><i class="fas fa-images"></i> 📸 Foto 4 (Galeria)</button>
+                    </div>
+
+                    <div class="form-group"><label>Título</label><input type="text" id="input-title-make1"></div>
+                    <div class="form-group"><label>Descrição</label><textarea id="input-desc-make1"></textarea></div>
+                    <div class="form-group"><label>Preço</label><input type="text" id="input-price-make1"></div>
+                    <button class="save-btn" onclick="saveMakeupChanges()">Salvar</button>
+                </div>
+                <h4>Postagens</h4>
+                <div id="manager-makeup-list"></div>
+            </div>
+            
+            <!-- PAINEL CABELO -->
+            <div id="panel-hair" class="panel-section">                <div class="edit-card">
+                    <h4>Nova Postagem Cabelo</h4>
+                    <input type="hidden" id="edit-hair-id">
+                    
+                    <div class="image-group">
+                        <label><i class="fas fa-image"></i> Foto 1 (Principal)</label>
+                        <input type="text" id="input-img-hair1" placeholder="Cole URL da imagem 1">
+                        <button class="mini-btn btn-add-photo" onclick="abrirGaleria('hair', 1)" style="background:#6c757d; width:100%; margin-top:8px; margin-bottom:0;"><i class="fas fa-images"></i> 📸 Foto 1 (Galeria)</button>
+                    </div>
+                    <div class="image-group">
+                        <label><i class="fas fa-image"></i> Foto 2</label>
+                        <input type="text" id="input-img-hair2" placeholder="Cole URL da imagem 2">
+                        <button class="mini-btn btn-add-photo" onclick="abrirGaleria('hair', 2)" style="background:#6c757d; width:100%; margin-top:8px; margin-bottom:0;"><i class="fas fa-images"></i> 📸 Foto 2 (Galeria)</button>
+                    </div>
+                    <div class="image-group">
+                        <label><i class="fas fa-image"></i> Foto 3</label>
+                        <input type="text" id="input-img-hair3" placeholder="Cole URL da imagem 3">
+                        <button class="mini-btn btn-add-photo" onclick="abrirGaleria('hair', 3)" style="background:#6c757d; width:100%; margin-top:8px; margin-bottom:0;"><i class="fas fa-images"></i> 📸 Foto 3 (Galeria)</button>
+                    </div>
+                    <div class="image-group">
+                        <label><i class="fas fa-image"></i> Foto 4</label>
+                        <input type="text" id="input-img-hair4" placeholder="Cole URL da imagem 4">
+                        <button class="mini-btn btn-add-photo" onclick="abrirGaleria('hair', 4)" style="background:#6c757d; width:100%; margin-top:8px; margin-bottom:0;"><i class="fas fa-images"></i> 📸 Foto 4 (Galeria)</button>
+                    </div>
+
+                    <div class="form-group"><label>Título</label><input type="text" id="input-title-hair1"></div>
+                    <div class="form-group"><label>Descrição</label><textarea id="input-desc-hair1"></textarea></div>
+                    <div class="form-group"><label>Preço</label><input type="text" id="input-price-hair1"></div>
+                    <button class="save-btn" onclick="saveHairChanges()">Salvar</button>
+                </div>
+                <div id="manager-hair-list"></div>
+            </div>
+            
+            <!-- PAINEL EMPRESA -->
+            <div id="panel-company" class="panel-section">
+                <div class="edit-card">
+                    <h4>Editar Empresa</h4>
+                    <div class="form-group"><label>Foto URL</label><input type="text" id="input-img-company" value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80"></div>
+                    <button class="mini-btn btn-add-photo" onclick="abrirGaleria('company')" style="background:#6c757d; width:100%; margin-bottom:15px;"><i class="fas fa-images"></i> 📸 ADD FOTOS (Galeria)</button>
+                    <div class="form-group"><label>Biografia</label><textarea id="input-desc-company">Seja bem-vinda ao meu catálogo! Sou especialista em realçar sua beleza natural...</textarea></div>
+                    <button class="save-btn" onclick="saveCompanyChanges()">Salvar Empresa</button>
+                </div>
+            </div>
+            
+            <!-- PAINEL FINANCEIRO -->
+            <div id="panel-finance" class="panel-section">
+                <div class="finance-card"><div class="finance-title">📊 Resumo Financeiro</div>
+                <div class="filter-box"><label>Filtrar Mês:</label><input type="month" id="finance-month-filter"><button class="mini-btn" style="background:var(--accent); color:#000;" onclick="renderFinanceiro()">Filtrar</button></div>
+                <div class="total-receita" id="total-receita-mes">Total do mês: R$ 0,00</div>
+                </div>                <div class="finance-card"><div class="finance-title">💰 Sangria (Retirada)</div>
+                <div class="sangria-box"><input type="number" id="sangria-valor" placeholder="Valor R$"><input type="text" id="sangria-desc" placeholder="Descrição"><button class="mini-btn" style="background:var(--danger-color);" onclick="registrarSangria()">Registrar Sangria</button></div>
+                <div id="lista-sangrias" style="margin-top:12px;"></div>
+                </div>
+                <div class="finance-card"><div class="finance-title">✅ Agenda Concluída (Pagamentos)</div>
+                <div id="completed-list-finance"></div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- TELA CASHBACK (NOVA) -->
-    <div id="cashback-screen" class="screen">
-        <div class="panel-header"><button class="back-btn" onclick="fecharCashback()"><i class="fas fa-arrow-left"></i></button><h3>💰 Área Cashback</h3></div>
-        <div class="panel-body">
-            <div class="cashback-card"><label>CPF do Cliente</label><input type="text" id="cashback-cpf" placeholder="000.000.000-00" oninput="mascaraCPF(this)"><button class="save-btn" style="margin-top:10px;" onclick="consultarSaldoCashback()">Consultar Saldo</button></div>
-            <div id="cashback-resultado" style="display:none;">
-                <div class="cashback-card"><h4>👤 Nome: <span id="cb-nome"></span></h4><div>SALDO DISPONÍVEL TOTAL: <span id="cb-saldo" class="saldo-disponivel">R$ 0,00</span></div><button id="btn-resgatar" class="mini-btn resgate-btn" onclick="resgatarCashback()">💸 RESGATE</button><small style="display:block; margin-top:8px;">*Resgate reduz seu saldo (converte em desconto ou dinheiro conforme política).</small></div>
-                <div class="cashback-card"><h4>📋 Agendamentos Concluídos</h4><div id="cb-agendamentos"></div></div>
-                <div class="cashback-card"><h4>🔄 Atividades Recentes (Cashback)</h4><div id="cb-atividades"></div></div>
+    <!-- MODAL DE EDIÇÃO COMPLETA DE AGENDAMENTO -->
+    <div id="edit-appointment-modal" class="edit-modal-overlay" style="display:none;">
+        <div class="edit-modal-box">
+            <h3 style="margin-bottom:15px;">✏️ Editar Agendamento</h3>
+            <input type="hidden" id="edit-app-id">
+            <div class="form-group"><label>Nome do Cliente</label><input type="text" id="edit-app-name"></div>
+            <div class="form-group"><label>Data Atendimento</label><input type="date" id="edit-app-date"></div>
+            <div class="form-group"><label>Hora Atendimento</label><input type="time" id="edit-app-time"></div>
+            <div class="form-group"><label>Tipo de Atendimento</label><select id="edit-app-type"><option value="studio">Estúdio</option><option value="home">Domicílio</option></select></div>
+            <div id="edit-delivery-fields"><div class="form-group"><label>Endereço</label><input type="text" id="edit-app-address"></div><div class="form-group"><label>Bairro</label><input type="text" id="edit-app-neighborhood"></div></div>
+            <div class="form-group"><label>Observações do Serviço</label><textarea id="edit-app-desc" rows="2"></textarea></div>
+            <div class="form-group"><label>Valor Total (R$)</label><input type="number" step="0.01" id="edit-app-valor"></div>
+            <div class="form-group"><label>Desconto em Cashback (%)</label><input type="number" step="0.01" id="edit-app-cashbackPercent" oninput="calcularCashbackSaldo()"></div>
+            <div class="form-group"><label>Saldo em Cashback (R$)</label><input type="text" id="edit-app-cashbackAmount" readonly style="background:#f0f0f0;"></div>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="save-btn" onclick="saveAppointmentChanges()" style="background:var(--success-color);">Salvar Alterações</button>
+                <button class="save-btn" onclick="closeEditModal()" style="background:#6c757d;">Cancelar</button>
             </div>
         </div>
     </div>
@@ -192,29 +281,19 @@
     <button id="fixed-booking-btn" class="booking-fixed-btn" onclick="navigateToBooking()"><i class="fas fa-calendar-check"></i> Agendar Horário</button>
     <div id="fixed-buttons-right" class="fixed-buttons-container"><div id="notification-bubble" class="notification-bubble hidden-fixed" onclick="dismissNotification(event)"><i class="fas fa-bell"></i> Novo Agendamento!</div><button id="fixed-settings-btn" class="settings-fixed-btn" onclick="toggleSettingsMenu()"><i class="fas fa-cog"></i></button></div>
     <div id="drawer-overlay" class="overlay-drawer"></div>
-    <div id="settings-drawer" class="settings-menu"><button class="close-menu-btn" onclick="toggleSettingsMenu()" style="background:none; border:none; font-size:1.5rem; float:right;"><i class="fas fa-times"></i></button><h3>Ajustes</h3><a href="https://wa.me/558599415246?text=Ol%C3%A1" target="_blank" class="whatsapp-trigger-btn">WHATSAPP <i class="fab fa-whatsapp"></i></a><div class="panel-trigger-btn" onclick="navigateToAboutMe()">MINHA EMPRESA</div><div class="panel-trigger-btn" onclick="abrirCashback()">💰 CASHBACK</div><div id="dynamic-login-logout"></div></div>
-
-    <!-- MODAL DE EDIÇÃO DE AGENDAMENTO (completo) -->
-    <div id="edit-appointment-modal" class="edit-modal-overlay" style="display:none;">
-        <div class="edit-modal-box" style="max-width:380px; max-height:80vh; overflow-y:auto;">
-            <h4>✏️ Editar Agendamento</h4>
-            <input type="hidden" id="edit-app-id">
-            <div class="form-group"><label>Nome</label><input type="text" id="edit-app-nome"></div>
-            <div class="form-group"><label>CPF</label><input type="text" id="edit-app-cpf" oninput="mascaraCPF(this)"></div>
-            <div class="form-group"><label>Data Atendimento</label><input type="date" id="edit-app-data"></div>
-            <div class="form-group"><label>Hora Atendimento</label><input type="time" id="edit-app-hora"></div>
-            <div class="form-group"><label>Local Atendimento</label><select id="edit-app-tipo"><option value="studio">Salão</option><option value="home">Domicílio</option></select></div>
-            <div id="edit-endereco-group"><div class="form-group"><label>Endereço</label><input type="text" id="edit-app-endereco"></div><div class="form-group"><label>Bairro</label><input type="text" id="edit-app-bairro"></div></div>
-            <div class="form-group"><label>Observações do Serviço</label><textarea id="edit-app-desc" rows="2"></textarea></div>
-            <div class="form-group"><label>Valor Total (R$)</label><input type="number" step="0.01" id="edit-app-valor" placeholder="0,00"></div>
-            <div class="form-group"><label>Cashback %</label><input type="number" step="0.1" id="edit-app-cashback-pct" placeholder="Ex: 5"></div>
-            <button class="save-btn" onclick="salvarEdicaoAgendamento()">Salvar Alterações</button>
-            <button class="save-btn" style="background:gray; margin-top:8px;" onclick="fecharModalEdicao()">Cancelar</button>
-        </div>
+    <div id="settings-drawer" class="settings-menu"><button class="close-menu-btn" onclick="toggleSettingsMenu()" style="background:none; border:none; font-size:1.5rem; float:right;"><i class="fas fa-times"></i></button><h3>Ajustes</h3><a href="https://wa.me/558599415246?text=Ol%C3%A1" target="_blank" class="whatsapp-trigger-btn">WHATSAPP <i class="fab fa-whatsapp"></i></a><div class="panel-trigger-btn" onclick="navigateToAboutMe()">MINHA EMPRESA</div>
+        <div id="dynamic-login-logout"></div>
     </div>
 
+    <!-- MODAL LOGIN -->
     <div id="login-modal" class="login-modal-overlay">
-        <div class="login-modal-card"><h3>🔐 Acesso Restrito</h3><input type="email" id="login-email" class="login-input" placeholder="E-mail"><input type="password" id="login-password" class="login-input" placeholder="Senha"><button class="login-btn" onclick="loginFirebase()">Entrar no Painel</button><div id="login-error-msg" class="login-error"></div></div>
+        <div class="login-modal-card">
+            <h3>🔐 Acesso Restrito</h3>
+            <input type="email" id="login-email" class="login-input" placeholder="E-mail" autocomplete="email">
+            <input type="password" id="login-password" class="login-input" placeholder="Senha" autocomplete="current-password">
+            <button class="login-btn" onclick="loginFirebase()">Entrar no Painel</button>
+            <div id="login-error-msg" class="login-error"></div>
+        </div>
     </div>
 </div>
 
@@ -228,32 +307,29 @@
         messagingSenderId: "53044575318",
         appId: "1:53044575318:web:0e1f91217379c378a30ff7"
     };
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const auth = firebase.auth();
     
-    let listMakeup = [], listHair = [], listAppointments = [], completedAppointments = [], sangrias = [];
+    let listMakeup = [];
+    let listHair = [];
+    let listAppointments = [];
+    let completedAppointments = [];    let sangrias = [];
     let companyData = { img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80", bio: "Seja bem-vinda ao meu catálogo! Sou especialista em realçar sua beleza natural..." };
     let currentUser = null;
-    let currentCashbackCliente = null; // armazena dados do cliente consultado
 
-    // Máscaras
-    function mascaraCPF(input) { let v = input.value.replace(/\D/g,""); if(v.length>11) v=v.slice(0,11); if(v.length>9) input.value = v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,"$1.$2.$3-$4"); else if(v.length>6) input.value = v.replace(/(\d{3})(\d{3})(\d{1,3})/,"$1.$2.$3"); else if(v.length>3) input.value = v.replace(/(\d{3})(\d{1,3})/,"$1.$2"); else input.value=v; }
-    function maskPhone(input) { let v = input.value.replace(/\D/g,""); if(v.length > 11) v = v.substring(0,11); if(v.length > 6) input.value = `(${v.substring(0,2)}) ${v.substring(2,7)}-${v.substring(7,11)}`; else if(v.length > 2) input.value = `(${v.substring(0,2)}) ${v.substring(2)}`; else input.value = v; }
-    function limpaCPF(cpf) { return cpf.replace(/\D/g,''); }
-
-    // Atualização de menu
     function updateLoginLogoutMenu() {
         const container = document.getElementById('dynamic-login-logout');
         if(!container) return;
         if(currentUser) {
-            container.innerHTML = `<div class="panel-trigger-btn panel-access-btn" onclick="navigateToPanel()">👑 PAINEL DE CONTROLE</div><div class="panel-trigger-btn" onclick="logoutFirebase()">🚪 SAIR</div>`;
+            container.innerHTML = `<div class="panel-trigger-btn panel-access-btn" onclick="navigateToPanel()">👑 PAINEL DE CONTROLE</div>
+                                   <div class="panel-trigger-btn" onclick="logoutFirebase()">🚪 SAIR</div>`;
         } else {
             container.innerHTML = `<div class="panel-trigger-btn" id="login-trigger-btn" onclick="abrirModalLogin()">🔐 LOGIN</div>`;
         }
     }
 
-    // Auth
     auth.onAuthStateChanged(async (user) => {
         currentUser = user;
         updateLoginLogoutMenu();
@@ -261,105 +337,332 @@
         if(user) {
             if(panelUserSpan) panelUserSpan.innerText = user.email || 'Logado';
             await loadPrivateData();
-            if(document.getElementById('panel-screen').classList.contains('active')) { renderAppointmentsList(); renderFinanceiro(); }
+            if(document.getElementById('panel-screen').classList.contains('active')) {
+                renderAppointmentsList();
+                renderFinanceiro();
+            }
         } else {
             if(panelUserSpan) panelUserSpan.innerText = '';
-            listAppointments = []; completedAppointments = []; sangrias = [];
+            listAppointments = [];
+            completedAppointments = [];
+            sangrias = [];
             if(document.getElementById('appointments-list')) document.getElementById('appointments-list').innerHTML = '<div>Faça login para ver os agendamentos.</div>';
-            if(document.getElementById('panel-screen').classList.contains('active')) navigateToMain();
+            if(document.getElementById('lista-sangrias')) document.getElementById('lista-sangrias').innerHTML = '';
+            if(document.getElementById('completed-list-finance')) document.getElementById('completed-list-finance').innerHTML = '';
+            if(document.getElementById('panel-screen').classList.contains('active')) {
+                navigateToMain();
+            }
         }
     });
-    async function loginFirebase() { try { await auth.signInWithEmailAndPassword(document.getElementById('login-email').value.trim(), document.getElementById('login-password').value.trim()); document.getElementById('login-modal').style.display = 'none'; toggleSettingsMenu(); navigateToPanel(); } catch(err) { document.getElementById('login-error-msg').innerText = 'Erro: '+err.message; } }
-    async function logoutFirebase() { await auth.signOut(); toggleSettingsMenu(); alert('Saiu'); if(document.getElementById('panel-screen').classList.contains('active')) navigateToMain(); }
-    function abrirModalLogin() { toggleSettingsMenu(); document.getElementById('login-modal').style.display = 'flex'; }
-    window.onclick = function(e) { if(e.target === document.getElementById('login-modal')) document.getElementById('login-modal').style.display = 'none'; if(e.target === document.getElementById('edit-appointment-modal')) fecharModalEdicao(); }
 
-    // Normalização imagens
-    function normalizeImages(data) { if(data.img && !data.img1) { data.img1 = data.img; data.img2 = data.img2||''; data.img3 = data.img3||''; data.img4 = data.img4||''; } data.img1 = data.img1||''; data.img2 = data.img2||''; data.img3 = data.img3||''; data.img4 = data.img4||''; return data; }
-    function getImagesArray(item) { return [item.img1, item.img2, item.img3, item.img4].filter(img => img && img.trim() !== ''); }
+    async function loginFirebase() {
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value.trim();
+        const errorDiv = document.getElementById('login-error-msg');
+        if(!email || !password) {
+            errorDiv.innerText = 'Preencha e-mail e senha.';
+            return;
+        }        try {
+            await auth.signInWithEmailAndPassword(email, password);
+            document.getElementById('login-modal').style.display = 'none';
+            document.getElementById('login-email').value = '';
+            document.getElementById('login-password').value = '';
+            errorDiv.innerText = '';
+            toggleSettingsMenu();
+            navigateToPanel();
+        } catch(err) {
+            errorDiv.innerText = 'Erro: ' + (err.message || 'Credenciais inválidas.');
+        }
+    }
 
-    // Carregar dados públicos
+    async function logoutFirebase() {
+        await auth.signOut();
+        toggleSettingsMenu();
+        alert('Você saiu do painel.');
+        if(document.getElementById('panel-screen').classList.contains('active')) navigateToMain();
+    }
+
+    function abrirModalLogin() {
+        toggleSettingsMenu();
+        const modal = document.getElementById('login-modal');
+        if(modal) modal.style.display = 'flex';
+    }
+    window.onclick = function(e) {
+        const modal = document.getElementById('login-modal');
+        if(e.target === modal) modal.style.display = 'none';
+        const editModal = document.getElementById('edit-appointment-modal');
+        if(e.target === editModal) closeEditModal();
+    }
+
+    function normalizeImages(data) {
+        if(data.img && !data.img1) {
+            data.img1 = data.img;
+            data.img2 = data.img2 || '';
+            data.img3 = data.img3 || '';
+            data.img4 = data.img4 || '';
+        }
+        data.img1 = data.img1 || '';
+        data.img2 = data.img2 || '';
+        data.img3 = data.img3 || '';
+        data.img4 = data.img4 || '';
+        return data;
+    }
+
+    function getImagesArray(item) {
+        return [item.img1, item.img2, item.img3, item.img4].filter(img => img && img.trim() !== '');    }
+
     async function loadPublicData() {
         try {
-            const makeupSnapshot = await db.collection('makeup').orderBy('createdAt','desc').get();
-            listMakeup = []; makeupSnapshot.forEach(doc=>{ listMakeup.push({ id:doc.id, ...normalizeImages(doc.data()) }); });
-            if(!listMakeup.length) { const def = { img1:"https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=500&q=80", img2:"", img3:"", img4:"", title:"Make Social Premium", desc:"Ideal para festas", price:"Sob Consulta", createdAt:new Date() }; const ref = await db.collection('makeup').add(def); listMakeup.push({ id:ref.id,...def }); }
-            const hairSnapshot = await db.collection('hair').orderBy('createdAt','desc').get();
-            listHair = []; hairSnapshot.forEach(doc=>{ listHair.push({ id:doc.id, ...normalizeImages(doc.data()) }); });
-            if(!listHair.length) { const def = { img1:"https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=500&q=80", img2:"", img3:"", img4:"", title:"Coque Despojado", desc:"Moderno", price:"Sob Consulta", createdAt:new Date() }; const ref = await db.collection('hair').add(def); listHair.push({ id:ref.id,...def }); }
+            const makeupSnapshot = await db.collection('makeup').orderBy('createdAt', 'desc').get();
+            listMakeup = [];
+            makeupSnapshot.forEach(doc => { 
+                const data = normalizeImages(doc.data());
+                listMakeup.push({ id: doc.id, ...data }); 
+            });
+            if(listMakeup.length === 0) {
+                const defaultMake = { 
+                    img1: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=500&q=80", 
+                    img2: "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?auto=format&fit=crop&w=500&q=80",
+                    img3: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=500&q=80",
+                    img4: "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=500&q=80",
+                    title: "Make Social Premium", 
+                    desc: "Ideal para festas, formaturas e eventos noturnos. Inclui cílios postiços.", 
+                    price: "Sob Consulta", 
+                    createdAt: new Date() 
+                };
+                const docRef = await db.collection('makeup').add(defaultMake);
+                listMakeup.push({ id: docRef.id, ...defaultMake });
+            }
+            const hairSnapshot = await db.collection('hair').orderBy('createdAt', 'desc').get();
+            listHair = [];
+            hairSnapshot.forEach(doc => { 
+                const data = normalizeImages(doc.data());
+                listHair.push({ id: doc.id, ...data }); 
+            });
+            if(listHair.length === 0) {
+                const defaultHair = { 
+                    img1: "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=500&q=80", 
+                    img2: "https://images.unsplash.com/photo-1522337055103-2337b2316e85?auto=format&fit=crop&w=500&q=80",
+                    img3: "https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?auto=format&fit=crop&w=500&q=80",
+                    img4: "https://images.unsplash.com/photo-1560869713-7d0a29430803?auto=format&fit=crop&w=500&q=80",
+                    title: "Coque Despojado", 
+                    desc: "Do clássico atemporal ao moderno desconstruído.", 
+                    price: "Sob Consulta", 
+                    createdAt: new Date() 
+                };
+                const docRef = await db.collection('hair').add(defaultHair);
+                listHair.push({ id: docRef.id, ...defaultHair });
+            }
             const companySnapshot = await db.collection('company').doc('profile').get();
-            if(companySnapshot.exists) { companyData = companySnapshot.data(); document.getElementById('company-profile-img').src = companyData.img; document.getElementById('company-profile-desc').innerText = companyData.bio; if(document.getElementById('input-img-company')) document.getElementById('input-img-company').value = companyData.img; if(document.getElementById('input-desc-company')) document.getElementById('input-desc-company').value = companyData.bio; }
-            renderMainGrid('makeup-grid', listMakeup); renderMainGrid('hair-grid', listHair);
-        } catch(e) { console.error(e); }
+            if(companySnapshot.exists) {
+                companyData = companySnapshot.data();
+                document.getElementById('company-profile-img').src = companyData.img;
+                document.getElementById('company-profile-desc').innerText = companyData.bio;                if(document.getElementById('input-img-company')) document.getElementById('input-img-company').value = companyData.img;
+                if(document.getElementById('input-desc-company')) document.getElementById('input-desc-company').value = companyData.bio;
+            }
+            renderMainGrid('makeup-grid', listMakeup);
+            renderMainGrid('hair-grid', listHair);
+        } catch(error) { console.error("Erro ao carregar dados públicos:", error); }
     }
-    async function loadPrivateData() { if(!currentUser) return; try { const appSnap = await db.collection('appointments').where('status','==','active').get(); listAppointments = []; appSnap.forEach(d=>listAppointments.push({id:d.id,...d.data()})); const compSnap = await db.collection('appointments').where('status','==','completed').get(); completedAppointments = []; compSnap.forEach(d=>completedAppointments.push({id:d.id,...d.data()})); const sangSnap = await db.collection('sangrias').orderBy('data','desc').get(); sangrias = []; sangSnap.forEach(d=>sangrias.push({id:d.id,...d.data()})); if(document.getElementById('manager-makeup-list')) renderManagerList('manager-makeup-list', listMakeup,'make'); if(document.getElementById('manager-hair-list')) renderManagerList('manager-hair-list', listHair,'hair'); } catch(e){ console.error(e); } }
     
-    function renderMainGrid(gridId, items) { const grid = document.getElementById(gridId); if(!grid) return; grid.innerHTML = ''; items.forEach(item => { const images = getImagesArray(item); const mainImg = images[0]||''; let thumbHtml = ''; if(images.length>1) { thumbHtml = `<div class="thumbnails">`; images.forEach((img,idx)=>{ thumbHtml+=`<img src="${img}" onclick="swapImage(event,'${item.id}',${idx},this.src)" class="${idx===0?'active-thumb':''}">`; }); thumbHtml+=`</div>`; } const counter = images.length>1?`<div class="photo-counter"><i class="fas fa-images"></i> ${images.length} fotos</div>`:''; grid.innerHTML+=`<div class="card"><div class="card-gallery">${counter}<img id="main-img-${item.id}" src="${mainImg}" onclick="openFullscreen(this.src)">${thumbHtml}</div><div class="card-info"><h3>${item.title}</h3><p>${item.desc}</p><p class="card-price">${item.price}</p></div></div>`; }); }
-    function swapImage(event,itemId,idx,src) { event.stopPropagation(); const mainImg = document.getElementById(`main-img-${itemId}`); if(mainImg) { mainImg.style.opacity='0.5'; setTimeout(()=>{ mainImg.src=src; mainImg.style.opacity='1'; },150); const card = mainImg.closest('.card'); const thumbs = card.querySelectorAll('.thumbnails img'); thumbs.forEach(t=>t.classList.remove('active-thumb')); event.currentTarget.classList.add('active-thumb'); } }
-    function renderManagerList(managerId, items, type) { const list = document.getElementById(managerId); if(!list) return; list.innerHTML = ''; items.forEach(item=>{ const mainImg = item.img1||''; const total = getImagesArray(item).length; list.innerHTML+=`<div class="manager-item"><div style="display:flex; gap:8px; align-items:center;"><img src="${mainImg}" width="50" height="50" style="object-fit:cover; border-radius:8px;"><div><h5>${item.title}</h5><p>${item.price}</p><p style="font-size:10px;">📸 ${total} foto(s)</p></div></div><div><button class="mini-btn" style="background:var(--edit-color);" onclick="startEdit('${type}','${item.id}')">Editar</button><button class="mini-btn" style="background:var(--danger-color);" onclick="deletePost('${type}','${item.id}')">Deletar</button></div></div>`; }); }
+    async function loadPrivateData() {
+        if (!currentUser) return;
+        try {
+            const appointmentsSnapshot = await db.collection('appointments').where('status', '==', 'active').get();
+            listAppointments = [];
+            appointmentsSnapshot.forEach(doc => { 
+                let data = doc.data();
+                if(data.cashbackPercent === undefined) data.cashbackPercent = 0;
+                if(data.cashbackAmount === undefined) data.cashbackAmount = 0;
+                listAppointments.push({ id: doc.id, ...data }); 
+            });
+            const completedSnapshot = await db.collection('appointments').where('status', '==', 'completed').get();
+            completedAppointments = [];
+            completedSnapshot.forEach(doc => { 
+                let data = doc.data();
+                if(data.cashbackPercent === undefined) data.cashbackPercent = 0;
+                if(data.cashbackAmount === undefined) data.cashbackAmount = 0;
+                completedAppointments.push({ id: doc.id, ...data }); 
+            });
+            const sangriaSnapshot = await db.collection('sangrias').orderBy('data', 'desc').get();
+            sangrias = [];
+            sangriaSnapshot.forEach(doc => { sangrias.push({ id: doc.id, ...doc.data() }); });
+            if(document.getElementById('manager-makeup-list')) renderManagerList('manager-makeup-list', listMakeup, 'make');
+            if(document.getElementById('manager-hair-list')) renderManagerList('manager-hair-list', listHair, 'hair');
+        } catch(error) { console.error("Erro ao carregar dados privados:", error); }
+    }
     
-    // RENDER AGENDA COM BOTÃO EDITAR MELHORADO
-    function renderAppointmentsList() {
+    function renderMainGrid(gridId, items) {
+        const grid = document.getElementById(gridId);
+        if(!grid) return;
+        grid.innerHTML = '';
+        if(items.length === 0) { grid.innerHTML = '<div class="loading">Nenhum item encontrado</div>'; return; }
+        items.forEach(item => { 
+            const images = getImagesArray(item);
+            const mainImg = images[0] || '';
+            const totalPhotos = images.length;
+            let thumbnailsHtml = '';
+            if(totalPhotos > 1) {
+                thumbnailsHtml = `<div class="thumbnails">`;
+                images.forEach((img, idx) => {
+                    thumbnailsHtml += `<img src="${img}" onclick="swapImage(event, '${item.id}', ${idx}, this.src)" class="${idx === 0 ? 'active-thumb' : ''}">`;
+                });
+                thumbnailsHtml += `</div>`;
+            }
+            const counterHtml = totalPhotos > 1 ? `<div class="photo-counter"><i class="fas fa-images"></i> ${totalPhotos} fotos</div>` : '';
+            grid.innerHTML += `
+                <div class="card">                    <div class="card-gallery">
+                        ${counterHtml}
+                        <img id="main-img-${item.id}" src="${mainImg}" onclick="openFullscreen(this.src)">
+                        ${thumbnailsHtml}
+                    </div>
+                    <div class="card-info">
+                        <h3>${item.title}</h3>
+                        <p>${item.desc}</p>
+                        <p class="card-price">${item.price}</p>
+                    </div>
+                </div>`; 
+        });
+    }
+    
+    function swapImage(event, itemId, idx, src) {
+        event.stopPropagation();
+        const mainImg = document.getElementById(`main-img-${itemId}`);
+        if(!mainImg) return;
+        mainImg.style.opacity = '0.5';
+        setTimeout(() => {
+            mainImg.src = src;
+            mainImg.style.opacity = '1';
+        }, 150);
+        const card = mainImg.closest('.card');
+        const thumbs = card.querySelectorAll('.thumbnails img');
+        thumbs.forEach(t => t.classList.remove('active-thumb'));
+        event.currentTarget.classList.add('active-thumb');
+    }
+    
+    function renderManagerList(managerId, items, type) {
+        const list = document.getElementById(managerId);
+        if(!list) return;
+        list.innerHTML = '';
+        items.forEach(item => {
+            const mainImg = item.img1 || item.img || '';
+            const totalPhotos = getImagesArray(item).length;
+            list.innerHTML += `<div class="manager-item">
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <img src="${mainImg}" width="50" height="50" style="object-fit:cover; border-radius:8px;">
+                    <div>
+                        <h5>${item.title}</h5>
+                        <p>${item.price}</p>
+                        <p style="font-size:10px; color:var(--accent);"><i class="fas fa-images"></i> ${totalPhotos} foto(s)</p>
+                    </div>
+                </div>
+                <div>
+                    <button class="action-btn edit" style="background:var(--edit-color); border:none; color:white; padding:5px 10px; border-radius:20px; margin-right:5px;" onclick="startEdit('${type}','${item.id}')">Editar</button>
+                    <button class="action-btn delete" style="background:var(--danger-color); border:none; color:white; padding:5px 10px; border-radius:20px;" onclick="deletePost('${type}','${item.id}')">Deletar</button>
+                </div>            </div>`;
+        });
+    }
+    
+    function renderAppointmentsList() { 
         const container = document.getElementById('appointments-list');
         if(!container) return;
-        if(!currentUser) { container.innerHTML = '<div>🔒 Faça login para visualizar os agendamentos.</div>'; return; }
-        if(!listAppointments.length) { container.innerHTML = '<div>Nenhum agendamento ativo.</div>'; return; }
-        listAppointments.sort((a,b)=>new Date(a.date+'T'+a.time)-new Date(b.date+'T'+b.time));
+        if(!currentUser) {
+            container.innerHTML = '<div>🔒 Faça login para visualizar os agendamentos.</div>';
+            return;
+        }
+        if(listAppointments.length === 0) { container.innerHTML = '<div>Nenhum agendamento ativo.</div>'; return; }
+        listAppointments.sort((a,b) => new Date(a.date+'T'+a.time) - new Date(b.date+'T'+b.time));
         container.innerHTML = '';
         listAppointments.forEach(app => {
             const formattedDate = app.date.split('-').reverse().join('/');
-            let locHtml = (app.type === 'home') ? `<p>🏠 ${app.address} - ${app.neighborhood}</p>` : '';
-            const phoneClean = (app.phone||'').replace(/\D/g,'');
+            let locationHtml = (app.type === 'home') ? `<p>🏠 ${app.address} - ${app.neighborhood}</p>` : '';
+            const phoneClean = app.phone.replace(/\D/g,'');
             const waLink = `https://wa.me/55${phoneClean}?text=Olá ${app.name}`;
-            container.innerHTML += `<div class="appointment-card"><div class="appointment-card-header"><h5>${app.name}</h5><span class="appointment-badge ${app.type==='home'?'badge-home':'badge-studio'}">${app.type==='home'?'Domicílio':'Estúdio'}</span></div><div><p>📅 ${formattedDate} às ${app.time}</p><p>📞 +55 ${app.phone||''}</p>${locHtml}${app.desc?`<div>${app.desc}</div>`:''}</div><div class="appointment-actions"><button class="mini-btn btn-wa" onclick="window.open('${waLink}','_blank')"><i class="fab fa-whatsapp"></i> WhatsApp</button><button class="mini-btn btn-confirm" onclick="confirmarAgendamento('${app.id}')">Confirmar</button><button class="mini-btn btn-edit-app" onclick="abrirModalEdicao('${app.id}')">Editar</button><button class="mini-btn btn-finish" onclick="concluirAgendamento('${app.id}')">Concluir</button></div></div>`;
+            container.innerHTML += `<div class="appointment-card"><div class="appointment-card-header"><h5>${app.name}</h5><span class="appointment-badge ${app.type==='home'?'badge-home':'badge-studio'}">${app.type==='home'?'Domicílio':'Estúdio'}</span></div><div><p>📅 ${formattedDate} às ${app.time}</p><p>📞 +55 ${app.phone}</p>${locationHtml}${app.desc?`<div class="appointment-notes">${app.desc}</div>`:''}<p><strong>Valor:</strong> R$ ${app.valor ? parseFloat(app.valor).toFixed(2) : '0,00'} | <strong>Cashback %:</strong> ${app.cashbackPercent || 0}%</p></div><div class="appointment-actions"><button class="mini-btn btn-wa" onclick="window.open('${waLink}','_blank')"><i class="fab fa-whatsapp"></i> WhatsApp</button><button class="mini-btn btn-confirm" onclick="confirmarAgendamento('${app.id}')"><i class="fas fa-check-circle"></i> Confirmar</button><button class="mini-btn btn-edit-app" onclick="openEditAppointmentModal('${app.id}')"><i class="fas fa-edit"></i> Editar</button><button class="mini-btn btn-finish" onclick="concluirAgendamento('${app.id}')"><i class="fas fa-dollar-sign"></i> Concluir</button></div></div>`;
         });
     }
 
-    // ABRIR MODAL DE EDIÇÃO COMPLETO
-    function abrirModalEdicao(id) {
-        const app = listAppointments.find(a=>a.id===id);
+    function openEditAppointmentModal(id) {
+        const app = listAppointments.find(a => a.id === id);
         if(!app) return;
         document.getElementById('edit-app-id').value = app.id;
-        document.getElementById('edit-app-nome').value = app.name||'';
-        document.getElementById('edit-app-cpf').value = app.cpf||'';
-        document.getElementById('edit-app-data').value = app.date||'';
-        document.getElementById('edit-app-hora').value = app.time||'';
-        document.getElementById('edit-app-tipo').value = app.type||'studio';
-        document.getElementById('edit-app-endereco').value = app.address||'';
-        document.getElementById('edit-app-bairro').value = app.neighborhood||'';
-        document.getElementById('edit-app-desc').value = app.desc||'';
-        document.getElementById('edit-app-valor').value = (app.valorTotal||app.valor||0);
-        document.getElementById('edit-app-cashback-pct').value = (app.cashbackPercent||0);
+        document.getElementById('edit-app-name').value = app.name || '';
+        document.getElementById('edit-app-date').value = app.date || '';
+        document.getElementById('edit-app-time').value = app.time || '';
+        document.getElementById('edit-app-type').value = app.type || 'studio';
+        document.getElementById('edit-app-address').value = app.address || '';
+        document.getElementById('edit-app-neighborhood').value = app.neighborhood || '';
+        document.getElementById('edit-app-desc').value = app.desc || '';
+        document.getElementById('edit-app-valor').value = app.valor || '';
+        document.getElementById('edit-app-cashbackPercent').value = app.cashbackPercent || 0;
+        calcularCashbackSaldo();
         document.getElementById('edit-appointment-modal').style.display = 'flex';
     }
-    function fecharModalEdicao() { document.getElementById('edit-appointment-modal').style.display = 'none'; }
-    async function salvarEdicaoAgendamento() {
-        if(!currentUser) return;
-        const id = document.getElementById('edit-app-id').value;
-        const nome = document.getElementById('edit-app-nome').value;
-        const cpf = limpaCPF(document.getElementById('edit-app-cpf').value);
-        const data = document.getElementById('edit-app-data').value;
-        const hora = document.getElementById('edit-app-hora').value;
-        const tipo = document.getElementById('edit-app-tipo').value;
-        const endereco = document.getElementById('edit-app-endereco').value;
-        const bairro = document.getElementById('edit-app-bairro').value;
-        const desc = document.getElementById('edit-app-desc').value;
+
+    function calcularCashbackSaldo() {
         const valorTotal = parseFloat(document.getElementById('edit-app-valor').value) || 0;
-        const cashbackPct = parseFloat(document.getElementById('edit-app-cashback-pct').value) || 0;
-        const updateData = { name:nome, cpf, date:data, time:hora, type:tipo, address:endereco, neighborhood:bairro, desc, valorTotal, cashbackPercent:cashbackPct };
+        const percent = parseFloat(document.getElementById('edit-app-cashbackPercent').value) || 0;
+        const saldo = (percent / 100) * valorTotal;
+        document.getElementById('edit-app-cashbackAmount').value = saldo.toFixed(2);
+    }
+
+    async function saveAppointmentChanges() {
+        const id = document.getElementById('edit-app-id').value;
+        const name = document.getElementById('edit-app-name').value;
+        const date = document.getElementById('edit-app-date').value;
+        const time = document.getElementById('edit-app-time').value;
+        const type = document.getElementById('edit-app-type').value;
+        const address = document.getElementById('edit-app-address').value;
+        const neighborhood = document.getElementById('edit-app-neighborhood').value;
+        const desc = document.getElementById('edit-app-desc').value;
+        const valor = parseFloat(document.getElementById('edit-app-valor').value) || 0;
+        const cashbackPercent = parseFloat(document.getElementById('edit-app-cashbackPercent').value) || 0;
+        const cashbackAmount = (cashbackPercent / 100) * valor;
+        const updateData = { name, date, time, type, address, neighborhood, desc, valor, cashbackPercent, cashbackAmount };
         await db.collection('appointments').doc(id).update(updateData);
-        const index = listAppointments.findIndex(a=>a.id===id);
-        if(index!==-1) Object.assign(listAppointments[index], updateData);
+        const index = listAppointments.findIndex(a => a.id === id);
+        if(index !== -1) listAppointments[index] = { ...listAppointments[index], ...updateData };
         renderAppointmentsList();
-        fecharModalEdicao();
-        alert("Agendamento atualizado!");
+        renderFinanceiro();
+        closeEditModal();
+        alert("Alterações salvas!");
+    }
+
+    function closeEditModal() {
+        document.getElementById('edit-appointment-modal').style.display = 'none';
     }
     
-    // PROCESSAR AGENDAMENTO (com CPF)
-    async function processBooking() {
+    async function confirmarAgendamento(id) {
+        if(!currentUser) { alert('Login necessário.'); return; }
+        const app = listAppointments.find(a => a.id === id);
+        if(!app) return;
+        const formatted = app.date.split('-').reverse().join('/');
+        const msg = `Olá sou a Lanny, vim avisar que seu agendamento foi confirmado para o dia: ${formatted} / ${app.time}`;
+        const phoneClean = app.phone.replace(/\D/g,'');
+        window.open(`https://wa.me/55${phoneClean}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+    
+    async function concluirAgendamento(id) {
+        if(!currentUser){ alert('Login necessário.'); return; }
+        const app = listAppointments.find(a => a.id === id);
+        if(!app) return;
+        let valorFinal = app.valor ? parseFloat(app.valor) : 0;
+        if(!valorFinal && app.valor === undefined) {
+            const valorDigitado = prompt("Informe o valor recebido para este serviço (R$):", "0");
+            if(valorDigitado === null) return;
+            valorFinal = parseFloat(valorDigitado.replace(',','.')) || 0;
+        } else if(isNaN(valorFinal)) valorFinal = 0;
+        const completed = { ...app, valor: valorFinal, dataConclusao: new Date().toISOString().slice(0,10), status: 'completed' };
+        await db.collection('appointments').doc(id).update({ status: 'completed', valor: valorFinal, dataConclusao: completed.dataConclusao });
+        completedAppointments.push(completed);
+        listAppointments = listAppointments.filter(a => a.id !== id);
+        renderAppointmentsList();
+        renderFinanceiro();
+        alert("Serviço concluído e registrado no financeiro!");
+    }
+    
+    async function processBooking() { 
         const name = document.getElementById('booking-name').value.trim();
-        const cpfRaw = document.getElementById('booking-cpf').value;
-        const cpf = limpaCPF(cpfRaw);
         const date = document.getElementById('booking-date').value;
         const time = document.getElementById('booking-time').value;
         const phone = document.getElementById('booking-phone').value.trim();
@@ -369,140 +672,265 @@
         const desc = document.getElementById('booking-desc').value.trim();
         if(!name || !date || !time || !phone) { alert("Preencha os obrigatórios"); return; }
         if(type === 'home' && (!address || !neighborhood)) { alert("Endereço completo"); return; }
-        const newBooking = { name, cpf, date, time, phone, type, address, neighborhood, desc, valorTotal:null, cashbackPercent:0, status:'active', createdAt:new Date() };
+        const newBooking = { name, date, time, phone, type, address, neighborhood, desc, valor: null, status: 'active', createdAt: new Date(), cashbackPercent: 0, cashbackAmount: 0 };
         const docRef = await db.collection('appointments').add(newBooking);
-        if(currentUser) { listAppointments.push({ id: docRef.id, ...newBooking }); renderAppointmentsList(); }
-        document.getElementById('booking-name').value = ''; document.getElementById('booking-cpf').value = ''; document.getElementById('booking-date').value = ''; document.getElementById('booking-time').value = ''; document.getElementById('booking-phone').value = ''; document.getElementById('booking-address').value = ''; document.getElementById('booking-neighborhood').value = ''; document.getElementById('booking-desc').value = ''; document.getElementById('delivery-fields').style.display = 'none';
+        if(currentUser) {
+            listAppointments.push({ id: docRef.id, ...newBooking });
+            renderAppointmentsList();
+        }
+        document.getElementById('booking-name').value = ''; document.getElementById('booking-date').value = ''; document.getElementById('booking-time').value = '';
+        document.getElementById('booking-phone').value = ''; document.getElementById('booking-type').value = 'studio'; document.getElementById('booking-address').value = ''; document.getElementById('booking-neighborhood').value = ''; document.getElementById('booking-desc').value = ''; document.getElementById('delivery-fields').style.display = 'none';
         alert("Agendamento solicitado!");
-        if(currentUser) document.getElementById('notification-bubble').classList.remove('hidden-fixed');
+        if(currentUser) {
+            const notif = document.getElementById('notification-bubble');
+            notif.classList.remove('hidden-fixed');
+        }
         document.getElementById('booking-screen').classList.remove('active');
         document.getElementById('main-screen').classList.add('active');
         toggleFixedButtonsVisibility(true);
         window.open(`https://wa.me/558599415246?text=${encodeURIComponent("Olá Lanny, acabei de fazer um Agendamento no App!!")}`, '_blank');
-    }
+    }    
     
-    // CONCLUIR AGENDAMENTO COM CASHBACK
-    async function concluirAgendamento(id) {
-        if(!currentUser) { alert('Login necessário.'); return; }
-        const app = listAppointments.find(a => a.id === id);
-        if(!app) return;
-        let valorFinal = app.valorTotal || 0;
-        if(!valorFinal) { const v = prompt("Informe o valor total recebido (R$):","0"); if(v===null) return; valorFinal = parseFloat(v.replace(',','.'))||0; }
-        let cashPct = app.cashbackPercent || 0;
-        if(cashPct===0 && confirm("Deseja definir % de cashback para este cliente?")) { cashPct = parseFloat(prompt("% de cashback (ex: 5):","0"))||0; }
-        const completed = { ...app, valor:valorFinal, valorTotal:valorFinal, cashbackPercent:cashPct, dataConclusao: new Date().toISOString().slice(0,10), status:'completed' };
-        await db.collection('appointments').doc(id).update({ status:'completed', valor:valorFinal, valorTotal:valorFinal, cashbackPercent:cashPct, dataConclusao:completed.dataConclusao });
-        completedAppointments.push(completed);
-        listAppointments = listAppointments.filter(a=>a.id!==id);
-        renderAppointmentsList();
-        renderFinanceiro();
-        // Processar cashback se tiver CPF
-        if(app.cpf && app.cpf.trim() !== "" && cashPct>0 && valorFinal>0) {
-            const cpfCliente = app.cpf;
-            const valorCashback = valorFinal * (cashPct/100);
-            await adicionarCashbackCliente(cpfCliente, app.name, valorCashback, `Cashback referente ao serviço de ${app.date} (${app.desc||'sem descrição'})`);
+    async function saveMakeupChanges() { 
+        if(!currentUser){alert('Login necessário');return;} 
+        const id = document.getElementById('edit-make-id').value;
+        const img1 = document.getElementById('input-img-make1').value.trim();
+        const img2 = document.getElementById('input-img-make2').value.trim();
+        const img3 = document.getElementById('input-img-make3').value.trim();
+        const img4 = document.getElementById('input-img-make4').value.trim();
+        const title = document.getElementById('input-title-make1').value;
+        const desc = document.getElementById('input-desc-make1').value;
+        let price = document.getElementById('input-price-make1').value;
+        if(!img1) { alert('A Foto 1 (Principal) é obrigatória!'); return; }
+        if(!title) { alert('O título é obrigatório!'); return; }
+        if(!price.toLowerCase().includes('consulta') && !price.includes('R$')) price = "R$ " + price;
+        if(id) { 
+            await db.collection('makeup').doc(id).update({ img1, img2, img3, img4, title, desc, price }); 
+            const item = listMakeup.find(i => i.id === id); 
+            if(item) { 
+                item.img1 = img1; item.img2 = img2; item.img3 = img3; item.img4 = img4; 
+                item.title = title; item.desc = desc; item.price = price; 
+            } 
+        } else { 
+            const newItem = { img1, img2, img3, img4, title, desc, price, createdAt: new Date() }; 
+            const docRef = await db.collection('makeup').add(newItem); 
+            listMakeup.push({ id: docRef.id, ...newItem }); 
         }
-        alert("Serviço concluído! Cashback creditado se aplicável.");
+        document.getElementById('edit-make-id').value = ''; 
+        clearMakeFields(); 
+        renderMainGrid('makeup-grid', listMakeup); 
+        renderManagerList('manager-makeup-list', listMakeup, 'make'); 
+        alert("✅ Postagem salva com 4 fotos!"); 
+        navigateToMain();
     }
-    
-    // FUNÇÕES CASHBACK
-    async function adicionarCashbackCliente(cpf, nomeCliente, valorCashback, descricao) {
-        const cpfClean = limpaCPF(cpf);
-        if(!cpfClean || valorCashback<=0) return;
-        const clienteRef = db.collection('clientes').doc(cpfClean);
-        const doc = await clienteRef.get();
-        let saldoAtual = 0;
-        let historico = [];
-        if(doc.exists) { saldoAtual = doc.data().saldoCashback || 0; historico = doc.data().historico || []; }
-        else { if(nomeCliente) await clienteRef.set({ nome:nomeCliente, saldoCashback:0, historico:[] }); }
-        const novoSaldo = saldoAtual + valorCashback;
-        const novaTransacao = { tipo:'credito', valor:valorCashback, descricao, data:new Date().toISOString() };
-        historico.unshift(novaTransacao);
-        await clienteRef.set({ nome:nomeCliente, saldoCashback:novoSaldo, historico }, { merge:true });
-    }
-    async function consultarSaldoCashback() {
-        const cpfInput = document.getElementById('cashback-cpf');
-        const cpfClean = limpaCPF(cpfInput.value);
-        if(!cpfClean || cpfClean.length !== 11) { alert("CPF inválido"); return; }
-        const doc = await db.collection('clientes').doc(cpfClean).get();
-        const resultadoDiv = document.getElementById('cashback-resultado');
-        if(!doc.exists) { alert("Cliente não encontrado. Após concluir um serviço com cashback ele será criado."); resultadoDiv.style.display='none'; return; }
-        const data = doc.data();
-        currentCashbackCliente = { cpf:cpfClean, nome:data.nome, saldo:data.saldoCashback||0, historico:data.historico||[] };
-        document.getElementById('cb-nome').innerText = data.nome;
-        document.getElementById('cb-saldo').innerText = `R$ ${(data.saldoCashback||0).toFixed(2)}`;
-        // Listar agendamentos concluídos deste CPF
-        const agendamentosConcluidos = completedAppointments.filter(a => a.cpf === cpfClean);
-        const agendDiv = document.getElementById('cb-agendamentos');
-        if(agendDiv) {
-            agendDiv.innerHTML = agendamentosConcluidos.length ? '' : '<div>Nenhum agendamento concluído.</div>';
-            agendamentosConcluidos.forEach(ag => {
-                agendDiv.innerHTML += `<div class="atividade-item">📅 ${ag.date.split('-').reverse().join('/')} ${ag.time} - Valor R$ ${(ag.valorTotal||0).toFixed(2)} (Cashback ${ag.cashbackPercent||0}%)</div>`;
-            });
-        }
-        const histDiv = document.getElementById('cb-atividades');
-        if(histDiv) {
-            const historicoOrdenado = (data.historico||[]).slice(0,15);
-            histDiv.innerHTML = historicoOrdenado.length ? '' : '<div>Nenhuma atividade recente.</div>';
-            historicoOrdenado.forEach(trans => {
-                const dataTrans = new Date(trans.data).toLocaleDateString();
-                const sinal = trans.tipo === 'credito' ? '+' : '-';
-                histDiv.innerHTML += `<div class="atividade-item">${dataTrans} - ${trans.descricao} ${sinal} R$ ${trans.valor.toFixed(2)}</div>`;
-            });
-        }
-        resultadoDiv.style.display = 'block';
-    }
-    async function resgatarCashback() {
-        if(!currentCashbackCliente) { alert("Consulte um CPF primeiro."); return; }
-        const valorResgate = parseFloat(prompt("Valor a resgatar (R$):", "0"));
-        if(isNaN(valorResgate) || valorResgate <= 0) return;
-        if(valorResgate > currentCashbackCliente.saldo) { alert("Saldo insuficiente."); return; }
-        const cpf = currentCashbackCliente.cpf;
-        const clienteRef = db.collection('clientes').doc(cpf);
-        const doc = await clienteRef.get();
-        const novoSaldo = (doc.data().saldoCashback||0) - valorResgate;
-        const novoHistorico = [ { tipo:'debito', valor:valorResgate, descricao:`Resgate de cashback`, data:new Date().toISOString() }, ...(doc.data().historico||[]) ];
-        await clienteRef.update({ saldoCashback:novoSaldo, historico:novoHistorico });
-        alert(`Resgate de R$ ${valorResgate.toFixed(2)} realizado! Entre em contato com a Lanny para utilizar o benefício.`);
-        await consultarSaldoCashback(); // recarrega
-    }
-    function abrirCashback() { toggleSettingsMenu(); document.getElementById('main-screen').classList.remove('active'); document.getElementById('cashback-screen').classList.add('active'); toggleFixedButtonsVisibility(false); document.getElementById('cashback-resultado').style.display='none'; document.getElementById('cashback-cpf').value=''; currentCashbackCliente=null; }
-    function fecharCashback() { document.getElementById('cashback-screen').classList.remove('active'); document.getElementById('main-screen').classList.add('active'); toggleFixedButtonsVisibility(true); }
 
-    // Outras funções (salvar posts, etc) mantidas
-    async function saveMakeupChanges() { if(!currentUser) return; const id=document.getElementById('edit-make-id').value; const img1=document.getElementById('input-img-make1').value, img2=document.getElementById('input-img-make2').value, img3=document.getElementById('input-img-make3').value, img4=document.getElementById('input-img-make4').value, title=document.getElementById('input-title-make1').value, desc=document.getElementById('input-desc-make1').value, price=document.getElementById('input-price-make1').value; if(!img1||!title) { alert("Foto1 e título obrigatórios"); return; } const finalPrice = price.toLowerCase().includes('consulta')||price.includes('R$')?price:"R$ "+price; if(id){ await db.collection('makeup').doc(id).update({img1,img2,img3,img4,title,desc,price:finalPrice}); const idx=listMakeup.findIndex(i=>i.id===id); if(idx!==-1) Object.assign(listMakeup[idx],{img1,img2,img3,img4,title,desc,price:finalPrice}); } else { const newItem={img1,img2,img3,img4,title,desc,price:finalPrice,createdAt:new Date()}; const ref=await db.collection('makeup').add(newItem); listMakeup.push({id:ref.id,...newItem}); } clearMakeFields(); renderMainGrid('makeup-grid',listMakeup); renderManagerList('manager-makeup-list',listMakeup,'make'); alert("Salvo!"); navigateToMain(); }
-    async function saveHairChanges() { if(!currentUser) return; const id=document.getElementById('edit-hair-id').value; const img1=document.getElementById('input-img-hair1').value, img2=document.getElementById('input-img-hair2').value, img3=document.getElementById('input-img-hair3').value, img4=document.getElementById('input-img-hair4').value, title=document.getElementById('input-title-hair1').value, desc=document.getElementById('input-desc-hair1').value, price=document.getElementById('input-price-hair1').value; if(!img1||!title) { alert("Foto1 e título obrigatórios"); return; } const finalPrice = price.toLowerCase().includes('consulta')||price.includes('R$')?price:"R$ "+price; if(id){ await db.collection('hair').doc(id).update({img1,img2,img3,img4,title,desc,price:finalPrice}); const idx=listHair.findIndex(i=>i.id===id); if(idx!==-1) Object.assign(listHair[idx],{img1,img2,img3,img4,title,desc,price:finalPrice}); } else { const newItem={img1,img2,img3,img4,title,desc,price:finalPrice,createdAt:new Date()}; const ref=await db.collection('hair').add(newItem); listHair.push({id:ref.id,...newItem}); } clearHairFields(); renderMainGrid('hair-grid',listHair); renderManagerList('manager-hair-list',listHair,'hair'); alert("Salvo!"); navigateToMain(); }
-    function clearMakeFields() { for(let i=1;i<=4;i++) document.getElementById(`input-img-make${i}`).value=''; document.getElementById('input-title-make1').value=''; document.getElementById('input-desc-make1').value=''; document.getElementById('input-price-make1').value=''; document.getElementById('edit-make-id').value=''; }
-    function clearHairFields() { for(let i=1;i<=4;i++) document.getElementById(`input-img-hair${i}`).value=''; document.getElementById('input-title-hair1').value=''; document.getElementById('input-desc-hair1').value=''; document.getElementById('input-price-hair1').value=''; document.getElementById('edit-hair-id').value=''; }
-    async function saveCompanyChanges() { if(!currentUser) return; const img=document.getElementById('input-img-company').value; const bio=document.getElementById('input-desc-company').value; await db.collection('company').doc('profile').set({img,bio}); companyData={img,bio}; document.getElementById('company-profile-img').src=img; document.getElementById('company-profile-desc').innerText=bio; alert("Salvo!"); navigateToMain(); }
-    async function deletePost(type,id) { if(!currentUser || !confirm("Deletar?")) return; if(type==='make') { await db.collection('makeup').doc(id).delete(); listMakeup=listMakeup.filter(i=>i.id!==id); renderMainGrid('makeup-grid',listMakeup); renderManagerList('manager-makeup-list',listMakeup,'make'); } else { await db.collection('hair').doc(id).delete(); listHair=listHair.filter(i=>i.id!==id); renderMainGrid('hair-grid',listHair); renderManagerList('manager-hair-list',listHair,'hair'); } }
-    function startEdit(type,id) { if(type==='make') { const item=listMakeup.find(i=>i.id===id); document.getElementById('edit-make-id').value=item.id; for(let i=1;i<=4;i++) document.getElementById(`input-img-make${i}`).value=item[`img${i}`]||''; document.getElementById('input-title-make1').value=item.title; document.getElementById('input-desc-make1').value=item.desc; document.getElementById('input-price-make1').value=item.price.replace("R$ ",""); switchPanelTab({currentTarget:document.querySelector(".panel-tab-btn[onclick*='panel-make']")},'panel-make'); } else { const item=listHair.find(i=>i.id===id); document.getElementById('edit-hair-id').value=item.id; for(let i=1;i<=4;i++) document.getElementById(`input-img-hair${i}`).value=item[`img${i}`]||''; document.getElementById('input-title-hair1').value=item.title; document.getElementById('input-desc-hair1').value=item.desc; document.getElementById('input-price-hair1').value=item.price.replace("R$ ",""); switchPanelTab({currentTarget:document.querySelector(".panel-tab-btn[onclick*='panel-hair']")},'panel-hair'); } }
-    function abrirGaleria(tipo,numFoto) { const input=document.createElement('input'); input.type='file'; input.accept='image/*'; input.onchange=function(e){ const file=e.target.files[0]; if(file && file.size<=2*1024*1024){ const reader=new FileReader(); reader.onload=ev=>{ const dataURL=ev.target.result; if(tipo==='make') document.getElementById(`input-img-make${numFoto}`).value=dataURL; else if(tipo==='hair') document.getElementById(`input-img-hair${numFoto}`).value=dataURL; else if(tipo==='company'){ document.getElementById('input-img-company').value=dataURL; document.getElementById('company-profile-img').src=dataURL; } }; reader.readAsDataURL(file); } else alert("Máx. 2MB"); }; input.click(); }
-    async function registrarSangria() { if(!currentUser) return; const valor=parseFloat(document.getElementById('sangria-valor').value); const desc=document.getElementById('sangria-desc').value; if(isNaN(valor)||valor<=0) { alert("Valor inválido"); return; } const newSangria={valor,desc:desc||"Retirada",data:new Date().toISOString().slice(0,10)}; const ref=await db.collection('sangrias').add(newSangria); sangrias.push({id:ref.id,...newSangria}); document.getElementById('sangria-valor').value=''; document.getElementById('sangria-desc').value=''; renderFinanceiro(); }
-    async function deletarSangria(id) { if(!currentUser||!confirm("Excluir?")) return; await db.collection('sangrias').doc(id).delete(); sangrias=sangrias.filter(s=>s.id!==id); renderFinanceiro(); }
-    async function deletarConcluido(id) { if(!currentUser||!confirm("Deletar?")) return; await db.collection('appointments').doc(id).delete(); completedAppointments=completedAppointments.filter(c=>c.id!==id); renderFinanceiro(); }
-    function renderFinanceiro() { if(!currentUser){ const t=document.getElementById('total-receita-mes'); if(t) t.innerHTML='🔒 Faça login.'; return; } const monthFilter=document.getElementById('finance-month-filter')?.value||''; let filteredCompleted=completedAppointments.filter(c=>c.date&&(!monthFilter||c.date.startsWith(monthFilter))); let totalMes=filteredCompleted.reduce((s,c)=>s+(c.valorTotal||c.valor||0),0); const sangriasFiltradas=sangrias.filter(s=>s.data&&(!monthFilter||s.data.startsWith(monthFilter))); const totalSangrias=sangriasFiltradas.reduce((s,item)=>s+item.valor,0); const saldoLiquido=totalMes-totalSangrias; const totalEl=document.getElementById('total-receita-mes'); if(totalEl) totalEl.innerHTML=`💰 Total Bruto: R$ ${totalMes.toFixed(2)} | 🧾 Sangrias: R$ ${totalSangrias.toFixed(2)}<br>📌 Saldo Líquido: R$ ${saldoLiquido.toFixed(2)}`; const sangriaDiv=document.getElementById('lista-sangrias'); if(sangriaDiv){ sangriaDiv.innerHTML=`<strong>Histórico Sangrias:</strong>`; sangriasFiltradas.forEach(s=>{ sangriaDiv.innerHTML+=`<div style="background:#fff; margin:5px 0; padding:8px; border-radius:8px;">R$ ${s.valor.toFixed(2)} - ${s.desc||'Sem desc'} (${s.data}) <button class="mini-btn" style="background:gray;" onclick="deletarSangria('${s.id}')">🗑️</button></div>`; }); } const completedDiv=document.getElementById('completed-list-finance'); if(completedDiv){ completedDiv.innerHTML=`<strong>Serviços finalizados (mês selecionado):</strong>`; filteredCompleted.forEach(c=>{ const dateBr=c.date.split('-').reverse().join('/'); completedDiv.innerHTML+=`<div class="completed-item"><div><b>${c.name}</b> - ${dateBr} ${c.time}</div><div>💰 R$ ${(c.valorTotal||c.valor||0).toFixed(2)}</div><div class="appointment-actions"><button class="mini-btn btn-wa" onclick="enviarComprovante('${c.id}')">Comprovante</button><button class="mini-btn" style="background:red;" onclick="deletarConcluido('${c.id}')">Deletar</button></div></div>`; }); } }
-    function enviarComprovante(id) { const item=completedAppointments.find(c=>c.id===id); if(!item) return; const dataFormat=item.date.split('-').reverse().join('/'); const msg=`🧾 *COMPROVANTE* 🧾\nCliente: ${item.name}\nData: ${dataFormat} ${item.time}\nValor Pago: R$ ${(item.valorTotal||item.valor||0).toFixed(2)}`; const phoneClean=(item.phone||'').replace(/\D/g,''); if(phoneClean) window.open(`https://wa.me/55${phoneClean}?text=${encodeURIComponent(msg)}`,'_blank'); else alert("Sem telefone."); }
-    function confirmarAgendamento(id) { const app=listAppointments.find(a=>a.id===id); if(app){ const formatted=app.date.split('-').reverse().join('/'); const msg=`Olá ${app.name}, seu agendamento foi confirmado para ${formatted} ${app.time}.`; const phoneClean=(app.phone||'').replace(/\D/g,''); if(phoneClean) window.open(`https://wa.me/55${phoneClean}?text=${encodeURIComponent(msg)}`,'_blank'); else alert("Telefone não informado."); } }
+    async function saveHairChanges() { 
+        if(!currentUser){alert('Login necessário');return;} 
+        const id = document.getElementById('edit-hair-id').value;
+        const img1 = document.getElementById('input-img-hair1').value.trim();
+        const img2 = document.getElementById('input-img-hair2').value.trim();
+        const img3 = document.getElementById('input-img-hair3').value.trim();
+        const img4 = document.getElementById('input-img-hair4').value.trim();
+        const title = document.getElementById('input-title-hair1').value;
+        const desc = document.getElementById('input-desc-hair1').value;
+        let price = document.getElementById('input-price-hair1').value;
+        if(!img1) { alert('A Foto 1 (Principal) é obrigatória!'); return; }
+        if(!title) { alert('O título é obrigatório!'); return; }
+        if(!price.toLowerCase().includes('consulta') && !price.includes('R$')) price = "R$ " + price;
+        if(id) { 
+            await db.collection('hair').doc(id).update({ img1, img2, img3, img4, title, desc, price }); 
+            const item = listHair.find(i => i.id === id); 
+            if(item) { 
+                item.img1 = img1; item.img2 = img2; item.img3 = img3; item.img4 = img4; 
+                item.title = title; item.desc = desc; item.price = price; 
+            } 
+        } else { 
+            const newItem = { img1, img2, img3, img4, title, desc, price, createdAt: new Date() }; 
+            const docRef = await db.collection('hair').add(newItem); 
+            listHair.push({ id: docRef.id, ...newItem }); 
+        }
+        clearHairFields(); 
+        renderMainGrid('hair-grid', listHair); 
+        renderManagerList('manager-hair-list', listHair, 'hair'); 
+        alert("✅ Postagem salva com 4 fotos!"); 
+        navigateToMain();
+    }
+
+    async function saveCompanyChanges() { if(!currentUser){alert('Login necessário');return;} 
+        const img = document.getElementById('input-img-company').value;
+        const bio = document.getElementById('input-desc-company').value;
+        await db.collection('company').doc('profile').set({ img, bio });
+        companyData = { img, bio };
+        document.getElementById('company-profile-img').src = img;
+        document.getElementById('company-profile-desc').innerText = bio;
+        alert("Salvo!"); navigateToMain();
+    }
+
+    async function deletePost(type, id) { 
+        if(!currentUser){alert('Login necessário');return;} 
+        if(confirm("Deletar?")) { 
+            if(type === 'make') { 
+                await db.collection('makeup').doc(id).delete(); 
+                listMakeup = listMakeup.filter(i => i.id !== id); 
+                renderMainGrid('makeup-grid', listMakeup); 
+                renderManagerList('manager-makeup-list', listMakeup, 'make'); 
+            } else { 
+                await db.collection('hair').doc(id).delete(); 
+                listHair = listHair.filter(i => i.id !== id); 
+                renderMainGrid('hair-grid', listHair); 
+                renderManagerList('manager-hair-list', listHair, 'hair'); 
+            } 
+        } 
+    }
+    async function registrarSangria() { if(!currentUser){alert('Login necessário');return;} const valor = parseFloat(document.getElementById('sangria-valor').value); const desc = document.getElementById('sangria-desc').value; if(isNaN(valor) || valor <= 0) { alert("Valor inválido"); return; } const newSangria = { valor, desc: desc || "Retirada", data: new Date().toISOString().slice(0,10) }; const docRef = await db.collection('sangrias').add(newSangria); sangrias.push({ id: docRef.id, ...newSangria }); document.getElementById('sangria-valor').value = ''; document.getElementById('sangria-desc').value = ''; renderFinanceiro(); }
+    async function deletarSangria(id) { if(!currentUser){alert('Login necessário');return;} if(confirm("Excluir sangria?")) { await db.collection('sangrias').doc(id).delete(); sangrias = sangrias.filter(s => s.id !== id); renderFinanceiro(); } }
+    async function deletarConcluido(id) { if(!currentUser){alert('Login necessário');return;} if(confirm("Deletar este serviço concluído?")) { await db.collection('appointments').doc(id).delete(); completedAppointments = completedAppointments.filter(c => c.id !== id); renderFinanceiro(); } }
     
-    // Navegação
-    function toggleFixedButtonsVisibility(show) { const b=document.getElementById('fixed-booking-btn'); const r=document.getElementById('fixed-buttons-right'); if(show){ b.classList.remove('hidden-fixed'); r.classList.remove('hidden-fixed'); } else { b.classList.add('hidden-fixed'); r.classList.add('hidden-fixed'); } }
+    function enviarComprovanteCompleto(id) {
+        const item = completedAppointments.find(c => c.id === id);
+        if(!item) return;
+        const dataFormat = item.date.split('-').reverse().join('/');
+        const local = item.type === 'home' ? `${item.address}, ${item.neighborhood}` : 'Estúdio Lanny';
+        const valorTotal = item.valor ? parseFloat(item.valor).toFixed(2) : '0,00';
+        const cashbackPercent = item.cashbackPercent || 0;
+        const cashbackAmount = item.cashbackAmount ? parseFloat(item.cashbackAmount).toFixed(2) : '0,00';
+        const msg = `✅ *PAGAMENTO CONFIRMADO!*\n\n*Nome:* ${item.name}\n*Data Atendimento:* ${dataFormat}\n*Hora Atendimento:* ${item.time}\n*Local de Atendimento:* ${local}\n*Observações do Serviço:* ${item.desc || 'Nenhuma'}\n*Valor Total (R$):* R$ ${valorTotal}\n*Desconto em Cashback %:* ${cashbackPercent}%\n*Saldo Em Cashback (R$):* R$ ${cashbackAmount}\n\nAgradecemos pela preferência! 💄✨`;
+        const phoneClean = item.phone.replace(/\D/g,'');
+        window.open(`https://wa.me/55${phoneClean}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+    
+    function renderFinanceiro() { 
+        if(!currentUser) {
+            const totalEl = document.getElementById('total-receita-mes');
+            if(totalEl) totalEl.innerHTML = '🔒 Faça login para ver o financeiro.';
+            return;
+        }
+        const monthFilter = document.getElementById('finance-month-filter')?.value || '';
+        let filteredCompleted = [...completedAppointments];
+        if(monthFilter) filteredCompleted = filteredCompleted.filter(c => c.date && c.date.startsWith(monthFilter));
+        let totalMes = filteredCompleted.reduce((sum,c) => sum + (c.valor || 0), 0);
+        const sangriasFiltradas = sangrias.filter(s => s.data && (!monthFilter || s.data.startsWith(monthFilter)));
+        const totalSangrias = sangriasFiltradas.reduce((s,item) => s + item.valor, 0);
+        const saldoLiquido = totalMes - totalSangrias;
+        const totalEl = document.getElementById('total-receita-mes'); if(totalEl) totalEl.innerHTML = `💰 Total Bruto: R$ ${totalMes.toFixed(2)} | 🧾 Sangrias: R$ ${totalSangrias.toFixed(2)}<br>📌 Saldo Líquido: R$ ${saldoLiquido.toFixed(2)}`;
+        const sangriaDiv = document.getElementById('lista-sangrias'); if(sangriaDiv) { sangriaDiv.innerHTML = `<strong>Histórico Sangrias:</strong>`; sangriasFiltradas.forEach(s => { sangriaDiv.innerHTML += `<div style="background:#fff; margin:5px 0; padding:8px; border-radius:8px;">R$ ${s.valor.toFixed(2)} - ${s.desc || 'Sem desc'} (${s.data}) <button class="mini-btn" style="background:gray;" onclick="deletarSangria('${s.id}')">🗑️</button></div>`; }); }
+        const completedDiv = document.getElementById('completed-list-finance'); if(completedDiv) { 
+            completedDiv.innerHTML = `<strong>Serviços finalizados (mês selecionado):</strong>`;
+            filteredCompleted.forEach(c => { 
+                const dateBr = c.date.split('-').reverse().join('/');
+                const local = c.type === 'home' ? `${c.address || ''} ${c.neighborhood || ''}` : 'Estúdio';
+                completedDiv.innerHTML += `<div class="completed-item">
+                    <div><b>${c.name}</b> - ${dateBr} ${c.time}</div>
+                    <div>📍 ${local}</div>
+                    <div>📝 ${c.desc || 'Nenhuma obs'}</div>
+                    <div>💰 Valor Total: R$ ${(c.valor || 0).toFixed(2)}</div>
+                    <div>🎁 Desconto Cashback: ${c.cashbackPercent || 0}% | Saldo: R$ ${(c.cashbackAmount || 0).toFixed(2)}</div>
+                    <div class="appointment-actions" style="margin-top:6px;">
+                        <button class="mini-btn btn-wa" onclick="enviarComprovanteCompleto('${c.id}')"><i class="fas fa-receipt"></i> Comprovante</button>
+                        <button class="mini-btn" style="background:red;" onclick="deletarConcluido('${c.id}')">Deletar</button>
+                    </div>
+                </div>`; 
+            }); 
+        }
+    }
+
+    function startEdit(type, id) { 
+        if(type === 'make') { 
+            const item = listMakeup.find(i => i.id === id); 
+            document.getElementById('edit-make-id').value = item.id; 
+            document.getElementById('input-img-make1').value = item.img1 || '';
+            document.getElementById('input-img-make2').value = item.img2 || '';
+            document.getElementById('input-img-make3').value = item.img3 || '';
+            document.getElementById('input-img-make4').value = item.img4 || '';
+            document.getElementById('input-title-make1').value = item.title; 
+            document.getElementById('input-desc-make1').value = item.desc; 
+            document.getElementById('input-price-make1').value = item.price.replace("R$ ", ""); 
+            switchPanelTab({currentTarget: document.querySelector(".panel-tab-btn[onclick*='panel-make']")}, 'panel-make'); 
+        } else { 
+            const item = listHair.find(i => i.id === id); 
+            document.getElementById('edit-hair-id').value = item.id; 
+            document.getElementById('input-img-hair1').value = item.img1 || '';
+            document.getElementById('input-img-hair2').value = item.img2 || '';
+            document.getElementById('input-img-hair3').value = item.img3 || '';
+            document.getElementById('input-img-hair4').value = item.img4 || '';
+            document.getElementById('input-title-hair1').value = item.title; 
+            document.getElementById('input-desc-hair1').value = item.desc; 
+            document.getElementById('input-price-hair1').value = item.price.replace("R$ ", ""); 
+            switchPanelTab({currentTarget: document.querySelector(".panel-tab-btn[onclick*='panel-hair']")}, 'panel-hair'); 
+        }     }
+    
+    function abrirGaleria(tipo, numFoto) {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = function(e) {
+            const file = e.target.files[0];
+            if(file) {
+                if(file.size > 2 * 1024 * 1024) {
+                    alert('⚠️ Imagem muito grande! Máximo 2MB. Use uma imagem menor.');
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const imagemDataURL = event.target.result;
+                    if(tipo === 'make') {
+                        document.getElementById(`input-img-make${numFoto}`).value = imagemDataURL;
+                    } else if(tipo === 'hair') {
+                        document.getElementById(`input-img-hair${numFoto}`).value = imagemDataURL;
+                    } else if(tipo === 'company') {
+                        document.getElementById('input-img-company').value = imagemDataURL;
+                        const previewImg = document.getElementById('company-profile-img');
+                        if(previewImg) previewImg.src = imagemDataURL;
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+        input.click();
+    }
+    
+    function clearMakeFields() { 
+        document.getElementById('input-img-make1').value = ''; 
+        document.getElementById('input-img-make2').value = ''; 
+        document.getElementById('input-img-make3').value = ''; 
+        document.getElementById('input-img-make4').value = ''; 
+        document.getElementById('input-title-make1').value = ''; 
+        document.getElementById('input-desc-make1').value = ''; 
+        document.getElementById('input-price-make1').value = ''; 
+    }
+    function clearHairFields() { 
+        document.getElementById('input-img-hair1').value = ''; 
+        document.getElementById('input-img-hair2').value = ''; 
+        document.getElementById('input-img-hair3').value = ''; 
+        document.getElementById('input-img-hair4').value = '';         document.getElementById('input-title-hair1').value = ''; 
+        document.getElementById('input-desc-hair1').value = ''; 
+        document.getElementById('input-price-hair1').value = ''; 
+    }
+
+    function toggleFixedButtonsVisibility(show) { const b = document.getElementById('fixed-booking-btn'); const r = document.getElementById('fixed-buttons-right'); if(show) { b.classList.remove('hidden-fixed'); r.classList.remove('hidden-fixed'); } else { b.classList.add('hidden-fixed'); r.classList.add('hidden-fixed'); } }
     function navigateToBooking() { document.getElementById('main-screen').classList.remove('active'); document.getElementById('booking-screen').classList.add('active'); toggleFixedButtonsVisibility(false); }
     function navigateToMainFromBooking() { document.getElementById('booking-screen').classList.remove('active'); document.getElementById('main-screen').classList.add('active'); toggleFixedButtonsVisibility(true); }
     function navigateToAboutMe() { toggleSettingsMenu(); document.getElementById('main-screen').classList.remove('active'); document.getElementById('aboutme-screen').classList.add('active'); toggleFixedButtonsVisibility(false); }
     function navigateToMainFromAbout() { document.getElementById('aboutme-screen').classList.remove('active'); document.getElementById('main-screen').classList.add('active'); toggleFixedButtonsVisibility(true); }
-    function navigateToPanel() { if(!currentUser) { alert('Faça login no menu Ajustes.'); toggleSettingsMenu(); return; } document.getElementById('main-screen').classList.remove('active'); document.getElementById('panel-screen').classList.add('active'); toggleFixedButtonsVisibility(false); renderAppointmentsList(); renderFinanceiro(); }
+    function navigateToPanel() { if(!currentUser) { alert('Faça login no menu Ajustes (🔐 LOGIN) para acessar o painel.'); toggleSettingsMenu(); return; } document.getElementById('main-screen').classList.remove('active'); document.getElementById('panel-screen').classList.add('active'); toggleFixedButtonsVisibility(false); renderAppointmentsList(); renderFinanceiro(); }
     function navigateToMain() { document.getElementById('panel-screen').classList.remove('active'); document.getElementById('main-screen').classList.add('active'); toggleFixedButtonsVisibility(true); }
-    function openTab(evt,tabName) { document.querySelectorAll('.catalog-section').forEach(s=>s.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.getElementById(tabName).classList.add('active'); evt.currentTarget.classList.add('active'); }
-    function switchPanelTab(evt,sectionId) { document.querySelectorAll('.panel-section').forEach(s=>s.classList.remove('active')); document.querySelectorAll('.panel-tab-btn').forEach(b=>b.classList.remove('active')); document.getElementById(sectionId).classList.add('active'); evt.currentTarget.classList.add('active'); if(sectionId==='panel-finance') renderFinanceiro(); }
-    function toggleSettingsMenu() { document.getElementById('settings-drawer').classList.toggle('open'); const ov=document.getElementById('drawer-overlay'); ov.style.display=document.getElementById('settings-drawer').classList.contains('open')?'block':'none'; }
-    function closeMenuFromOverlay(e) { if(e.target===document.getElementById('drawer-overlay')) toggleSettingsMenu(); }
-    function toggleDeliveryFields() { document.getElementById('delivery-fields').style.display=document.getElementById('booking-type').value==='home'?'block':'none'; }
+    function openTab(evt, tabName) { document.querySelectorAll('.catalog-section').forEach(s => s.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById(tabName).classList.add('active'); evt.currentTarget.classList.add('active'); }
+    function switchPanelTab(evt, sectionId) { document.querySelectorAll('.panel-section').forEach(s => s.classList.remove('active')); document.querySelectorAll('.panel-tab-btn').forEach(b => b.classList.remove('active')); document.getElementById(sectionId).classList.add('active'); evt.currentTarget.classList.add('active'); if(sectionId === 'panel-finance') renderFinanceiro(); }
+    function toggleSettingsMenu() { document.getElementById('settings-drawer').classList.toggle('open'); const ov = document.getElementById('drawer-overlay'); ov.style.display = document.getElementById('settings-drawer').classList.contains('open') ? 'block' : 'none'; }
+    function closeMenuFromOverlay(e) { if(e.target === document.getElementById('drawer-overlay')) toggleSettingsMenu(); }
+    function maskPhone(input) { let v = input.value.replace(/\D/g,""); if(v.length > 11) v = v.substring(0,11); if(v.length > 6) input.value = `(${v.substring(0,2)}) ${v.substring(2,7)}-${v.substring(7,11)}`; else if(v.length > 2) input.value = `(${v.substring(0,2)}) ${v.substring(2)}`; else input.value = v; }
+    function toggleDeliveryFields() { document.getElementById('delivery-fields').style.display = document.getElementById('booking-type').value === 'home' ? 'block' : 'none'; }
     function dismissNotification(e) { e.stopPropagation(); document.getElementById('notification-bubble').classList.add('hidden-fixed'); }
-    function openFullscreen(src) { document.getElementById('lightbox-img').src=src; document.getElementById('lightbox-modal').style.display='flex'; }
-    function closeFullscreen() { document.getElementById('lightbox-modal').style.display='none'; }
-
-    window.onload = function() { document.getElementById('drawer-overlay').addEventListener('click', closeMenuFromOverlay); toggleFixedButtonsVisibility(true); if(document.getElementById('finance-month-filter')) document.getElementById('finance-month-filter').value = new Date().toISOString().slice(0,7); loadPublicData(); updateLoginLogoutMenu(); };
+    function openFullscreen(src) { const modal = document.getElementById('lightbox-modal'); document.getElementById('lightbox-img').src = src; modal.style.display = 'flex'; }
+    function closeFullscreen() { document.getElementById('lightbox-modal').style.display = 'none'; }
+    
+    window.onload = function() {
+        document.getElementById('drawer-overlay').addEventListener('click', closeMenuFromOverlay);
+        toggleFixedButtonsVisibility(true);
+        if(document.getElementById('finance-month-filter')) document.getElementById('finance-month-filter').value = new Date().toISOString().slice(0,7);
+        loadPublicData();
+        updateLoginLogoutMenu();
+    };
 </script>
 </body>
 </html>
