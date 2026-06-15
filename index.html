@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
-    <title>ITVContas1.3.1 + Calculadora + Lista de Compras</title>
+    <title>ITVContas1.3.1 + Calculadora + Lista</title>
     <style>
         * {
             margin: 0;
@@ -434,7 +434,7 @@
         <div id="bills-container"></div>
     </div>
 
-    <!-- SEÇÃO LISTA DE COMPRAS (com botão FIXAR funcionando) -->
+    <!-- SEÇÃO LISTA DE COMPRAS -->
     <div id="shopping-section" class="shopping-container" style="display: none;">
         <div style="padding: 20px 16px;">
             <div style="display:flex; justify-content:space-between; align-items:center;"><h2>🛒 Lista de Compras</h2><button onclick="showMainApp()" class="btn-small bg-lilas">Voltar</button></div>
@@ -614,7 +614,7 @@
         function setActiveNav(active){ document.querySelectorAll('.nav-item').forEach(btn=>btn.classList.remove('active')); if(active==='inicio') document.querySelector('.nav-item:first-child').classList.add('active'); else if(active==='shopping') document.getElementById('btnShoppingNav').classList.add('active'); else if(active==='calculator') document.getElementById('btnCalculatorNav').classList.add('active'); }
         function showToast(msg){ let toast=document.createElement('div'); toast.className='toast-msg'; toast.innerText=msg; document.body.appendChild(toast); setTimeout(()=>toast.remove(), 2000); }
 
-        // ==================== LISTA DE COMPRAS (FIXAR SALDO FUNCIONAL) ====================
+        // ==================== LISTA DE COMPRAS ====================
         async function saveShoppingData(){ if(!currentUser) return; await db.collection('users').doc(currentUser.uid).collection('shopping').doc('data').set({ compras, saldosMensais }); }
         function renderListaCompras(filtro='todos'){ const mes=document.getElementById('filtro-mes').value; const saldoAtual = saldosMensais[mes] || 0; document.getElementById('display-saldo').innerHTML=`R$ ${saldoAtual.toFixed(2)}`; if(saldosMensais[mes] !== undefined){ document.getElementById('saldo-alim').value = saldoAtual; document.getElementById('saldo-alim').disabled = true; document.getElementById('btn-fixar-alim').style.display = 'none'; document.getElementById('btn-editar-alim').style.display = 'block'; } else { document.getElementById('saldo-alim').value = ''; document.getElementById('saldo-alim').disabled = false; document.getElementById('btn-fixar-alim').style.display = 'block'; document.getElementById('btn-editar-alim').style.display = 'none'; } const listaDiv=document.getElementById('lista-compras'); listaDiv.innerHTML=''; (compras||[]).filter(c=>c.mes===mes).forEach(item=>{ if(filtro==='pago' && !item.pago) return; if(filtro==='n-pago' && item.pago) return; const div=document.createElement('div'); div.className=`item-compra ${item.pago?'pago':'pendente'}`; div.innerHTML=`<strong>${item.nome}</strong><br>Qtd: ${item.qtd} ${item.unidade||'UN'} | Total: R$ ${(item.total||0).toFixed(2)}<br>Status: ${item.pago?'PAGO':'NÃO PAGO'}<div style="margin-top:8px;"><button onclick="pagarCompra(${item.id})" class="btn-small bg-verde">PAGAR</button><button onclick="editCompra(${item.id})" class="btn-small bg-lilas">EDITAR</button><button onclick="deletarCompra(${item.id})" class="btn-small bg-vermelho">EXCLUIR</button></div>`; listaDiv.appendChild(div); }); }
         function calcTotalCompra(){ const v=parseFloat(document.getElementById('valor-unit').value)||0; const q=parseFloat(document.getElementById('qtd-compra').value)||0; document.getElementById('total-preview').innerText=`R$ ${(v*q).toFixed(2)}`; }
