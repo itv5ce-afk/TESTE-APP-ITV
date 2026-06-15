@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
-    <title>ITVContas1.3.1 + Lista de Compras</title>
+    <title>ITVContas1.3.1 + Calculadora + Lista de Compras</title>
     <style>
         * {
             margin: 0;
@@ -115,13 +115,12 @@
         }
 
         /* MAIN APP LAYOUT */
-        .container, .shopping-container {
+        .container, .shopping-container, .calculator-container {
             max-width: 500px;
             margin: 0 auto;
             padding: 20px 16px 30px;
         }
 
-        /* header + insight (ITVContas) */
         .welcome-header {
             margin-bottom: 24px;
         }
@@ -140,23 +139,6 @@
             color: white;
             box-shadow: 0 10px 20px rgba(108,92,231,0.25);
             margin-bottom: 24px;
-        }
-
-        .insight-title {
-            font-size: 14px;
-            opacity: 0.9;
-            letter-spacing: 1px;
-        }
-
-        .insight-value {
-            font-size: 24px;
-            font-weight: 800;
-            margin: 8px 0 4px;
-        }
-
-        .insight-message {
-            font-size: 14px;
-            opacity: 0.9;
         }
 
         .balance-grid {
@@ -200,32 +182,6 @@
             color: var(--danger);
         }
 
-        .investment-item {
-            background: linear-gradient(135deg, #f8fafc, #ffffff);
-            border-left: 4px solid var(--primary);
-        }
-
-        .section-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin: 24px 0 12px;
-        }
-
-        .section-title h3 {
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .btn-view-all {
-            background: none;
-            border: none;
-            color: var(--primary);
-            font-weight: 500;
-            font-size: 13px;
-            cursor: pointer;
-        }
-
         .upcoming-list {
             background: var(--card-bg);
             border-radius: 28px;
@@ -242,32 +198,6 @@
             border-bottom: 1px solid #f0f0f0;
         }
 
-        .upcoming-info h4 {
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        .upcoming-date {
-            font-size: 12px;
-            color: #64748b;
-        }
-
-        .upcoming-value {
-            font-weight: 700;
-            color: var(--danger);
-        }
-
-        .btn-pay-mini {
-            background: var(--success);
-            border: none;
-            color: white;
-            padding: 6px 14px;
-            border-radius: 30px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
         .expense-stats {
             background: var(--card-bg);
             border-radius: 28px;
@@ -276,23 +206,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-
-        .expense-current h4 {
-            font-size: 14px;
-            color: #64748b;
-        }
-
-        .expense-current .value {
-            font-size: 28px;
-            font-weight: 800;
-            color: #1e293b;
-        }
-
-        .trend-down {
-            color: var(--success);
-            font-weight: 700;
         }
 
         .admin-card {
@@ -300,30 +213,6 @@
             border-radius: 28px;
             padding: 18px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        .salary-area {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .salary-area input {
-            flex: 2;
-            padding: 12px;
-            border-radius: 30px;
-            border: 1px solid #ddd;
-        }
-
-        .filter-select {
-            width: 100%;
-            padding: 12px;
-            border-radius: 30px;
-            margin-top: 12px;
-            border: 1px solid #ddd;
-            background: white;
         }
 
         .action-buttons {
@@ -339,7 +228,6 @@
             border: none;
             font-weight: bold;
             background: #f1f3f5;
-            color: #2d3436;
             cursor: pointer;
         }
 
@@ -364,53 +252,22 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             border-left: 5px solid #e2e8f0;
         }
 
-        .bill-card.pago {
-            border-left-color: var(--success);
-            opacity: 0.8;
-        }
+        .bill-card.pago { border-left-color: var(--success); }
+        .bill-card.pendente { border-left-color: var(--danger); }
 
-        .bill-card.pendente {
-            border-left-color: var(--danger);
-        }
-
-        .bill-info strong {
-            font-size: 16px;
-            display: block;
-        }
-
-        .bill-actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        button {
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .btn-edit-small {
-            background: #f1c40f;
+        .btn-pay-mini {
+            background: var(--success);
             border: none;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-weight: bold;
-        }
-
-        .btn-delete-small {
-            background: var(--danger);
             color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 20px;
+            padding: 6px 14px;
+            border-radius: 30px;
+            cursor: pointer;
         }
 
-        /* BARRA INFERIOR COM LISTA DE COMPRAS */
+        /* BARRA INFERIOR */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -420,7 +277,7 @@
             backdrop-filter: blur(12px);
             display: flex;
             justify-content: space-around;
-            padding: 12px 20px 24px;
+            padding: 12px 12px 24px;
             border-top: 1px solid rgba(0,0,0,0.05);
             max-width: 500px;
             margin: 0 auto;
@@ -438,6 +295,7 @@
             color: #7f8c8d;
             font-weight: 500;
             gap: 4px;
+            cursor: pointer;
         }
 
         .nav-item.active {
@@ -448,86 +306,74 @@
             display: none;
         }
 
-        .sync-status {
-            font-size: 11px;
-            text-align: center;
-            margin-top: 8px;
-            color: #5f5f7a;
-        }
-
-        /* ========== ESTILOS DA LISTA DE COMPRAS ========== */
-        .shopping-container {
+        /* CALCULADORA */
+        .calculator-container {
             background: #f0f2f5;
-            min-height: 100vh;
-        }
-        .card-info {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 15px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            color: #1e293b;
-        }
-        .menu-topo {
+            min-height: 70vh;
             display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            justify-content: center;
         }
-        .btn-small {
-            flex: 1;
-            padding: 10px 5px;
+        .calc-card {
+            background: #1e293b;
+            border-radius: 48px;
+            padding: 24px;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.2);
+        }
+        .calc-display {
+            background: #0f172a;
+            border-radius: 32px;
+            padding: 20px;
+            text-align: right;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 20px;
+            min-height: 85px;
+            font-family: monospace;
+        }
+        .calc-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        .calc-btn {
+            background: #334155;
             border: none;
-            border-radius: 30px;
+            padding: 18px 0;
+            border-radius: 40px;
+            font-size: 1.4rem;
             font-weight: bold;
-            font-size: 0.75rem;
+            color: white;
             cursor: pointer;
-            text-align: center;
         }
-        .bg-azul { background-color: #2196F3; color: white; }
-        .bg-verde { background-color: #4CAF50; color: white; }
-        .bg-vermelho { background-color: #f44336; color: white; }
-        .bg-lilas { background-color: #9c27b0; color: white; }
-        .bg-laranja { background-color: #ff9800; color: white; }
-        .input-row {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-        }
-        .input-row input, .input-row select {
-            flex: 1;
-            padding: 10px;
-            border-radius: 30px;
-            border: 1px solid #ddd;
-        }
-        .item-compra {
-            background: white;
-            padding: 15px;
-            border-radius: 20px;
-            margin-bottom: 12px;
-            border-left: 5px solid;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-            color: #1e293b;
-        }
-        .item-compra.pago { border-left-color: #4CAF50; }
-        .item-compra.pendente { border-left-color: #f44336; }
-        #lista-compras {
-            margin-top: 15px;
-        }
-        @media (max-width: 480px) {
-            .balance-grid { gap: 10px; }
-            .balance-amount { font-size: 18px; }
-            .menu-topo { flex-direction: row; flex-wrap: wrap; }
-        }
+        .calc-btn.op { background: var(--primary); }
+        .calc-btn.equal { background: var(--success); grid-column: span 2; }
+        .calc-btn.clear { background: var(--danger); grid-column: span 2; }
+        @media (max-width: 480px) { .calc-btn { padding: 14px 0; font-size: 1.2rem; } }
+
+        /* LISTA DE COMPRAS */
+        .card-info, .menu-topo, .item-compra { background: white; border-radius: 20px; padding: 12px; margin-bottom: 12px; }
+        .btn-small { padding: 8px 12px; border-radius: 30px; font-size: 0.7rem; border: none; cursor: pointer; }
+        .bg-azul { background: #2196F3; color:white; }
+        .bg-verde { background: #4CAF50; color:white; }
+        .bg-vermelho { background: #f44336; color:white; }
+        .bg-lilas { background: #9c27b0; color:white; }
+        .bg-laranja { background: #ff9800; color:white; }
+        .input-row { display: flex; gap: 8px; margin-top: 8px; }
+        .sync-status { font-size: 11px; text-align: center; margin-top: 8px; color: #5f5f7a; }
+        .btn-edit-small { background: #f1c40f; border: none; padding: 6px 12px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+        .btn-delete-small { background: var(--danger); color: white; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; }
+        .toast-msg { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: #323232; color: white; padding: 8px 16px; border-radius: 40px; font-size: 14px; z-index: 200; opacity: 0.9; }
     </style>
 </head>
 <body>
 
-    <!-- 🔐 TELA DE AUTENTICAÇÃO (mesma do ITVContas) -->
+    <!-- TELA DE AUTENTICAÇÃO -->
     <div id="auth-screen" class="active">
         <div class="auth-container">
             <h2 style="margin-bottom: 5px; color:#2d3436;">💰 ITVContas</h2>
-            <p style="margin-bottom: 20px; color:#636e72;">Organize suas finanças e compras</p>
+            <p style="margin-bottom: 20px; color:#636e72;">Finanças + Calculadora + Lista</p>
             <div class="auth-tabs">
                 <button class="auth-tab active" onclick="switchAuthTab('login')">Entrar</button>
                 <button class="auth-tab" onclick="switchAuthTab('register')">Cadastrar</button>
@@ -549,102 +395,108 @@
         </div>
     </div>
 
-    <!-- CONTEÚDO PRINCIPAL DO ITVContas (dashboard financeiro) -->
+    <!-- DASHBOARD FINANCEIRO -->
     <div class="container" id="main-app" style="display: none;">
         <div class="welcome-header">
             <div class="greeting" id="greeting-name">Olá, Moni</div>
             <div id="sync-status" class="sync-status">🔄 sincronizando...</div>
         </div>
-
         <div class="insight-card">
             <div class="insight-title">🔍 INSIGHT DO DIA</div>
             <div class="insight-value" id="insight-percent">Seus gastos caíram!</div>
-            <div class="insight-message" id="insight-message">Seus gastos este mês estão 15% menores que o mês passado. Continue assim!</div>
+            <div class="insight-message" id="insight-message">Continue assim para alcançar sua meta.</div>
         </div>
-
         <div class="balance-grid">
             <div class="balance-item"><div class="balance-label">💵 Carteira <button class="edit-balance" onclick="editExtraBalance('wallet')">✏️</button></div><div class="balance-amount" id="wallet-balance">R$ 0,00</div></div>
             <div class="balance-item"><div class="balance-label">🏦 Conta corrente <button class="edit-balance" onclick="editExtraBalance('checking')">✏️</button></div><div class="balance-amount" id="checking-balance">R$ 0,00</div></div>
             <div class="balance-item"><div class="balance-label">💳 Cartão de crédito <button class="edit-balance" onclick="editExtraBalance('credit')">✏️</button></div><div class="balance-amount negative" id="credit-balance">-R$ 0,00</div></div>
-            <div class="balance-item investment-item"><div class="balance-label">📈 Investimentos <button class="edit-balance" onclick="editExtraBalance('invest')">✏️</button></div><div class="balance-amount" id="invest-balance">R$ 0,00</div></div>
+            <div class="balance-item"><div class="balance-label">📈 Investimentos <button class="edit-balance" onclick="editExtraBalance('invest')">✏️</button></div><div class="balance-amount" id="invest-balance">R$ 0,00</div></div>
         </div>
-
-        <div class="section-title"><h3>📅 Próximos Pagamentos</h3><button class="btn-view-all" onclick="scrollToBills()">Ver todos →</button></div>
+        <div style="display:flex; justify-content:space-between; margin-bottom: 8px;"><h3>📅 Próximos Pagamentos</h3><button class="btn-view-all" onclick="scrollToBills()" style="background:none; border:none; color:var(--primary);">Ver todos →</button></div>
         <div id="upcoming-list" class="upcoming-list"></div>
-
-        <div class="expense-stats"><div class="expense-current"><h4>ESTE MÊS</h4><div class="value" id="current-expense">R$ 0,00</div></div><div class="expense-compare"><div>vs período anterior</div><div id="trend-percent" class="trend-down">0%</div></div></div>
-
+        <div class="expense-stats"><div><h4>ESTE MÊS</h4><div class="value" id="current-expense">R$ 0,00</div></div><div><div>vs período anterior</div><div id="trend-percent" class="trend-down">0%</div></div></div>
         <div class="admin-card">
-            <div style="display:flex; justify-content:space-between; align-items:center;"><strong>💰 Planejamento Mensal</strong><select id="month-filter" onchange="changeMonthAndRender()"><option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option><option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option><option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select></div>
-            <div class="salary-area" style="margin-top:15px;"><input type="number" id="salary-input" placeholder="Definir Salário do Mês" step="0.01"><button onclick="setSalary()" style="background:var(--primary); color:white; border:none; padding:10px 18px; border-radius:30px;">Salvar</button></div>
-            <div id="salary-display" style="font-weight:bold; margin-top:8px;">Salário atual: R$ 0,00</div>
+            <div style="display:flex; justify-content:space-between;"><strong>💰 Planejamento Mensal</strong><select id="month-filter" onchange="changeMonthAndRender()"><option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option><option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option><option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select></div>
+            <div class="salary-area" style="margin-top:15px; display:flex; gap:8px; flex-wrap:wrap;">
+                <input type="number" id="salary-input" placeholder="Definir Salário do Mês" step="0.01" style="flex:2; padding:10px; border-radius:30px; border:1px solid #ddd;">
+                <button onclick="setSalary()" style="background:var(--primary); color:white; border:none; padding:10px 18px; border-radius:30px;">Salvar</button>
+            </div>
+            <div id="salary-display" style="font-weight:bold;">Salário atual: R$ 0,00</div>
             <div id="balance-display" style="font-size:14px; color:green;">Saldo após contas: R$ 0,00</div>
-            <button id="btn-edit-salary" class="hidden" onclick="enableSalaryEdit()" style="margin-top:8px; background:#f39c12; border:none; padding:6px; border-radius:30px;">EDITAR SALÁRIO</button>
+            <div style="display: flex; gap: 10px; margin-top: 12px;">
+                <button id="btn-edit-salary" class="hidden" onclick="enableSalaryEdit()" style="background:#f39c12; border:none; padding:8px 16px; border-radius:30px; color:white; font-weight:bold; cursor:pointer;">✏️ EDITAR SALÁRIO</button>
+                <button id="btn-fix-salary" class="hidden" onclick="fixSalary()" style="background:#00b894; border:none; padding:8px 16px; border-radius:30px; color:white; font-weight:bold; cursor:pointer;">🔒 FIXAR SALÁRIO</button>
+            </div>
         </div>
-
         <div class="action-buttons"><button class="btn-action btn-action-primary" onclick="toggleForm()">+ NOVO</button><button class="btn-action" onclick="filterType('pago')">✅ PAGO</button><button class="btn-action" onclick="filterType('pendente')">⚠️ A VENCER</button></div>
-
         <div id="bill-form" class="form-card hidden"><h3>➕ Cadastrar Conta</h3><input type="text" id="bill-name" placeholder="Nome da Conta" style="width:100%; margin:8px 0; padding:12px;"><input type="date" id="bill-date"><input type="number" id="bill-value" placeholder="Valor R$" step="0.01"><button onclick="saveBill()" style="background:var(--success); color:white; width:100%; padding:12px; border-radius:30px;">CADASTRAR</button></div>
-        <div id="edit-form" class="form-card hidden"><h3>✏️ Editar Conta</h3><input type="hidden" id="edit-bill-id"><input type="text" id="edit-bill-name" placeholder="Nome"><input type="date" id="edit-bill-date"><input type="number" id="edit-bill-value" placeholder="Valor"><div style="display:flex; gap:10px;"><button onclick="updateBill()" style="background:var(--success); flex:2;">SALVAR</button><button onclick="toggleEditForm()" style="background:#95a5a6;">CANCELAR</button></div></div>
-
+        <div id="edit-form" class="form-card hidden"><h3>✏️ Editar Conta</h3><input type="hidden" id="edit-bill-id"><input type="text" id="edit-bill-name"><input type="date" id="edit-bill-date"><input type="number" id="edit-bill-value"><div style="display:flex; gap:10px;"><button onclick="updateBill()" style="background:var(--success); flex:2;">SALVAR</button><button onclick="toggleEditForm()">CANCELAR</button></div></div>
         <div id="bills-container"></div>
     </div>
 
-    <!-- SEÇÃO LISTA DE COMPRAS (integrada ao mesmo usuário) -->
+    <!-- SEÇÃO LISTA DE COMPRAS (com botão FIXAR funcionando) -->
     <div id="shopping-section" class="shopping-container" style="display: none;">
         <div style="padding: 20px 16px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <h2 style="color:#1e293b;">🛒 Lista de Compras</h2>
-                <button onclick="showMainApp()" class="btn-small bg-lilas" style="width:auto;">Voltar ao Financeiro</button>
-            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;"><h2>🛒 Lista de Compras</h2><button onclick="showMainApp()" class="btn-small bg-lilas">Voltar</button></div>
             <div class="card-info">
                 <label>Saldo Alimentação (Mês):</label>
-                <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
-                    <input type="number" id="saldo-alim" placeholder="R$ 0,00" style="flex:1;">
-                    <button onclick="salvarAlimentacao()" id="btn-fixar" class="btn-small bg-verde">FIXAR ALIMENTAÇÃO</button>
-                    <button onclick="editarAlimentacao()" id="btn-editar-alim" class="btn-small bg-laranja" style="display:none">EDITAR</button>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <input type="number" id="saldo-alim" placeholder="R$ 0,00" style="flex:2; padding: 10px; border-radius: 30px; border:1px solid #ddd;">
+                    <button onclick="fixarSaldoAlimentacao()" id="btn-fixar-alim" class="btn-small bg-verde">🔒 FIXAR</button>
+                    <button onclick="editarSaldoAlimentacao()" id="btn-editar-alim" class="btn-small bg-laranja" style="display:none">✏️ EDITAR</button>
                 </div>
                 <p>Saldo Atual: <strong id="display-saldo">R$ 0,00</strong></p>
             </div>
-            <div class="menu-topo">
-                <button class="btn-small bg-azul" onclick="showTab('cad')">+ COMPRA</button>
-                <button class="btn-small bg-verde" onclick="showTab('pago')">PAGO</button>
-                <button class="btn-small bg-vermelho" onclick="showTab('n-pago')">NÃO PAGO</button>
-                <select id="filtro-mes" class="btn-small" style="background:#333; color:white;" onchange="renderListaCompras()">
-                    <option value="01">JAN</option><option value="02">FEV</option><option value="03">MAR</option><option value="04">ABR</option>
-                    <option value="05">MAI</option><option value="06">JUN</option><option value="07">JUL</option><option value="08">AGO</option>
-                    <option value="09">SET</option><option value="10">OUT</option><option value="11">NOV</option><option value="12">DEZ</option>
-                </select>
-            </div>
-            <div id="tab-cad" class="form-card">
-                <input type="text" id="nome-compra" placeholder="Nome do item">
-                <input type="number" id="valor-unit" placeholder="Valor Unitário R$" oninput="calcTotalCompra()">
-                <div class="input-row">
-                    <input type="number" id="qtd-compra" placeholder="Qtd" oninput="calcTotalCompra()">
-                    <select id="unidade-compra"><option value="UN">UN</option><option value="CX">CX</option><option value="KG">KG</option><option value="ML">ML</option></select>
-                </div>
-                <p>Total: <strong id="total-preview">R$ 0,00</strong></p>
-                <button onclick="addCompra()" class="btn-small bg-azul" style="width:100%;">CADASTRAR COMPRA</button>
-            </div>
+            <div class="menu-topo"><button class="btn-small bg-azul" onclick="showTabShopping('cad')">+ COMPRA</button><button class="btn-small bg-verde" onclick="showTabShopping('pago')">PAGO</button><button class="btn-small bg-vermelho" onclick="showTabShopping('n-pago')">NÃO PAGO</button><select id="filtro-mes" class="btn-small" style="background:#333; color:white;" onchange="renderListaCompras()"><option value="01">JAN</option><option value="02">FEV</option><option value="03">MAR</option><option value="04">ABR</option><option value="05">MAI</option><option value="06">JUN</option><option value="07">JUL</option><option value="08">AGO</option><option value="09">SET</option><option value="10">OUT</option><option value="11">NOV</option><option value="12">DEZ</option></select></div>
+            <div id="tab-cad" class="form-card"><input type="text" id="nome-compra" placeholder="Nome do item"><input type="number" id="valor-unit" placeholder="Valor Unitário R$" oninput="calcTotalCompra()"><div class="input-row"><input type="number" id="qtd-compra" placeholder="Qtd" oninput="calcTotalCompra()"><select id="unidade-compra"><option value="UN">UN</option><option value="CX">CX</option><option value="KG">KG</option></select></div><p>Total: <strong id="total-preview">R$ 0,00</strong></p><button onclick="addCompra()" class="btn-small bg-azul" style="width:100%;">CADASTRAR COMPRA</button></div>
             <div id="lista-compras"></div>
         </div>
     </div>
 
-    <!-- BARRA INFERIOR (Botão Compartilhado renomeado para Lista de Compras) -->
+    <!-- SEÇÃO CALCULADORA -->
+    <div id="calculator-section" class="calculator-container" style="display: none;">
+        <div class="calc-card">
+            <div class="calc-display" id="calc-display">0</div>
+            <div class="calc-buttons">
+                <button class="calc-btn clear" onclick="calcClear()">C</button>
+                <button class="calc-btn op" onclick="calcAppend('/')">÷</button>
+                <button class="calc-btn op" onclick="calcAppend('*')">×</button>
+                <button class="calc-btn op" onclick="calcAppend('-')">−</button>
+                <button class="calc-btn" onclick="calcAppend('7')">7</button>
+                <button class="calc-btn" onclick="calcAppend('8')">8</button>
+                <button class="calc-btn" onclick="calcAppend('9')">9</button>
+                <button class="calc-btn op" onclick="calcAppend('+')">+</button>
+                <button class="calc-btn" onclick="calcAppend('4')">4</button>
+                <button class="calc-btn" onclick="calcAppend('5')">5</button>
+                <button class="calc-btn" onclick="calcAppend('6')">6</button>
+                <button class="calc-btn" onclick="calcAppend('%')">%</button>
+                <button class="calc-btn" onclick="calcAppend('1')">1</button>
+                <button class="calc-btn" onclick="calcAppend('2')">2</button>
+                <button class="calc-btn" onclick="calcAppend('3')">3</button>
+                <button class="calc-btn equal" onclick="calcResult()">=</button>
+                <button class="calc-btn" onclick="calcAppend('0')">0</button>
+                <button class="calc-btn" onclick="calcAppend('.')">.</button>
+                <button class="calc-btn" onclick="calcBackspace()">⌫</button>
+            </div>
+            <div style="text-align:center; margin-top: 20px;"><button onclick="showMainApp()" class="btn-small bg-lilas" style="background:#6c5ce7;">Voltar ao Início</button></div>
+        </div>
+    </div>
+
+    <!-- BARRA INFERIOR -->
     <div class="bottom-nav" id="bottom-nav" style="display: none;">
         <button class="nav-item active" onclick="showMainApp()">🏠 Início</button>
         <button class="nav-item" onclick="scrollToBills()">📋 Registros</button>
-        <button class="nav-item" onclick="document.querySelector('.admin-card').scrollIntoView({behavior:'smooth'})">📊 Planejado</button>
+        <button class="nav-item" onclick="scrollToPlanning()">📊 Planejado</button>
+        <button class="nav-item" id="btnCalculatorNav" onclick="showCalculator()">🧮 Calculadora</button>
         <button class="nav-item" id="btnShoppingNav" onclick="showShoppingList()">🛍️ Lista de Compras</button>
     </div>
 
-    <!-- Firebase SDKs (mesma configuração do ITVContas) -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
     <script>
-        // ========== CONFIG FIREBASE ==========
+        // ==================== FIREBASE ====================
         const firebaseConfig = {
             apiKey: "AIzaSyDiGB5e7iw6_pF7tkpcXjwf3blz7MJ1NKI",
             authDomain: "contas-do-m-eaceb.firebaseapp.com",
@@ -653,20 +505,31 @@
             messagingSenderId: "508965274192",
             appId: "1:508965274192:web:a22c404693bed8dd650755"
         };
-        let db, auth, currentUser = null;
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        let currentUser = null;
         let bills = [], salaries = {}, extraBalances = { wallet: 2698, checking: 10773, credit: -1390, invest: 49734 };
         let currentFilter = 'all';
+        let compras = [], saldosMensais = {}, editShoppingIdx = null;
 
-        firebase.initializeApp(firebaseConfig);
-        db = firebase.firestore();
-        auth = firebase.auth();
+        // ==================== CALCULADORA ====================
+        let calcExpression = "";
+        function updateCalcDisplay() { document.getElementById('calc-display').innerText = calcExpression || "0"; }
+        window.calcAppend = function(val) { calcExpression += val; updateCalcDisplay(); };
+        window.calcClear = function() { calcExpression = ""; updateCalcDisplay(); };
+        window.calcBackspace = function() { calcExpression = calcExpression.slice(0, -1); updateCalcDisplay(); };
+        window.calcResult = function() {
+            try {
+                let expr = calcExpression.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
+                let result = eval(expr);
+                calcExpression = String(result);
+                updateCalcDisplay();
+            } catch(e) { calcExpression = "Erro"; updateCalcDisplay(); setTimeout(()=>{ calcClear(); }, 1000); }
+        };
 
-        // ========== DADOS DA LISTA DE COMPRAS ==========
-        let compras = [];
-        let saldosMensais = {};
-        let editShoppingIdx = null;
-
-        // ========== FUNÇÕES DE AUTENTICAÇÃO (ITVContas) ==========
+        // ==================== AUTENTICAÇÃO ====================
         window.switchAuthTab = function(tab) {
             document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
             event.target.classList.add('active');
@@ -685,24 +548,18 @@
         }
         window.handleLogin = handleLogin; window.handleRegister = handleRegister;
 
-        // ========== FUNÇÕES DO ITVCONTAS (ORIGINAIS) ==========
+        // ==================== FUNÇÕES ITVCONTAS ====================
         async function loadFromFirestore() {
             if(!currentUser) return;
             const billsSnap = await db.collection('users').doc(currentUser.uid).collection('bills').get();
             bills = []; billsSnap.forEach(d=> bills.push({ id: parseInt(d.id), ...d.data() }));
-            localStorage.setItem('itv_bills', JSON.stringify(bills));
             const salarySnap = await db.collection('users').doc(currentUser.uid).collection('appData').doc('salaries').get();
             if(salarySnap.exists) salaries = salarySnap.data(); else salaries = {};
             const extraSnap = await db.collection('users').doc(currentUser.uid).collection('appData').doc('extraBalances').get();
             if(extraSnap.exists) extraBalances = extraSnap.data();
             renderBalanceCards(); renderBills(); renderInsight();
-            // Carregar dados da lista de compras
             const comprasSnap = await db.collection('users').doc(currentUser.uid).collection('shopping').doc('data').get();
-            if(comprasSnap.exists){
-                const data = comprasSnap.data();
-                compras = data.compras || [];
-                saldosMensais = data.saldosMensais || {};
-            } else { compras = []; saldosMensais = {}; }
+            if(comprasSnap.exists){ const data = comprasSnap.data(); compras = data.compras || []; saldosMensais = data.saldosMensais || {}; }
             renderListaCompras();
         }
         function renderBalanceCards() {
@@ -713,40 +570,65 @@
         }
         window.editExtraBalance = async function(type){
             let val = parseFloat(prompt(`Novo valor para ${type}:`, extraBalances[type]||0));
-            if(!isNaN(val)){ extraBalances[type]=val; await saveExtraBalances(); renderBalanceCards(); }
+            if(!isNaN(val)){ extraBalances[type]=val; await db.collection('users').doc(currentUser.uid).collection('appData').doc('extraBalances').set(extraBalances); renderBalanceCards(); }
         };
-        async function saveExtraBalances(){ if(currentUser) await db.collection('users').doc(currentUser.uid).collection('appData').doc('extraBalances').set(extraBalances);}
-        async function setSalary(){ const month=document.getElementById('month-filter').value; const val=parseFloat(document.getElementById('salary-input').value); if(isNaN(val)) return; salaries[month]=val; if(currentUser) await db.collection('users').doc(currentUser.uid).collection('appData').doc('salaries').set(salaries); renderBills();}
-        function enableSalaryEdit(){ document.getElementById('salary-input').value = salaries[document.getElementById('month-filter').value]||''; }
-        async function saveBill(){ const name=document.getElementById('bill-name').value, date=document.getElementById('bill-date').value, value=parseFloat(document.getElementById('bill-value').value); if(!name||!date||isNaN(value)) return; const newBill={ id:Date.now(), name, date, value, status:'pendente', month:date.split('-')[1] }; bills.push(newBill); await syncBill(newBill,'set'); localStorage.setItem('itv_bills',JSON.stringify(bills)); renderBills(); toggleForm(); clearBillForm();}
+        async function setSalary(){ const month=document.getElementById('month-filter').value; const val=parseFloat(document.getElementById('salary-input').value); if(isNaN(val)) return; salaries[month]=val; if(currentUser) await db.collection('users').doc(currentUser.uid).collection('appData').doc('salaries').set(salaries); renderBills(); disableSalaryEditMode();}
+        function enableSalaryEdit(){ 
+            document.getElementById('salary-input').disabled = false;
+            document.getElementById('salary-input').value = salaries[document.getElementById('month-filter').value] || '';
+            document.getElementById('btn-edit-salary').classList.add('hidden');
+            document.getElementById('btn-fix-salary').classList.remove('hidden');
+        }
+        async function fixSalary(){
+            const month = document.getElementById('month-filter').value;
+            const newSalary = parseFloat(document.getElementById('salary-input').value);
+            if(isNaN(newSalary)) return alert("Valor inválido!");
+            salaries[month] = newSalary;
+            if(currentUser) await db.collection('users').doc(currentUser.uid).collection('appData').doc('salaries').set(salaries);
+            renderBills();
+            disableSalaryEditMode();
+            showToast("Salário fixado com sucesso!");
+        }
+        function disableSalaryEditMode(){
+            document.getElementById('salary-input').disabled = true;
+            document.getElementById('btn-edit-salary').classList.remove('hidden');
+            document.getElementById('btn-fix-salary').classList.add('hidden');
+        }
+        async function saveBill(){ const name=document.getElementById('bill-name').value, date=document.getElementById('bill-date').value, value=parseFloat(document.getElementById('bill-value').value); if(!name||!date||isNaN(value)) return; const newBill={ id:Date.now(), name, date, value, status:'pendente', month:date.split('-')[1] }; bills.push(newBill); await syncBill(newBill,'set'); renderBills(); toggleForm(); }
         async function syncBill(bill,op){ if(!currentUser) return; const ref=db.collection('users').doc(currentUser.uid).collection('bills').doc(String(bill.id)); if(op==='delete') await ref.delete(); else await ref.set(bill);}
         async function markAsPaid(id){ const bill=bills.find(b=>b.id===id); if(!bill) return; bill.status='pago'; const nextDate=new Date(bill.date); nextDate.setMonth(nextDate.getMonth()+1); const newBill={...bill, id:Date.now()+1, date:nextDate.toISOString().split('T')[0], status:'pendente', month:String(nextDate.getMonth()+1).padStart(2,'0')}; bills.push(newBill); await syncBill(bill,'set'); await syncBill(newBill,'set'); renderBills();}
         async function deleteBill(id){ if(!confirm("Excluir?")) return; bills=bills.filter(b=>b.id!==id); await syncBill({id},'delete'); renderBills();}
-        function renderBills(){ const month=document.getElementById('month-filter').value; const salary=salaries[month]||0; document.getElementById('salary-display').innerHTML=`Salário atual: R$ ${salary.toFixed(2)}`; let totalPaid=0; const filtered=bills.filter(b=>b.month===month && (currentFilter==='all'||b.status===currentFilter)); const container=document.getElementById('bills-container'); container.innerHTML=''; filtered.forEach(bill=>{ if(bill.status==='pago') totalPaid+=bill.value; const div=document.createElement('div'); div.className=`bill-card ${bill.status}`; div.innerHTML=`<div><strong>${bill.name}</strong><br><small>${bill.date.split('-').reverse().join('/')}</small><br>R$ ${bill.value.toFixed(2)}</div><div class="bill-actions">${bill.status==='pendente'?`<button class="btn-pay-mini" onclick="markAsPaid(${bill.id})">PAGAR</button>`:''}<button class="btn-edit-small" onclick="editBill(${bill.id})">EDITAR</button><button class="btn-delete-small" onclick="deleteBill(${bill.id})">EXCLUIR</button></div>`; container.appendChild(div); }); document.getElementById('balance-display').innerHTML=`Saldo após contas: R$ ${(salary-totalPaid).toFixed(2)}`; if(salary>0){ document.getElementById('salary-input').parentElement.querySelector('button').style.display='none'; document.getElementById('btn-edit-salary').classList.remove('hidden'); } else document.getElementById('btn-edit-salary').classList.add('hidden'); renderInsight();}
-        function renderInsight(){ const month=document.getElementById('month-filter').value; let currentTotal=bills.filter(b=>b.month===month).reduce((a,b)=>a+b.value,0); let prevMonth=(parseInt(month)-1).toString().padStart(2,'0'); if(prevMonth==='00') prevMonth='12'; let prevTotal=bills.filter(b=>b.month===prevMonth).reduce((a,b)=>a+b.value,0); let percent=prevTotal?((currentTotal-prevTotal)/prevTotal)*100:0; document.getElementById('insight-percent').innerHTML=percent<0?'📉 Gastos diminuíram!':'📈 Atenção aos gastos'; document.getElementById('insight-message').innerHTML=percent<0?`Gastos caíram ${Math.abs(percent).toFixed(0)}%`:`Gastos aumentaram ${percent.toFixed(0)}%`; document.getElementById('current-expense').innerHTML=`R$ ${currentTotal.toFixed(2)}`; document.getElementById('trend-percent').innerHTML=`${percent>=0?'+':''}${percent.toFixed(0)}%`; const pendentes=bills.filter(b=>b.month===month && b.status==='pendente').slice(0,5); const upcomingDiv=document.getElementById('upcoming-list'); upcomingDiv.innerHTML=pendentes.length?pendentes.map(b=>`<div class="upcoming-item"><div><h4>${b.name}</h4><div class="upcoming-date">${b.date.split('-').reverse().join('/')}</div></div><div><span class="upcoming-value">-R$ ${b.value.toFixed(2)}</span><button class="btn-pay-mini" onclick="markAsPaid(${b.id})">Pagar</button></div></div>`).join(''):'<div style="padding:20px;text-align:center;">Nenhum pagamento pendente</div>';}
+        function renderBills(){ const month=document.getElementById('month-filter').value; const salary=salaries[month]||0; document.getElementById('salary-display').innerHTML=`Salário atual: R$ ${salary.toFixed(2)}`; let totalPaid=0; const filtered=bills.filter(b=>b.month===month && (currentFilter==='all'||b.status===currentFilter)); const container=document.getElementById('bills-container'); container.innerHTML=''; filtered.forEach(bill=>{ if(bill.status==='pago') totalPaid+=bill.value; const div=document.createElement('div'); div.className=`bill-card ${bill.status}`; div.innerHTML=`<div><strong>${bill.name}</strong><br>${bill.date.split('-').reverse().join('/')}<br>R$ ${bill.value.toFixed(2)}</div><div>${bill.status==='pendente'?`<button class="btn-pay-mini" onclick="markAsPaid(${bill.id})">PAGAR</button>`:''}<button class="btn-edit-small" onclick="editBill(${bill.id})">EDITAR</button><button class="btn-delete-small" onclick="deleteBill(${bill.id})">EXCLUIR</button></div>`; container.appendChild(div); }); document.getElementById('balance-display').innerHTML=`Saldo após contas: R$ ${(salary-totalPaid).toFixed(2)}`; if(salary>0){ document.getElementById('salary-input').disabled=true; document.getElementById('btn-edit-salary').classList.remove('hidden'); document.getElementById('btn-fix-salary').classList.add('hidden'); } else { document.getElementById('salary-input').disabled=false; document.getElementById('btn-edit-salary').classList.add('hidden'); document.getElementById('btn-fix-salary').classList.add('hidden'); } renderInsight();}
+        function renderInsight(){ const month=document.getElementById('month-filter').value; let currentTotal=bills.filter(b=>b.month===month).reduce((a,b)=>a+b.value,0); let prevMonth=(parseInt(month)-1).toString().padStart(2,'0'); if(prevMonth==='00') prevMonth='12'; let prevTotal=bills.filter(b=>b.month===prevMonth).reduce((a,b)=>a+b.value,0); let percent=prevTotal?((currentTotal-prevTotal)/prevTotal)*100:0; document.getElementById('insight-percent').innerHTML=percent<0?'📉 Gastos diminuíram!':'📈 Atenção aos gastos'; document.getElementById('insight-message').innerHTML=percent<0?`Gastos caíram ${Math.abs(percent).toFixed(0)}%`:`Gastos aumentaram ${percent.toFixed(0)}%`; document.getElementById('current-expense').innerHTML=`R$ ${currentTotal.toFixed(2)}`; document.getElementById('trend-percent').innerHTML=`${percent>=0?'+':''}${percent.toFixed(0)}%`; const pendentes=bills.filter(b=>b.month===month && b.status==='pendente').slice(0,5); const upcomingDiv=document.getElementById('upcoming-list'); upcomingDiv.innerHTML=pendentes.length?pendentes.map(b=>`<div class="upcoming-item"><div><strong>${b.name}</strong><br>${b.date.split('-').reverse().join('/')}</div><div>-R$ ${b.value.toFixed(2)}<button class="btn-pay-mini" onclick="markAsPaid(${b.id})">Pagar</button></div></div>`).join(''):'<div style="padding:20px;text-align:center;">Nenhum pagamento pendente</div>';}
         function toggleForm(){ document.getElementById('bill-form').classList.toggle('hidden'); document.getElementById('edit-form').classList.add('hidden');}
         function toggleEditForm(){ document.getElementById('edit-form').classList.toggle('hidden');}
-        function editBill(id){ const bill=bills.find(b=>b.id===id); if(bill){ document.getElementById('edit-bill-id').value=bill.id; document.getElementById('edit-bill-name').value=bill.name; document.getElementById('edit-bill-date').value=bill.date; document.getElementById('edit-bill-value').value=bill.value; toggleEditForm();}}
-        async function updateBill(){ const id=parseInt(document.getElementById('edit-bill-id').value); const idx=bills.findIndex(b=>b.id===id); if(idx!==-1){ bills[idx].name=document.getElementById('edit-bill-name').value; bills[idx].date=document.getElementById('edit-bill-date').value; bills[idx].value=parseFloat(document.getElementById('edit-bill-value').value); bills[idx].month=bills[idx].date.split('-')[1]; await syncBill(bills[idx],'set'); renderBills(); toggleEditForm();}}
+        function editBill(id){ const bill=bills.find(b=>b.id===id); if(bill){ document.getElementById('edit-bill-id').value=bill.id; document.getElementById('edit-bill-name').value=bill.name; document.getElementById('edit-bill-date').value=bill.date; document.getElementById('edit-bill-value').value=bill.value; document.getElementById('edit-form').classList.remove('hidden');}}
+        async function updateBill(){ const id=parseInt(document.getElementById('edit-bill-id').value); const idx=bills.findIndex(b=>b.id===id); if(idx!==-1){ bills[idx].name=document.getElementById('edit-bill-name').value; bills[idx].date=document.getElementById('edit-bill-date').value; bills[idx].value=parseFloat(document.getElementById('edit-bill-value').value); bills[idx].month=bills[idx].date.split('-')[1]; await syncBill(bills[idx],'set'); renderBills(); document.getElementById('edit-form').classList.add('hidden');}}
         function filterType(t){ currentFilter=t; renderBills();}
-        function changeMonthAndRender(){ renderBills();}
-        function clearBillForm(){ document.getElementById('bill-name').value=''; document.getElementById('bill-date').value=''; document.getElementById('bill-value').value='';}
-        function scrollToBills(){ document.getElementById('bills-container').scrollIntoView({behavior:'smooth'});}
-        function showMainApp(){ document.getElementById('main-app').style.display='block'; document.getElementById('shopping-section').style.display='none'; document.querySelector('.bottom-nav .nav-item.active')?.classList.remove('active'); document.querySelector('.bottom-nav .nav-item:first-child').classList.add('active');}
-        function showShoppingList(){ document.getElementById('main-app').style.display='none'; document.getElementById('shopping-section').style.display='block'; document.querySelector('.bottom-nav .nav-item.active')?.classList.remove('active'); document.getElementById('btnShoppingNav').classList.add('active'); renderListaCompras();}
-        // ========== FUNÇÕES LISTA DE COMPRAS ==========
-        async function saveShoppingData(){ if(!currentUser) return; await db.collection('users').doc(currentUser.uid).collection('shopping').doc('data').set({ compras, saldosMensais }); }
-        function renderListaCompras(filtro='todos'){ const mes=document.getElementById('filtro-mes').value; document.getElementById('display-saldo').innerHTML=`R$ ${(saldosMensais[mes]||0).toFixed(2)}`; if(saldosMensais[mes]!==undefined){ document.getElementById('saldo-alim').value=saldosMensais[mes].toFixed(2); document.getElementById('saldo-alim').disabled=true; document.getElementById('btn-fixar').style.display='none'; document.getElementById('btn-editar-alim').style.display='block'; }else{ document.getElementById('saldo-alim').value=''; document.getElementById('saldo-alim').disabled=false; document.getElementById('btn-fixar').style.display='block'; document.getElementById('btn-editar-alim').style.display='none'; } const listaDiv=document.getElementById('lista-compras'); listaDiv.innerHTML=''; (compras||[]).filter(c=>c.mes===mes).forEach(item=>{ if(filtro==='pago' && !item.pago) return; if(filtro==='n-pago' && item.pago) return; const div=document.createElement('div'); div.className=`item-compra ${item.pago?'pago':'pendente'}`; div.innerHTML=`<strong>${item.nome}</strong><br>Qtd: ${item.qtd} ${item.unidade||'UN'} | Total: R$ ${(item.total||0).toFixed(2)}<br>Status: ${item.pago?'<span style="color:green">PAGO</span>':'<span style="color:red">NÃO PAGO</span>'}<div style="margin-top:10px; display:flex; gap:5px">${!item.pago?`<button onclick="pagarCompra(${item.id})" class="btn-small bg-verde">PAGAR</button>`:''}<button onclick="editCompra(${item.id})" class="btn-small bg-lilas">EDITAR</button><button onclick="deletarCompra(${item.id})" class="btn-small bg-vermelho">EXCLUIR</button></div>`; listaDiv.appendChild(div); });}
-        function calcTotalCompra(){ const v=parseFloat(document.getElementById('valor-unit').value)||0; const q=parseFloat(document.getElementById('qtd-compra').value)||0; document.getElementById('total-preview').innerText=`R$ ${(v*q).toFixed(2)}`; }
-        async function addCompra(){ const nome=document.getElementById('nome-compra').value, valor=parseFloat(document.getElementById('valor-unit').value), qtd=parseFloat(document.getElementById('qtd-compra').value), unidade=document.getElementById('unidade-compra').value, mes=document.getElementById('filtro-mes').value; if(!nome||isNaN(valor)||isNaN(qtd)) return alert("Preencha corretamente"); const nova={ id:Date.now(), nome, valor, qtd, unidade, total:valor*qtd, pago:false, mes }; if(editShoppingIdx!==null){ compras[editShoppingIdx]=nova; editShoppingIdx=null; }else compras.push(nova); await saveShoppingData(); renderListaCompras(); document.getElementById('nome-compra').value=''; document.getElementById('valor-unit').value=''; document.getElementById('qtd-compra').value=''; document.getElementById('total-preview').innerText='R$ 0,00'; }
-        async function pagarCompra(id){ const idx=compras.findIndex(c=>c.id===id); if(idx===-1) return; const item=compras[idx]; const mesAtual=item.mes; item.pago=true; if(saldosMensais[mesAtual]!==undefined) saldosMensais[mesAtual]-=item.total; let proxMes=(parseInt(mesAtual)%12)+1; let prox=proxMes.toString().padStart(2,'0'); const nova={...item, id:Date.now()+1, pago:false, mes:prox}; compras.push(nova); await saveShoppingData(); renderListaCompras(); }
-        async function deletarCompra(id){ compras=compras.filter(c=>c.id!==id); await saveShoppingData(); renderListaCompras(); }
-        function editCompra(id){ const item=compras.find(c=>c.id===id); if(!item) return; document.getElementById('nome-compra').value=item.nome; document.getElementById('valor-unit').value=item.valor; document.getElementById('qtd-compra').value=item.qtd; document.getElementById('unidade-compra').value=item.unidade||'UN'; editShoppingIdx=compras.findIndex(c=>c.id===id); calcTotalCompra(); window.scrollTo(0,0);}
-        async function salvarAlimentacao(){ const mes=document.getElementById('filtro-mes').value; const val=parseFloat(document.getElementById('saldo-alim').value)||0; saldosMensais[mes]=val; await saveShoppingData(); renderListaCompras();}
-        function editarAlimentacao(){ document.getElementById('saldo-alim').disabled=false; document.getElementById('btn-fixar').style.display='block'; document.getElementById('btn-editar-alim').style.display='none';}
-        function showTab(type){ if(type==='pago') renderListaCompras('pago'); else if(type==='n-pago') renderListaCompras('n-pago'); else renderListaCompras('todos'); }
+        function changeMonthAndRender(){ renderBills(); disableSalaryEditMode(); }
+        function scrollToBills(){ document.getElementById('bills-container').scrollIntoView({behavior:'smooth'}); showMainApp(); }
+        function scrollToPlanning(){ document.querySelector('.admin-card').scrollIntoView({behavior:'smooth'}); showMainApp(); }
+        function showMainApp(){ document.getElementById('main-app').style.display='block'; document.getElementById('shopping-section').style.display='none'; document.getElementById('calculator-section').style.display='none'; setActiveNav('inicio'); }
+        function showShoppingList(){ document.getElementById('main-app').style.display='none'; document.getElementById('shopping-section').style.display='block'; document.getElementById('calculator-section').style.display='none'; setActiveNav('shopping'); renderListaCompras(); }
+        function showCalculator(){ document.getElementById('main-app').style.display='none'; document.getElementById('shopping-section').style.display='none'; document.getElementById('calculator-section').style.display='block'; setActiveNav('calculator'); }
+        function setActiveNav(active){ document.querySelectorAll('.nav-item').forEach(btn=>btn.classList.remove('active')); if(active==='inicio') document.querySelector('.nav-item:first-child').classList.add('active'); else if(active==='shopping') document.getElementById('btnShoppingNav').classList.add('active'); else if(active==='calculator') document.getElementById('btnCalculatorNav').classList.add('active'); }
+        function showToast(msg){ let toast=document.createElement('div'); toast.className='toast-msg'; toast.innerText=msg; document.body.appendChild(toast); setTimeout(()=>toast.remove(), 2000); }
 
-        auth.onAuthStateChanged(async (user)=>{ if(user){ currentUser=user; document.getElementById('greeting-name').innerHTML=`Olá, ${user.displayName||user.email.split('@')[0]}`; document.getElementById('auth-screen').style.display='none'; document.getElementById('main-app').style.display='block'; document.getElementById('bottom-nav').style.display='flex'; await loadFromFirestore(); renderBills(); } else { document.getElementById('auth-screen').style.display='flex'; document.getElementById('main-app').style.display='none'; document.getElementById('shopping-section').style.display='none'; document.getElementById('bottom-nav').style.display='none'; } });
+        // ==================== LISTA DE COMPRAS (FIXAR SALDO FUNCIONAL) ====================
+        async function saveShoppingData(){ if(!currentUser) return; await db.collection('users').doc(currentUser.uid).collection('shopping').doc('data').set({ compras, saldosMensais }); }
+        function renderListaCompras(filtro='todos'){ const mes=document.getElementById('filtro-mes').value; const saldoAtual = saldosMensais[mes] || 0; document.getElementById('display-saldo').innerHTML=`R$ ${saldoAtual.toFixed(2)}`; if(saldosMensais[mes] !== undefined){ document.getElementById('saldo-alim').value = saldoAtual; document.getElementById('saldo-alim').disabled = true; document.getElementById('btn-fixar-alim').style.display = 'none'; document.getElementById('btn-editar-alim').style.display = 'block'; } else { document.getElementById('saldo-alim').value = ''; document.getElementById('saldo-alim').disabled = false; document.getElementById('btn-fixar-alim').style.display = 'block'; document.getElementById('btn-editar-alim').style.display = 'none'; } const listaDiv=document.getElementById('lista-compras'); listaDiv.innerHTML=''; (compras||[]).filter(c=>c.mes===mes).forEach(item=>{ if(filtro==='pago' && !item.pago) return; if(filtro==='n-pago' && item.pago) return; const div=document.createElement('div'); div.className=`item-compra ${item.pago?'pago':'pendente'}`; div.innerHTML=`<strong>${item.nome}</strong><br>Qtd: ${item.qtd} ${item.unidade||'UN'} | Total: R$ ${(item.total||0).toFixed(2)}<br>Status: ${item.pago?'PAGO':'NÃO PAGO'}<div style="margin-top:8px;"><button onclick="pagarCompra(${item.id})" class="btn-small bg-verde">PAGAR</button><button onclick="editCompra(${item.id})" class="btn-small bg-lilas">EDITAR</button><button onclick="deletarCompra(${item.id})" class="btn-small bg-vermelho">EXCLUIR</button></div>`; listaDiv.appendChild(div); }); }
+        function calcTotalCompra(){ const v=parseFloat(document.getElementById('valor-unit').value)||0; const q=parseFloat(document.getElementById('qtd-compra').value)||0; document.getElementById('total-preview').innerText=`R$ ${(v*q).toFixed(2)}`; }
+        async function addCompra(){ const nome=document.getElementById('nome-compra').value, valor=parseFloat(document.getElementById('valor-unit').value), qtd=parseFloat(document.getElementById('qtd-compra').value), unidade=document.getElementById('unidade-compra').value, mes=document.getElementById('filtro-mes').value; if(!nome||isNaN(valor)||isNaN(qtd)) return alert("Preencha corretamente"); const nova={ id:Date.now(), nome, valor, qtd, unidade, total:valor*qtd, pago:false, mes }; if(editShoppingIdx!==null){ compras[editShoppingIdx]=nova; editShoppingIdx=null; }else compras.push(nova); await saveShoppingData(); renderListaCompras(); document.getElementById('nome-compra').value=''; document.getElementById('valor-unit').value=''; document.getElementById('qtd-compra').value=''; document.getElementById('total-preview').innerText='R$ 0,00'; showToast("Item adicionado!");}
+        async function pagarCompra(id){ const idx=compras.findIndex(c=>c.id===id); if(idx===-1) return; const item=compras[idx]; const mesAtual=item.mes; item.pago=true; if(saldosMensais[mesAtual]!==undefined) saldosMensais[mesAtual]-=item.total; let proxMes=(parseInt(mesAtual)%12)+1; let prox=proxMes.toString().padStart(2,'0'); const nova={...item, id:Date.now()+1, pago:false, mes:prox}; compras.push(nova); await saveShoppingData(); renderListaCompras(); showToast("Pagamento registrado!");}
+        async function deletarCompra(id){ compras=compras.filter(c=>c.id!==id); await saveShoppingData(); renderListaCompras(); showToast("Item removido");}
+        function editCompra(id){ const item=compras.find(c=>c.id===id); if(!item) return; document.getElementById('nome-compra').value=item.nome; document.getElementById('valor-unit').value=item.valor; document.getElementById('qtd-compra').value=item.qtd; document.getElementById('unidade-compra').value=item.unidade||'UN'; editShoppingIdx=compras.findIndex(c=>c.id===id); calcTotalCompra(); window.scrollTo(0,0);}
+        async function fixarSaldoAlimentacao(){ const mes = document.getElementById('filtro-mes').value; const valor = parseFloat(document.getElementById('saldo-alim').value); if(isNaN(valor)){ alert("Digite um valor numérico válido!"); return; } saldosMensais[mes] = valor; await saveShoppingData(); renderListaCompras(); showToast(`Saldo de alimentação fixado em R$ ${valor.toFixed(2)} para ${mes}/2025`); }
+        function editarSaldoAlimentacao(){ document.getElementById('saldo-alim').disabled = false; document.getElementById('btn-fixar-alim').style.display = 'block'; document.getElementById('btn-editar-alim').style.display = 'none'; document.getElementById('saldo-alim').focus(); }
+        function showTabShopping(type){ if(type==='pago') renderListaCompras('pago'); else if(type==='n-pago') renderListaCompras('n-pago'); else renderListaCompras('todos'); }
+        window.fixarSaldoAlimentacao = fixarSaldoAlimentacao;
+        window.editarSaldoAlimentacao = editarSaldoAlimentacao;
+
+        auth.onAuthStateChanged(async (user)=>{ if(user){ currentUser=user; document.getElementById('greeting-name').innerHTML=`Olá, ${user.displayName||user.email.split('@')[0]}`; document.getElementById('auth-screen').style.display='none'; document.getElementById('main-app').style.display='block'; document.getElementById('bottom-nav').style.display='flex'; await loadFromFirestore(); renderBills(); } else { document.getElementById('auth-screen').style.display='flex'; document.getElementById('main-app').style.display='none'; document.getElementById('shopping-section').style.display='none'; document.getElementById('calculator-section').style.display='none'; document.getElementById('bottom-nav').style.display='none'; } });
     </script>
 </body>
 </html>
