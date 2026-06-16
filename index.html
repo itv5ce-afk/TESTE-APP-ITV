@@ -25,11 +25,106 @@
             --bg-gradient: linear-gradient(135deg, #6c5ce7 0%, #a363d9 100%);
         }
 
-        body {
-            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+        /* Tema claro (padrão) */
+        body.light {
             background: #f0f2f5;
             color: #1a1a2e;
+            --card-bg: #ffffff;
+            --bg-gradient: linear-gradient(135deg, #6c5ce7 0%, #a363d9 100%);
+        }
+        body.light .admin-card,
+        body.light .form-card,
+        body.light .bill-card,
+        body.light .card-info,
+        body.light .menu-topo .item-compra,
+        body.light .upcoming-list,
+        body.light .expense-stats,
+        body.light .balance-item {
+            background: var(--card-bg);
+            color: #1a1a2e;
+        }
+        body.light .bottom-nav {
+            background: rgba(255,255,255,0.96);
+        }
+        body.light .nav-item {
+            color: #7f8c8d;
+        }
+        body.light .nav-item.active {
+            color: var(--primary);
+        }
+        body.light .calc-card {
+            background: #1e293b;
+        }
+        body.light .calc-display {
+            background: #0f172a;
+            color: #f1f5f9;
+        }
+        body.light .calc-btn {
+            background: #334155;
+            color: white;
+        }
+
+        /* Tema escuro */
+        body.dark {
+            background: #121212;
+            color: #e0e0e0;
+            --card-bg: #1e1e2f;
+            --bg-gradient: linear-gradient(135deg, #0f0c29, #1a1a2e, #24243e);
+        }
+        body.dark .admin-card,
+        body.dark .form-card,
+        body.dark .bill-card,
+        body.dark .card-info,
+        body.dark .menu-topo .item-compra,
+        body.dark .upcoming-list,
+        body.dark .expense-stats,
+        body.dark .balance-item {
+            background: #1e1e2f;
+            color: #e0e0e0;
+            border-color: #333;
+        }
+        body.dark .insight-card {
+            background: linear-gradient(135deg, #4a3f8f, #2d2b5e);
+        }
+        body.dark .bottom-nav {
+            background: rgba(30,30,47,0.96);
+        }
+        body.dark .nav-item {
+            color: #aaa;
+        }
+        body.dark .nav-item.active {
+            color: var(--secondary);
+        }
+        body.dark input, body.dark select {
+            background: #2a2a3a;
+            color: #e0e0e0;
+            border-color: #444;
+        }
+        body.dark .bill-card.pago { border-left-color: var(--success); }
+        body.dark .bill-card.pendente { border-left-color: var(--danger); }
+        body.dark .item-compra {
+            background: #2a2a3a;
+            color: #e0e0e0;
+        }
+        body.dark .calc-card {
+            background: #0a0a1a;
+        }
+        body.dark .calc-display {
+            background: #000000;
+            color: #0f0;
+        }
+        body.dark .calc-btn {
+            background: #2c2c3e;
+        }
+        body.dark .toast-msg {
+            background: #333;
+            color: white;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
             padding-bottom: 80px;
+            transition: background 0.2s, color 0.2s;
         }
 
         /* Tela de autenticação */
@@ -53,6 +148,11 @@
             box-shadow: 0 20px 35px rgba(0,0,0,0.2);
         }
 
+        body.dark .auth-container {
+            background: #1e1e2f;
+            color: #e0e0e0;
+        }
+
         .auth-tabs {
             display: flex;
             gap: 12px;
@@ -60,6 +160,10 @@
             background: #f1f3f5;
             border-radius: 40px;
             padding: 4px;
+        }
+
+        body.dark .auth-tabs {
+            background: #2a2a3a;
         }
 
         .auth-tab {
@@ -72,6 +176,10 @@
             cursor: pointer;
             transition: 0.2s;
             color: #5f5f7a;
+        }
+
+        body.dark .auth-tab {
+            color: #aaa;
         }
 
         .auth-tab.active {
@@ -123,13 +231,61 @@
 
         .welcome-header {
             margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .greeting {
             font-size: 28px;
             font-weight: 700;
-            color: #1a1a2e;
-            margin-bottom: 8px;
+        }
+
+        /* Botão Menu */
+        .menu-btn {
+            background: rgba(108,92,231,0.2);
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 40px;
+            transition: 0.2s;
+            color: var(--primary);
+        }
+        .menu-btn:hover {
+            background: rgba(108,92,231,0.4);
+        }
+        .menu-dropdown {
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            z-index: 200;
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+            min-width: 150px;
+        }
+        .menu-dropdown button {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: 0.1s;
+        }
+        .menu-dropdown button:hover {
+            background: rgba(108,92,231,0.1);
+        }
+        body.dark .menu-dropdown button:hover {
+            background: rgba(108,92,231,0.3);
+        }
+        .menu-dropdown.show {
+            display: flex;
         }
 
         .insight-card {
@@ -163,6 +319,9 @@
             display: flex;
             justify-content: space-between;
         }
+        body.dark .balance-label {
+            color: #aaa;
+        }
 
         .edit-balance {
             background: none;
@@ -177,7 +336,9 @@
             font-weight: 700;
             color: #1e293b;
         }
-
+        body.dark .balance-amount {
+            color: #e0e0e0;
+        }
         .balance-amount.negative {
             color: var(--danger);
         }
@@ -196,6 +357,9 @@
             align-items: center;
             padding: 16px;
             border-bottom: 1px solid #f0f0f0;
+        }
+        body.dark .upcoming-item {
+            border-bottom-color: #333;
         }
 
         .expense-stats {
@@ -229,6 +393,10 @@
             font-weight: bold;
             background: #f1f3f5;
             cursor: pointer;
+        }
+        body.dark .btn-action {
+            background: #2a2a3a;
+            color: #e0e0e0;
         }
 
         .btn-action-primary {
@@ -267,7 +435,7 @@
             cursor: pointer;
         }
 
-        /* BARRA INFERIOR */
+        /* BARRA INFERIOR - apenas 3 botões: Contas do Mês, Calculadora, Lista de Compras */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -313,6 +481,9 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+        }
+        body.dark .calculator-container {
+            background: #121212;
         }
         .calc-card {
             background: #1e293b;
@@ -367,13 +538,13 @@
         .toast-msg { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: #323232; color: white; padding: 8px 16px; border-radius: 40px; font-size: 14px; z-index: 200; opacity: 0.9; }
     </style>
 </head>
-<body>
+<body class="light">
 
     <!-- TELA DE AUTENTICAÇÃO -->
     <div id="auth-screen" class="active">
         <div class="auth-container">
-            <h2 style="margin-bottom: 5px; color:#2d3436;">💰 ITVContas</h2>
-            <p style="margin-bottom: 20px; color:#636e72;">Finanças + Calculadora + Lista</p>
+            <h2 style="margin-bottom: 5px;">💰 ITVContas</h2>
+            <p style="margin-bottom: 20px;">Finanças + Calculadora + Lista</p>
             <div class="auth-tabs">
                 <button class="auth-tab active" onclick="switchAuthTab('login')">Entrar</button>
                 <button class="auth-tab" onclick="switchAuthTab('register')">Cadastrar</button>
@@ -399,22 +570,39 @@
     <div class="container" id="main-app" style="display: none;">
         <div class="welcome-header">
             <div class="greeting" id="greeting-name">Olá, Moni</div>
-            <div id="sync-status" class="sync-status">🔄 sincronizando...</div>
+            <div class="menu-container">
+                <button class="menu-btn" onclick="toggleMenu()">☰</button>
+                <div id="menu-dropdown" class="menu-dropdown">
+                    <button onclick="setTheme('light')">☀️ CLARO</button>
+                    <button onclick="setTheme('dark')">🌙 ESCURO</button>
+                    <button onclick="handleLogout()">🚪 SAIR</button>
+                </div>
+            </div>
         </div>
-        <div class="insight-card">
+        <div id="sync-status" class="sync-status">🔄 sincronizando...</div>
+
+        <!-- INSIGHT DO DIA - OCULTADO -->
+        <div class="insight-card" style="display: none;">
             <div class="insight-title">🔍 INSIGHT DO DIA</div>
             <div class="insight-value" id="insight-percent">Seus gastos caíram!</div>
             <div class="insight-message" id="insight-message">Continue assim para alcançar sua meta.</div>
         </div>
+
         <div class="balance-grid">
             <div class="balance-item"><div class="balance-label">💵 Carteira <button class="edit-balance" onclick="editExtraBalance('wallet')">✏️</button></div><div class="balance-amount" id="wallet-balance">R$ 0,00</div></div>
             <div class="balance-item"><div class="balance-label">🏦 Conta corrente <button class="edit-balance" onclick="editExtraBalance('checking')">✏️</button></div><div class="balance-amount" id="checking-balance">R$ 0,00</div></div>
             <div class="balance-item"><div class="balance-label">💳 Cartão de crédito <button class="edit-balance" onclick="editExtraBalance('credit')">✏️</button></div><div class="balance-amount negative" id="credit-balance">-R$ 0,00</div></div>
             <div class="balance-item"><div class="balance-label">📈 Investimentos <button class="edit-balance" onclick="editExtraBalance('invest')">✏️</button></div><div class="balance-amount" id="invest-balance">R$ 0,00</div></div>
         </div>
-        <div style="display:flex; justify-content:space-between; margin-bottom: 8px;"><h3>📅 Próximos Pagamentos</h3><button class="btn-view-all" onclick="scrollToBills()" style="background:none; border:none; color:var(--primary);">Ver todos →</button></div>
+        <div style="display:flex; justify-content:space-between; margin-bottom: 8px;"><h3>📅 Próximos Pagamentos</h3><button class="btn-view-all" onclick="scrollToBills()" style="background:none; border:none; color:var(--primary); cursor:pointer;">Ver todos →</button></div>
         <div id="upcoming-list" class="upcoming-list"></div>
-        <div class="expense-stats"><div><h4>ESTE MÊS</h4><div class="value" id="current-expense">R$ 0,00</div></div><div><div>vs período anterior</div><div id="trend-percent" class="trend-down">0%</div></div></div>
+
+        <!-- ESTE MÊS vs PERÍODO ANTERIOR - OCULTADO -->
+        <div class="expense-stats" style="display: none;">
+            <div><h4>ESTE MÊS</h4><div class="value" id="current-expense">R$ 0,00</div></div>
+            <div><div>vs período anterior</div><div id="trend-percent" class="trend-down">0%</div></div>
+        </div>
+
         <div class="admin-card">
             <div style="display:flex; justify-content:space-between;"><strong>💰 Planejamento Mensal</strong><select id="month-filter" onchange="changeMonthAndRender()"><option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option><option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option><option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select></div>
             <div class="salary-area" style="margin-top:15px; display:flex; gap:8px; flex-wrap:wrap;">
@@ -482,11 +670,9 @@
         </div>
     </div>
 
-    <!-- BARRA INFERIOR -->
+    <!-- BARRA INFERIOR - apenas 3 botões: Contas do Mês, Calculadora, Lista de Compras -->
     <div class="bottom-nav" id="bottom-nav" style="display: none;">
-        <button class="nav-item active" onclick="showMainApp()">🏠 Início</button>
-        <button class="nav-item" onclick="scrollToBills()">📋 Registros</button>
-        <button class="nav-item" onclick="scrollToPlanning()">📊 Planejado</button>
+        <button class="nav-item active" onclick="showMainApp()">📆 Contas do Mês</button>
         <button class="nav-item" id="btnCalculatorNav" onclick="showCalculator()">🧮 Calculadora</button>
         <button class="nav-item" id="btnShoppingNav" onclick="showShoppingList()">🛍️ Lista de Compras</button>
     </div>
@@ -513,6 +699,33 @@
         let bills = [], salaries = {}, extraBalances = { wallet: 2698, checking: 10773, credit: -1390, invest: 49734 };
         let currentFilter = 'all';
         let compras = [], saldosMensais = {}, editShoppingIdx = null;
+
+        // ==================== TEMA (CLARO/ESCURO) ====================
+        function setTheme(theme) {
+            document.body.classList.remove('light', 'dark');
+            document.body.classList.add(theme);
+            localStorage.setItem('itv_theme', theme);
+            toggleMenu(); // fecha menu após escolha
+        }
+        function loadTheme() {
+            const saved = localStorage.getItem('itv_theme');
+            if (saved === 'dark') setTheme('dark');
+            else setTheme('light');
+        }
+        loadTheme();
+
+        // Menu dropdown
+        function toggleMenu() {
+            const menu = document.getElementById('menu-dropdown');
+            menu.classList.toggle('show');
+        }
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('menu-dropdown');
+            const btn = document.querySelector('.menu-btn');
+            if (menu && btn && !btn.contains(e.target) && !menu.contains(e.target)) {
+                menu.classList.remove('show');
+            }
+        });
 
         // ==================== CALCULADORA ====================
         let calcExpression = "";
@@ -546,7 +759,23 @@
             await db.collection('users').doc(cred.user.uid).set({displayName:name, email});
             alert("Cadastro ok! Faça login.");
         }
-        window.handleLogin = handleLogin; window.handleRegister = handleRegister;
+        async function handleLogout() {
+            try {
+                await auth.signOut();
+                localStorage.removeItem('itv_bills');
+                localStorage.removeItem('itv_salaries');
+                document.getElementById('main-app').style.display = 'none';
+                document.getElementById('shopping-section').style.display = 'none';
+                document.getElementById('calculator-section').style.display = 'none';
+                document.getElementById('auth-screen').classList.remove('active');
+                document.getElementById('auth-screen').style.display = 'flex';
+                document.getElementById('bottom-nav').style.display = 'none';
+                bills = [];
+                compras = [];
+                salaries = {};
+            } catch(e) { console.error(e); alert("Erro ao sair"); }
+        }
+        window.handleLogin = handleLogin; window.handleRegister = handleRegister; window.handleLogout = handleLogout;
 
         // ==================== FUNÇÕES ITVCONTAS ====================
         async function loadFromFirestore() {
@@ -607,21 +836,92 @@
         function filterType(t){ currentFilter=t; renderBills();}
         function changeMonthAndRender(){ renderBills(); disableSalaryEditMode(); }
         function scrollToBills(){ document.getElementById('bills-container').scrollIntoView({behavior:'smooth'}); showMainApp(); }
-        function scrollToPlanning(){ document.querySelector('.admin-card').scrollIntoView({behavior:'smooth'}); showMainApp(); }
-        function showMainApp(){ document.getElementById('main-app').style.display='block'; document.getElementById('shopping-section').style.display='none'; document.getElementById('calculator-section').style.display='none'; setActiveNav('inicio'); }
+        function showMainApp(){ document.getElementById('main-app').style.display='block'; document.getElementById('shopping-section').style.display='none'; document.getElementById('calculator-section').style.display='none'; setActiveNav('main'); }
         function showShoppingList(){ document.getElementById('main-app').style.display='none'; document.getElementById('shopping-section').style.display='block'; document.getElementById('calculator-section').style.display='none'; setActiveNav('shopping'); renderListaCompras(); }
         function showCalculator(){ document.getElementById('main-app').style.display='none'; document.getElementById('shopping-section').style.display='none'; document.getElementById('calculator-section').style.display='block'; setActiveNav('calculator'); }
-        function setActiveNav(active){ document.querySelectorAll('.nav-item').forEach(btn=>btn.classList.remove('active')); if(active==='inicio') document.querySelector('.nav-item:first-child').classList.add('active'); else if(active==='shopping') document.getElementById('btnShoppingNav').classList.add('active'); else if(active==='calculator') document.getElementById('btnCalculatorNav').classList.add('active'); }
+        function setActiveNav(active){
+            document.querySelectorAll('.nav-item').forEach(btn=>btn.classList.remove('active'));
+            if(active==='main') document.querySelector('.bottom-nav .nav-item:first-child').classList.add('active');
+            else if(active==='shopping') document.getElementById('btnShoppingNav').classList.add('active');
+            else if(active==='calculator') document.getElementById('btnCalculatorNav').classList.add('active');
+        }
         function showToast(msg){ let toast=document.createElement('div'); toast.className='toast-msg'; toast.innerText=msg; document.body.appendChild(toast); setTimeout(()=>toast.remove(), 2000); }
 
         // ==================== LISTA DE COMPRAS ====================
         async function saveShoppingData(){ if(!currentUser) return; await db.collection('users').doc(currentUser.uid).collection('shopping').doc('data').set({ compras, saldosMensais }); }
-        function renderListaCompras(filtro='todos'){ const mes=document.getElementById('filtro-mes').value; const saldoAtual = saldosMensais[mes] || 0; document.getElementById('display-saldo').innerHTML=`R$ ${saldoAtual.toFixed(2)}`; if(saldosMensais[mes] !== undefined){ document.getElementById('saldo-alim').value = saldoAtual; document.getElementById('saldo-alim').disabled = true; document.getElementById('btn-fixar-alim').style.display = 'none'; document.getElementById('btn-editar-alim').style.display = 'block'; } else { document.getElementById('saldo-alim').value = ''; document.getElementById('saldo-alim').disabled = false; document.getElementById('btn-fixar-alim').style.display = 'block'; document.getElementById('btn-editar-alim').style.display = 'none'; } const listaDiv=document.getElementById('lista-compras'); listaDiv.innerHTML=''; (compras||[]).filter(c=>c.mes===mes).forEach(item=>{ if(filtro==='pago' && !item.pago) return; if(filtro==='n-pago' && item.pago) return; const div=document.createElement('div'); div.className=`item-compra ${item.pago?'pago':'pendente'}`; div.innerHTML=`<strong>${item.nome}</strong><br>Qtd: ${item.qtd} ${item.unidade||'UN'} | Total: R$ ${(item.total||0).toFixed(2)}<br>Status: ${item.pago?'PAGO':'NÃO PAGO'}<div style="margin-top:8px;"><button onclick="pagarCompra(${item.id})" class="btn-small bg-verde">PAGAR</button><button onclick="editCompra(${item.id})" class="btn-small bg-lilas">EDITAR</button><button onclick="deletarCompra(${item.id})" class="btn-small bg-vermelho">EXCLUIR</button></div>`; listaDiv.appendChild(div); }); }
+        function renderListaCompras(filtro='todos'){ 
+            const mes=document.getElementById('filtro-mes').value; 
+            const saldoAtual = saldosMensais[mes] || 0; 
+            document.getElementById('display-saldo').innerHTML=`R$ ${saldoAtual.toFixed(2)}`; 
+            if(saldosMensais[mes] !== undefined){ 
+                document.getElementById('saldo-alim').value = saldoAtual; 
+                document.getElementById('saldo-alim').disabled = true; 
+                document.getElementById('btn-fixar-alim').style.display = 'none'; 
+                document.getElementById('btn-editar-alim').style.display = 'block'; 
+            } else { 
+                document.getElementById('saldo-alim').value = ''; 
+                document.getElementById('saldo-alim').disabled = false; 
+                document.getElementById('btn-fixar-alim').style.display = 'block'; 
+                document.getElementById('btn-editar-alim').style.display = 'none'; 
+            } 
+            const listaDiv=document.getElementById('lista-compras'); 
+            listaDiv.innerHTML=''; 
+            (compras||[]).filter(c=>c.mes===mes).forEach(item=>{ 
+                if(filtro==='pago' && !item.pago) return; 
+                if(filtro==='n-pago' && item.pago) return; 
+                const div=document.createElement('div'); 
+                div.className=`item-compra ${item.pago?'pago':'pendente'}`; 
+                div.innerHTML = `
+                    <div style="margin-bottom:6px;"><strong>${item.nome}</strong></div>
+                    <div style="font-size:0.85rem; display:flex; justify-content:space-between; flex-wrap:wrap;">
+                        <span>📦 ${item.qtd} ${item.unidade||'UN'}</span>
+                        <span>💰 Unitário: R$ ${item.valor.toFixed(2)}</span>
+                        <span>💵 Total: R$ ${(item.total||0).toFixed(2)}</span>
+                    </div>
+                    <div style="margin-top:8px;">Status: ${item.pago?'✅ PAGO':'⏳ NÃO PAGO'}</div>
+                    <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+                        ${!item.pago ? `<button onclick="pagarCompra(${item.id})" class="btn-small bg-verde">💸 PAGAR</button>` : ''}
+                        ${!item.pago ? `<button onclick="editCompra(${item.id})" class="btn-small bg-lilas">✏️ EDITAR</button>` : ''}
+                        <button onclick="deletarCompra(${item.id})" class="btn-small bg-vermelho">🗑️ EXCLUIR</button>
+                    </div>
+                `;
+                listaDiv.appendChild(div); 
+            }); 
+        }
         function calcTotalCompra(){ const v=parseFloat(document.getElementById('valor-unit').value)||0; const q=parseFloat(document.getElementById('qtd-compra').value)||0; document.getElementById('total-preview').innerText=`R$ ${(v*q).toFixed(2)}`; }
         async function addCompra(){ const nome=document.getElementById('nome-compra').value, valor=parseFloat(document.getElementById('valor-unit').value), qtd=parseFloat(document.getElementById('qtd-compra').value), unidade=document.getElementById('unidade-compra').value, mes=document.getElementById('filtro-mes').value; if(!nome||isNaN(valor)||isNaN(qtd)) return alert("Preencha corretamente"); const nova={ id:Date.now(), nome, valor, qtd, unidade, total:valor*qtd, pago:false, mes }; if(editShoppingIdx!==null){ compras[editShoppingIdx]=nova; editShoppingIdx=null; }else compras.push(nova); await saveShoppingData(); renderListaCompras(); document.getElementById('nome-compra').value=''; document.getElementById('valor-unit').value=''; document.getElementById('qtd-compra').value=''; document.getElementById('total-preview').innerText='R$ 0,00'; showToast("Item adicionado!");}
-        async function pagarCompra(id){ const idx=compras.findIndex(c=>c.id===id); if(idx===-1) return; const item=compras[idx]; const mesAtual=item.mes; item.pago=true; if(saldosMensais[mesAtual]!==undefined) saldosMensais[mesAtual]-=item.total; let proxMes=(parseInt(mesAtual)%12)+1; let prox=proxMes.toString().padStart(2,'0'); const nova={...item, id:Date.now()+1, pago:false, mes:prox}; compras.push(nova); await saveShoppingData(); renderListaCompras(); showToast("Pagamento registrado!");}
-        async function deletarCompra(id){ compras=compras.filter(c=>c.id!==id); await saveShoppingData(); renderListaCompras(); showToast("Item removido");}
-        function editCompra(id){ const item=compras.find(c=>c.id===id); if(!item) return; document.getElementById('nome-compra').value=item.nome; document.getElementById('valor-unit').value=item.valor; document.getElementById('qtd-compra').value=item.qtd; document.getElementById('unidade-compra').value=item.unidade||'UN'; editShoppingIdx=compras.findIndex(c=>c.id===id); calcTotalCompra(); window.scrollTo(0,0);}
+        async function pagarCompra(id){ 
+            const idx=compras.findIndex(c=>c.id===id); 
+            if(idx===-1) return; 
+            const item=compras[idx]; 
+            const mesAtual=item.mes; 
+            item.pago=true; 
+            if(saldosMensais[mesAtual]!==undefined) saldosMensais[mesAtual]-=item.total; 
+            let proxMes=(parseInt(mesAtual)%12)+1; 
+            let prox=proxMes.toString().padStart(2,'0'); 
+            const nova={...item, id:Date.now()+1, pago:false, mes:prox}; 
+            compras.push(nova); 
+            await saveShoppingData(); 
+            renderListaCompras(); 
+            showToast("Pagamento registrado! Botões PAGAR e EDITAR ocultos."); 
+        }
+        async function deletarCompra(id){ 
+            compras=compras.filter(c=>c.id!==id); 
+            await saveShoppingData(); 
+            renderListaCompras(); 
+            showToast("Item removido"); 
+        }
+        function editCompra(id){ 
+            const item=compras.find(c=>c.id===id); 
+            if(!item) return; 
+            document.getElementById('nome-compra').value=item.nome; 
+            document.getElementById('valor-unit').value=item.valor; 
+            document.getElementById('qtd-compra').value=item.qtd; 
+            document.getElementById('unidade-compra').value=item.unidade||'UN'; 
+            editShoppingIdx=compras.findIndex(c=>c.id===id); 
+            calcTotalCompra(); 
+            window.scrollTo(0,0); 
+        }
         async function fixarSaldoAlimentacao(){ const mes = document.getElementById('filtro-mes').value; const valor = parseFloat(document.getElementById('saldo-alim').value); if(isNaN(valor)){ alert("Digite um valor numérico válido!"); return; } saldosMensais[mes] = valor; await saveShoppingData(); renderListaCompras(); showToast(`Saldo de alimentação fixado em R$ ${valor.toFixed(2)} para ${mes}/2025`); }
         function editarSaldoAlimentacao(){ document.getElementById('saldo-alim').disabled = false; document.getElementById('btn-fixar-alim').style.display = 'block'; document.getElementById('btn-editar-alim').style.display = 'none'; document.getElementById('saldo-alim').focus(); }
         function showTabShopping(type){ if(type==='pago') renderListaCompras('pago'); else if(type==='n-pago') renderListaCompras('n-pago'); else renderListaCompras('todos'); }
