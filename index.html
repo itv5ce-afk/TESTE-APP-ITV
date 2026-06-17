@@ -94,7 +94,7 @@
                 <small id="userEmailDisplay" class="d-block text-secondary" style="font-size: 0.7rem;"></small>
             </div>
         </div>
-        <!-- Botão "Gestão" removido conforme solicitado -->
+        <!-- Botão "Gestão" removido conforme solicitado anteriormente -->
     </div>
     <button class="btn btn-add-fixo" onclick="showModalCadastro()"><i class="bi bi-plus-lg"></i></button>
 </nav>
@@ -121,7 +121,8 @@
         <button class="btn-small bg-primary" onclick="filterData('ativos')">ATIVOS <span id="countAtivos">0</span></button>
         <button class="btn-small" style="background-color: orange;" onclick="filterData('vencer')">A VENCER <span id="countVencer">0</span></button>
         <button class="btn-small bg-danger" onclick="filterData('expirados')">EXPIRADOS <span id="countExp">0</span></button>
-        <button class="btn-small bg-info" onclick="filterData('apagar')">A PAGAR <span id="countPagar">0</span></button>
+        <!-- Botão renomeado para "A RECEBER" -->
+        <button class="btn-small bg-info" onclick="filterData('apagar')">A RECEBER <span id="countPagar">0</span></button>
         <button class="btn-small bg-secondary" onclick="filterData('deletados')">LIXO <span id="countDel">0</span></button>
     </div>
 
@@ -206,7 +207,6 @@
     function openNav() { document.getElementById("mySidenav").style.width = "260px"; }
     function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
     function unlockApp() { document.getElementById('adminLock').style.display = 'none'; }
-    // toggleAdminPanel removido (não mais necessário)
     
     function syncConfigAndClients() {
         if(!usuarioLogadoUid) return;
@@ -481,7 +481,6 @@
     window.accessPanel = accessPanel;
     window.saveSettings = saveSettings;
     window.showModalCadastro = showModalCadastro;
-    // toggleAdminPanel removido do escopo global
 </script>
 </body>
 </html>
