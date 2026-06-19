@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ZACK. - Assistente Virtual IA</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -39,7 +47,6 @@
             0% { transform: translate(0, 0); }
             100% { transform: translate(50px, 50px); }
         }
-
         /* Container principal */
         .container {
             position: relative;
@@ -47,7 +54,8 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
-            padding: 20px;        }
+            padding: 20px;
+        }
 
         /* Header */
         .header {
@@ -88,15 +96,15 @@
             height: 200px;
             border-radius: 50%;
             border: 2px solid #00d4ff;
-            position: relative;
-            display: flex;
+            position: relative;            display: flex;
             align-items: center;
             justify-content: center;
             background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
             box-shadow: 0 0 50px rgba(0, 212, 255, 0.3);
         }
 
-        .avatar::before {            content: '';
+        .avatar::before {
+            content: '';
             position: absolute;
             width: 100%;
             height: 100%;
@@ -137,15 +145,15 @@
         }
 
         .audio-bar {
-            width: 4px;
-            height: 20px;
+            width: 4px;            height: 20px;
             background: #00d4ff;
             border-radius: 2px;
             animation: audioWave 1s ease-in-out infinite;
         }
 
         .audio-bar:nth-child(1) { animation-delay: 0s; }
-        .audio-bar:nth-child(2) { animation-delay: 0.1s; }        .audio-bar:nth-child(3) { animation-delay: 0.2s; }
+        .audio-bar:nth-child(2) { animation-delay: 0.1s; }
+        .audio-bar:nth-child(3) { animation-delay: 0.2s; }
         .audio-bar:nth-child(4) { animation-delay: 0.3s; }
         .audio-bar:nth-child(5) { animation-delay: 0.4s; }
 
@@ -186,15 +194,15 @@
             box-shadow: 0 0 50px rgba(0, 212, 255, 0.8);
         }
 
-        .activation-button:active {
-            transform: scale(0.95);
+        .activation-button:active {            transform: scale(0.95);
         }
 
         .activation-button.active {
             background: linear-gradient(135deg, #ff0066 0%, #cc0052 100%);
             border-color: #ff0066;
             box-shadow: 0 0 50px rgba(255, 0, 102, 0.8);
-            animation: buttonPulse 1s ease-in-out infinite;        }
+            animation: buttonPulse 1s ease-in-out infinite;
+        }
 
         @keyframes buttonPulse {
             0%, 100% { box-shadow: 0 0 30px rgba(255, 0, 102, 0.5); }
@@ -236,14 +244,14 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         .message.user {
             background: rgba(0, 212, 255, 0.1);
             border-left: 3px solid #00d4ff;
         }
 
         .message.assistant {
-            background: rgba(255, 255, 255, 0.05);            border-left: 3px solid #fff;
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 3px solid #fff;
         }
 
         .message-label {
@@ -284,15 +292,15 @@
         }
 
         /* Modal de comandos */
-        .commands-panel {
-            position: fixed;
+        .commands-panel {            position: fixed;
             top: 0;
             right: -400px;
             width: 400px;
             height: 100vh;
             background: rgba(0, 0, 0, 0.95);
             border-left: 1px solid #00d4ff;
-            padding: 20px;            transition: right 0.3s ease;
+            padding: 20px;
+            transition: right 0.3s ease;
             overflow-y: auto;
             z-index: 100;
         }
@@ -333,15 +341,29 @@
         }
 
         /* Botão de menu */
-        .menu-button {
-            position: fixed;
+        .menu-button {            position: fixed;
             top: 20px;
             right: 20px;
             background: rgba(0, 212, 255, 0.2);
             border: 1px solid #00d4ff;
             color: #00d4ff;
             padding: 10px 15px;
-            border-radius: 5px;            cursor: pointer;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 99;
+        }
+
+        /* Botão de login */
+        .login-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 212, 255, 0.2);
+            border: 1px solid #00d4ff;
+            color: #00d4ff;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
             z-index: 99;
         }
 
@@ -362,6 +384,118 @@
 
         .notification.show {
             transform: translateX(-50%) translateY(0);
+        }
+
+        /* Modal de Login */
+        .login-modal {
+            position: fixed;
+            top: 0;
+            left: 0;            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 300;
+        }
+
+        .login-modal.show {
+            display: flex;
+        }
+
+        .login-content {
+            background: rgba(0, 20, 40, 0.95);
+            border: 2px solid #00d4ff;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 0 50px rgba(0, 212, 255, 0.5);
+        }
+
+        .login-content h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #00d4ff;
+            text-shadow: 0 0 10px #00d4ff;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid #00d4ff;
+            border-radius: 5px;
+            color: #00d4ff;
+            font-family: 'Courier New', monospace;
+        }
+
+        .login-form input::placeholder {
+            color: rgba(0, 212, 255, 0.5);
+        }
+
+        .login-form button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);            border: none;
+            border-radius: 5px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .login-form button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+
+        .login-form .google-btn {
+            background: #fff;
+            color: #000;
+        }
+
+        .login-form .anonymous-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: #00d4ff;
+            border: 1px solid #00d4ff;
+        }
+
+        .login-divider {
+            text-align: center;
+            margin: 20px 0;
+            color: rgba(0, 212, 255, 0.5);
+        }
+
+        .close-login {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #00d4ff;
+            font-size: 2em;
+            cursor: pointer;
+        }
+
+        /* User info */
+        .user-info {
+            position: fixed;
+            top: 70px;
+            left: 20px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid #00d4ff;
+            padding: 10px;            border-radius: 5px;
+            font-size: 0.8em;
+            display: none;
+            z-index: 99;
+        }
+
+        .user-info.show {
+            display: block;
         }
 
         /* Responsivo */
@@ -385,12 +519,17 @@
                 width: 100%;
                 right: -100%;
             }
+
+            .login-content {
+                padding: 20px;
+            }
         }
 
         /* Loading */
         .loading {
             display: inline-block;
-            width: 20px;            height: 20px;
+            width: 20px;
+            height: 20px;
             border: 3px solid rgba(0, 212, 255, 0.3);
             border-radius: 50%;
             border-top-color: #00d4ff;
@@ -398,14 +537,19 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+            to { transform: rotate(360deg); }        }
     </style>
 </head>
 <body>
     <div class="background-grid"></div>
     
+    <button class="login-button" id="loginBtn" onclick="showLoginModal()">🔐 LOGIN</button>
     <button class="menu-button" onclick="toggleCommands()">☰ COMANDOS</button>
+    
+    <div class="user-info" id="userInfo">
+        <div id="userEmail"></div>
+        <button onclick="logout()" style="background: none; border: none; color: #ff0066; cursor: pointer; margin-top: 5px;">Sair</button>
+    </div>
     
     <div class="container">
         <div class="header">
@@ -439,10 +583,10 @@
 
         <div class="system-status">
             <div class="status-item">
-                <div class="status-label">CPU</div>                <div class="status-value" id="cpuStatus">12%</div>
+                <div class="status-label">CPU</div>
+                <div class="status-value" id="cpuStatus">12%</div>
             </div>
-            <div class="status-item">
-                <div class="status-label">MEMÓRIA</div>
+            <div class="status-item">                <div class="status-label">MEMÓRIA</div>
                 <div class="status-value" id="memoryStatus">2.4GB</div>
             </div>
             <div class="status-item">
@@ -488,14 +632,61 @@
         </div>
         <div class="command-item" onclick="executeCommand('Ler notificações')">
             🔔 Ler notificações
-        </div>        <div class="command-item" onclick="executeCommand('Abrir mapas')">
+        </div>
+        <div class="command-item" onclick="executeCommand('Abrir mapas')">
             🗺️ Abrir mapas
+        </div>    </div>
+
+    <!-- Modal de Login -->
+    <div class="login-modal" id="loginModal">
+        <button class="close-login" onclick="hideLoginModal()">✕</button>
+        <div class="login-content">
+            <h2>🔐 AUTENTICAÇÃO ZACK.</h2>
+            <div class="login-form">
+                <input type="email" id="emailInput" placeholder="Email">
+                <input type="password" id="passwordInput" placeholder="Senha">
+                <button onclick="loginWithEmail()">Entrar com Email</button>
+                <button onclick="registerWithEmail()">Criar Conta</button>
+                
+                <div class="login-divider">OU</div>
+                
+                <button class="google-btn" onclick="loginWithGoogle()">🔵 Entrar com Google</button>
+                <button class="anonymous-btn" onclick="loginAnonymously()">👤 Entrar como Anônimo</button>
+            </div>
         </div>
     </div>
 
     <div class="notification" id="notification"></div>
 
     <script>
+        // ============================================
+        // CONFIGURAÇÃO FIREBASE
+        // ============================================
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhSM8iopBkh8i5cwLiZSlS-wO5X3Izd5A",
+            authDomain: "assistente-virtual-19ab8.firebaseapp.com",
+            projectId: "assistente-virtual-19ab8",
+            storageBucket: "assistente-virtual-19ab8.firebasestorage.app",
+            messagingSenderId: "978811638277",
+            appId: "1:978811638277:web:1fb1e58abaf197cfe1426c"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Inicializar serviços
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+        const messaging = firebase.messaging();
+
+        // ============================================
+        // VARIÁVEIS GLOBAIS
+        // ============================================
+                let currentUser = null;
+        let conversationId = null;
+
         // Configurações do sistema
         const config = {
             activationWord: 'ZACK',
@@ -511,11 +702,339 @@
         let conversationHistory = [];
         let userPreferences = {};
 
-        // Inicialização
+        // ============================================
+        // AUTENTICAÇÃO FIREBASE
+        // ============================================
+
+        // Monitorar estado de autenticação
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                console.log('Usuário autenticado:', user.email || 'Anônimo');
+                document.getElementById('loginBtn').style.display = 'none';
+                document.getElementById('userInfo').classList.add('show');
+                document.getElementById('userEmail').textContent = user.email || 'Usuário Anônimo';
+                
+                // Carregar dados do usuário
+                loadUserData();
+                loadConversationHistory();
+                
+                showNotification('✅ Login realizado com sucesso!');
+            } else {
+                currentUser = null;
+                console.log('Usuário deslogado');
+                document.getElementById('loginBtn').style.display = 'block';
+                document.getElementById('userInfo').classList.remove('show');
+            }
+        });
+
+        // Login com Email
+        async function loginWithEmail() {
+            const email = document.getElementById('emailInput').value;
+            const password = document.getElementById('passwordInput').value;
+            
+            if (!email || !password) {                showNotification('⚠️ Preencha email e senha');
+                return;
+            }
+
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                hideLoginModal();
+            } catch (error) {
+                console.error('Erro no login:', error);
+                showNotification('❌ Erro: ' + error.message);
+            }
+        }
+
+        // Registro com Email
+        async function registerWithEmail() {
+            const email = document.getElementById('emailInput').value;
+            const password = document.getElementById('passwordInput').value;
+            
+            if (!email || !password) {
+                showNotification('⚠️ Preencha email e senha');
+                return;
+            }
+
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                
+                // Criar documento do usuário no Firestore
+                await db.collection('users').doc(userCredential.user.uid).set({
+                    email: email,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    preferences: {
+                        voiceEnabled: true,
+                        language: 'pt-BR',
+                        theme: 'dark'
+                    },
+                    memories: [],
+                    tasks: []
+                });
+                
+                hideLoginModal();
+                showNotification('✅ Conta criada com sucesso!');
+            } catch (error) {
+                console.error('Erro no registro:', error);
+                showNotification('❌ Erro: ' + error.message);
+            }
+        }
+
+        // Login com Google
+        async function loginWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();            
+            try {
+                const result = await auth.signInWithPopup(provider);
+                
+                // Verificar se é primeiro login
+                const userDoc = await db.collection('users').doc(result.user.uid).get();
+                if (!userDoc.exists) {
+                    await db.collection('users').doc(result.user.uid).set({
+                        email: result.user.email,
+                        displayName: result.user.displayName,
+                        photoURL: result.user.photoURL,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        preferences: {
+                            voiceEnabled: true,
+                            language: 'pt-BR',
+                            theme: 'dark'
+                        },
+                        memories: [],
+                        tasks: []
+                    });
+                }
+                
+                hideLoginModal();
+            } catch (error) {
+                console.error('Erro no login Google:', error);
+                showNotification('❌ Erro: ' + error.message);
+            }
+        }
+
+        // Login Anônimo
+        async function loginAnonymously() {
+            try {
+                await auth.signInAnonymously();
+                hideLoginModal();
+            } catch (error) {
+                console.error('Erro no login anônimo:', error);
+                showNotification('❌ Erro: ' + error.message);
+            }
+        }
+
+        // Logout
+        async function logout() {
+            try {
+                await auth.signOut();
+                showNotification('👋 Logout realizado');
+            } catch (error) {
+                console.error('Erro no logout:', error);
+                showNotification('❌ Erro: ' + error.message);
+            }
+        }
+        // Mostrar modal de login
+        function showLoginModal() {
+            document.getElementById('loginModal').classList.add('show');
+        }
+
+        // Esconder modal de login
+        function hideLoginModal() {
+            document.getElementById('loginModal').classList.remove('show');
+        }
+
+        // ============================================
+        // FIRESTORE - CARREGAR E SALVAR DADOS
+        // ============================================
+
+        // Carregar dados do usuário
+        async function loadUserData() {
+            if (!currentUser) return;
+
+            try {
+                const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                if (userDoc.exists) {
+                    const data = userDoc.data();
+                    userPreferences = data.preferences || {};
+                    console.log('Preferências carregadas:', userPreferences);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+            }
+        }
+
+        // Salvar preferências do usuário
+        async function saveUserPreferences() {
+            if (!currentUser) return;
+
+            try {
+                await db.collection('users').doc(currentUser.uid).update({
+                    preferences: userPreferences,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } catch (error) {
+                console.error('Erro ao salvar preferências:', error);
+            }
+        }
+
+        // Carregar histórico de conversas
+        async function loadConversationHistory() {
+            if (!currentUser) return;
+
+            try {                const snapshot = await db.collection('conversations')
+                    .where('userId', '==', currentUser.uid)
+                    .orderBy('timestamp', 'desc')
+                    .limit(20)
+                    .get();
+
+                const historyDiv = document.getElementById('conversationHistory');
+                historyDiv.innerHTML = '';
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `message ${data.type}`;
+                    messageDiv.innerHTML = `
+                        <div class="message-label">${data.type === 'user' ? 'VOCÊ' : 'ZACK.'}</div>
+                        <div class="message-text">${data.text}</div>
+                    `;
+                    historyDiv.insertBefore(messageDiv, historyDiv.firstChild);
+                });
+            } catch (error) {
+                console.error('Erro ao carregar histórico:', error);
+            }
+        }
+
+        // Salvar mensagem no Firestore
+        async function saveMessageToFirestore(type, text) {
+            if (!currentUser) return;
+
+            try {
+                await db.collection('conversations').add({
+                    userId: currentUser.uid,
+                    type: type,
+                    text: text,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } catch (error) {
+                console.error('Erro ao salvar mensagem:', error);
+            }
+        }
+
+        // Salvar memória do usuário
+        async function saveMemory(memory) {
+            if (!currentUser) return;
+
+            try {
+                await db.collection('memories').add({
+                    userId: currentUser.uid,
+                    content: memory,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });            } catch (error) {
+                console.error('Erro ao salvar memória:', error);
+            }
+        }
+
+        // Salvar tarefa/lembrete
+        async function saveTask(task) {
+            if (!currentUser) return;
+
+            try {
+                await db.collection('tasks').add({
+                    userId: currentUser.uid,
+                    title: task.title,
+                    description: task.description,
+                    dueDate: task.dueDate,
+                    completed: false,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } catch (error) {
+                console.error('Erro ao salvar tarefa:', error);
+            }
+        }
+
+        // ============================================
+        // FIREBASE STORAGE - UPLOAD DE ÁUDIO
+        // ============================================
+
+        // Salvar gravação de áudio
+        async function saveAudioRecording(audioBlob) {
+            if (!currentUser) return;
+
+            try {
+                const timestamp = Date.now();
+                const fileName = `audio_${currentUser.uid}_${timestamp}.webm`;
+                const storageRef = storage.ref(`audio_recordings/${fileName}`);
+                
+                await storageRef.put(audioBlob);
+                
+                const url = await storageRef.getDownloadURL();
+                
+                // Salvar referência no Firestore
+                await db.collection('audio_files').add({
+                    userId: currentUser.uid,
+                    fileName: fileName,
+                    url: url,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                console.log('Áudio salvo com sucesso:', url);
+            } catch (error) {                console.error('Erro ao salvar áudio:', error);
+            }
+        }
+
+        // ============================================
+        // FIREBASE CLOUD MESSAGING - NOTIFICAÇÕES
+        // ============================================
+
+        // Solicitar permissão para notificações
+        async function requestNotificationPermission() {
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    console.log('Permissão para notificações concedida');
+                    
+                    // Obter token FCM
+                    const token = await messaging.getToken({
+                        vapidKey: 'SUA_VAPID_KEY_AQUI' // Substitua pela sua VAPID key
+                    });
+                    
+                    console.log('FCM Token:', token);
+                    
+                    // Salvar token no Firestore
+                    if (currentUser) {
+                        await db.collection('users').doc(currentUser.uid).update({
+                            fcmToken: token
+                        });
+                    }
+                } else {
+                    console.log('Permissão para notificações negada');
+                }
+            } catch (error) {
+                console.error('Erro ao solicitar permissão:', error);
+            }
+        }
+
+        // Enviar notificação local
+        function sendLocalNotification(title, body) {
+            if (Notification.permission === 'granted') {
+                new Notification(title, {
+                    body: body,
+                    icon: '/icon.png',
+                    badge: '/badge.png'
+                });
+            }
+        }
+
+        // ============================================
+        // INICIALIZAÇÃO
+        // ============================================
         document.addEventListener('DOMContentLoaded', function() {
             initializeSpeechRecognition();
             updateSystemStatus();
             setInterval(updateSystemStatus, 5000);
+            
+            // Solicitar permissão de notificação após 3 segundos
+            setTimeout(requestNotificationPermission, 3000);
             
             // Verificar suporte a voz
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
@@ -523,7 +1042,10 @@
             }
         });
 
-        // Inicializar reconhecimento de voz
+        // ============================================
+        // RECONHECIMENTO DE VOZ
+        // ============================================
+
         function initializeSpeechRecognition() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             
@@ -537,7 +1059,8 @@
                     console.log('Reconhecimento de voz iniciado');
                 };
 
-                recognition.onresult = function(event) {                    let finalTranscript = '';
+                recognition.onresult = function(event) {
+                    let finalTranscript = '';
                     let interimTranscript = '';
 
                     for (let i = event.resultIndex; i < event.results.length; i++) {
@@ -553,11 +1076,9 @@
                         processCommand(finalTranscript.toLowerCase());
                     }
                 };
-
                 recognition.onerror = function(event) {
                     console.error('Erro no reconhecimento de voz:', event.error);
                     if (event.error === 'no-speech') {
-                        // Reiniciar se não houver fala
                         if (isListening) {
                             setTimeout(() => recognition.start(), 100);
                         }
@@ -572,7 +1093,10 @@
             }
         }
 
-        // Alternar escuta
+        // ============================================
+        // CONTROLES DE ESCUTA
+        // ============================================
+
         function toggleListening() {
             const button = document.getElementById('activationButton');
             const indicator = document.getElementById('audioIndicator');
@@ -586,7 +1110,8 @@
             if (isListening) {
                 recognition.stop();
                 isListening = false;
-                button.classList.remove('active');                indicator.classList.remove('listening');
+                button.classList.remove('active');
+                indicator.classList.remove('listening');
                 indicator.classList.add('idle');
                 status.textContent = 'SISTEMA ONLINE - AGUARDANDO COMANDO';
                 showNotification('🔇 Escuta desativada');
@@ -600,21 +1125,21 @@
                     status.textContent = '🎤 ESCUTANDO...';
                     showNotification('🎤 Escuta ativada - Diga "ZACK" para ativar');
                 } catch (error) {
-                    console.error('Erro ao iniciar reconhecimento:', error);
-                    showNotification('⚠️ Erro ao ativar escuta');
+                    console.error('Erro ao iniciar reconhecimento:', error);                    showNotification('⚠️ Erro ao ativar escuta');
                 }
             }
         }
 
-        // Processar comando
+        // ============================================
+        // PROCESSAMENTO DE COMANDOS
+        // ============================================
+
         function processCommand(command) {
             console.log('Comando recebido:', command);
             
-            // Verificar palavra de ativação
             if (command.includes(config.activationWord.toLowerCase())) {
                 addMessage('user', command);
                 
-                // Resposta de ativação
                 const activationResponses = [
                     'Sim, senhor. Como posso ajudá-lo?',
                     'Às suas ordens.',
@@ -626,35 +1151,30 @@
                 const response = activationResponses[Math.floor(Math.random() * activationResponses.length)];
                 respond(response);
                 
-                // Continuar escutando para o próximo comando
                 setTimeout(() => {
                     if (isListening) {
                         status.textContent = '🎤 ESCUTANDO COMANDO...';
                     }
                 }, 2000);
             } else if (isListening) {
-                // Processar comando após ativação
                 addMessage('user', command);
-                executeCommand(command);            }
+                executeCommand(command);
+            }
         }
 
-        // Executar comando
         function executeCommand(command) {
             const lowerCommand = command.toLowerCase();
             let response = '';
             let action = null;
 
-            // Análise de comando
             if (lowerCommand.includes('whatsapp')) {
                 response = 'Abrindo WhatsApp.';
                 action = () => {
-                    // Em um app real, abriria o app
                     showNotification('📱 Abrindo WhatsApp...');
                 };
             } else if (lowerCommand.includes('previsão') || lowerCommand.includes('tempo')) {
                 response = 'Consultando os dados meteorológicos. A previsão para hoje é de céu parcialmente nublado com temperatura máxima de 28 graus.';
-                action = () => {
-                    showNotification('🌤️ Consultando previsão do tempo...');
+                action = () => {                    showNotification('🌤️ Consultando previsão do tempo...');
                 };
             } else if (lowerCommand.includes('ligação') || lowerCommand.includes('ligar')) {
                 response = 'Para quem deseja ligar?';
@@ -670,6 +1190,12 @@
                 response = 'Lembrete criado com sucesso.';
                 action = () => {
                     showNotification('⏰ Lembrete criado!');
+                    // Salvar tarefa no Firestore
+                    saveTask({
+                        title: 'Lembrete',
+                        description: command,
+                        dueDate: new Date()
+                    });
                 };
             } else if (lowerCommand.includes('câmera') || lowerCommand.includes('foto')) {
                 response = 'Abrindo câmera.';
@@ -684,7 +1210,8 @@
             } else if (lowerCommand.includes('silencioso') || lowerCommand.includes('silêncio')) {
                 response = 'Modo silencioso ativado.';
                 action = () => {
-                    showNotification('🔇 Modo silencioso ativado');                };
+                    showNotification('🔇 Modo silencioso ativado');
+                };
             } else if (lowerCommand.includes('wi-fi') || lowerCommand.includes('wifi')) {
                 response = 'Wi-Fi ativado.';
                 action = () => {
@@ -696,8 +1223,7 @@
                     showNotification('🔵 Bluetooth ativado');
                 };
             } else if (lowerCommand.includes('notificações') || lowerCommand.includes('notificação')) {
-                response = 'Você tem 3 notificações não lidas.';
-                action = () => {
+                response = 'Você tem 3 notificações não lidas.';                action = () => {
                     showNotification('🔔 Lendo notificações...');
                 };
             } else if (lowerCommand.includes('mapa') || lowerCommand.includes('mapas')) {
@@ -718,7 +1244,6 @@
                     setTimeout(toggleListening, 1000);
                 };
             } else {
-                // Comando não reconhecido - usar IA
                 response = processWithAI(command);
             }
 
@@ -729,28 +1254,29 @@
             respond(response);
         }
 
-        // Processar com IA (simulação)
         function processWithAI(command) {
             const responses = [
                 'Entendi seu comando. Processando solicitação.',
-                'Analisando sua solicitação. Um momento, por favor.',                'Comando recebido. Executando ação solicitada.',
+                'Analisando sua solicitação. Um momento, por favor.',
+                'Comando recebido. Executando ação solicitada.',
                 'Processando. Como posso ajudar melhor?'
             ];
             return responses[Math.floor(Math.random() * responses.length)];
         }
 
-        // Responder com voz
+        // ============================================
+        // RESPOSTAS E MENSAGENS
+        // ============================================
+
         function respond(text) {
             addMessage('assistant', text);
             
             if (config.voiceEnabled && synthesis) {
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = config.language;
+                const utterance = new SpeechSynthesisUtterance(text);                utterance.lang = config.language;
                 utterance.rate = 1.0;
                 utterance.pitch = 1.0;
                 utterance.volume = 1.0;
                 
-                // Tentar usar voz masculina
                 const voices = synthesis.getVoices();
                 const portugueseVoice = voices.find(voice => 
                     voice.lang.includes('pt') && voice.name.toLowerCase().includes('male')
@@ -763,7 +1289,6 @@
             }
         }
 
-        // Adicionar mensagem ao histórico
         function addMessage(type, text) {
             const history = document.getElementById('conversationHistory');
             const messageDiv = document.createElement('div');
@@ -779,23 +1304,31 @@
             history.appendChild(messageDiv);
             history.scrollTop = history.scrollHeight;
             
-            // Limitar histórico
+            // Salvar no Firestore
+            saveMessageToFirestore(type, text);
+            
             const messages = history.querySelectorAll('.message');
             if (messages.length > 20) {
-                messages[0].remove();            }
+                messages[0].remove();
+            }
         }
 
-        // Atualizar status do sistema
+        // ============================================
+        // STATUS DO SISTEMA
+        // ============================================
+
         function updateSystemStatus() {
             document.getElementById('cpuStatus').textContent = 
                 Math.floor(Math.random() * 30 + 10) + '%';
             document.getElementById('memoryStatus').textContent = 
-                (Math.random() * 2 + 2).toFixed(1) + 'GB';
-            document.getElementById('networkStatus').textContent = 
+                (Math.random() * 2 + 2).toFixed(1) + 'GB';            document.getElementById('networkStatus').textContent = 
                 navigator.onLine ? 'ATIVO' : 'OFFLINE';
         }
 
-        // Mostrar notificação
+        // ============================================
+        // NOTIFICAÇÕES E INTERFACE
+        // ============================================
+
         function showNotification(message) {
             const notification = document.getElementById('notification');
             notification.textContent = message;
@@ -806,13 +1339,15 @@
             }, 3000);
         }
 
-        // Alternar painel de comandos
         function toggleCommands() {
             const panel = document.getElementById('commandsPanel');
             panel.classList.toggle('open');
         }
 
-        // Carregar vozes disponíveis
+        // ============================================
+        // VOZES E DETECÇÃO DE WAKE WORD
+        // ============================================
+
         if (synthesis) {
             synthesis.onvoiceschanged = function() {
                 const voices = synthesis.getVoices();
@@ -820,25 +1355,21 @@
             };
         }
 
-        // Atalhos de teclado
         document.addEventListener('keydown', function(event) {
-            // Espaço para ativar/desativar escuta
             if (event.code === 'Space' && event.target === document.body) {
                 event.preventDefault();
                 toggleListening();
             }
             
-            // ESC para fechar painel
             if (event.code === 'Escape') {
                 const panel = document.getElementById('commandsPanel');
-                if (panel.classList.contains('open')) {                    toggleCommands();
+                if (panel.classList.contains('open')) {
+                    toggleCommands();
                 }
             }
         });
 
-        // Detectar palavra de ativação mesmo sem botão pressionado
         let wakeWordRecognition = null;
-
         function startWakeWordDetection() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             
@@ -865,7 +1396,6 @@
                 };
 
                 wakeWordRecognition.onend = function() {
-                    // Reiniciar automaticamente
                     setTimeout(() => {
                         if (wakeWordRecognition) {
                             try {
@@ -880,14 +1410,13 @@
                 try {
                     wakeWordRecognition.start();
                 } catch (e) {
-                    console.log('Não foi possível iniciar detecção de wake word');                }
+                    console.log('Não foi possível iniciar detecção de wake word');
+                }
             }
         }
 
-        // Iniciar detecção de wake word após 2 segundos
         setTimeout(startWakeWordDetection, 2000);
 
-        console.log('ZACK. Sistema inicializado com sucesso');
+        console.log('ZACK. Sistema inicializado com Firebase');
     </script>
-</body>
-</html>
+</body></html>
