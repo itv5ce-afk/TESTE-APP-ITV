@@ -1,1422 +1,1065 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ZACK. - Assistente Virtual IA</title>
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Courier New', monospace;
-            background: #000;
-            color: #00d4ff;
-            overflow: hidden;
-            height: 100vh;
-            position: relative;
-        }
-
-        /* Efeito de fundo holográfico */
-        .background-grid {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: gridMove 20s linear infinite;
-            z-index: 0;
-        }
-
-        @keyframes gridMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(50px, 50px); }
-        }
-        /* Container principal */
-        .container {
-            position: relative;
-            z-index: 1;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-        }
-
-        /* Header */
-        .header {
-            text-align: center;
-            padding: 20px;
-            border-bottom: 1px solid rgba(0, 212, 255, 0.3);
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            letter-spacing: 10px;
-            text-shadow: 0 0 20px #00d4ff;
-            animation: glow 2s ease-in-out infinite;
-        }
-
-        @keyframes glow {
-            0%, 100% { text-shadow: 0 0 20px #00d4ff; }
-            50% { text-shadow: 0 0 30px #00d4ff, 0 0 40px #00d4ff; }
-        }
-
-        .status {
-            margin-top: 10px;
-            font-size: 0.9em;
-            opacity: 0.7;
-        }
-
-        /* Avatar holográfico */
-        .avatar-container {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .avatar {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            border: 2px solid #00d4ff;
-            position: relative;            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
-            box-shadow: 0 0 50px rgba(0, 212, 255, 0.3);
-        }
-
-        .avatar::before {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: 2px solid #00d4ff;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        .avatar::after {
-            content: '';
-            position: absolute;
-            width: 120%;
-            height: 120%;
-            border-radius: 50%;
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            animation: pulse 2s ease-in-out infinite 0.5s;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.5; }
-        }
-
-        .avatar-icon {
-            font-size: 4em;
-            color: #00d4ff;
-            text-shadow: 0 0 20px #00d4ff;
-        }
-
-        /* Indicador de áudio */
-        .audio-indicator {
-            position: absolute;
-            bottom: -50px;
-            display: flex;
-            gap: 5px;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .audio-bar {
-            width: 4px;            height: 20px;
-            background: #00d4ff;
-            border-radius: 2px;
-            animation: audioWave 1s ease-in-out infinite;
-        }
-
-        .audio-bar:nth-child(1) { animation-delay: 0s; }
-        .audio-bar:nth-child(2) { animation-delay: 0.1s; }
-        .audio-bar:nth-child(3) { animation-delay: 0.2s; }
-        .audio-bar:nth-child(4) { animation-delay: 0.3s; }
-        .audio-bar:nth-child(5) { animation-delay: 0.4s; }
-
-        @keyframes audioWave {
-            0%, 100% { height: 20px; }
-            50% { height: 40px; }
-        }
-
-        .listening .audio-bar {
-            animation-play-state: running;
-        }
-
-        .idle .audio-bar {
-            animation-play-state: paused;
-            height: 10px;
-        }
-
-        /* Botão de ativação */
-        .activation-button {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
-            border: 3px solid #00d4ff;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2em;
-            color: #000;
-            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
-            transition: all 0.3s ease;
-            margin: 20px auto;
-        }
-
-        .activation-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 50px rgba(0, 212, 255, 0.8);
-        }
-
-        .activation-button:active {            transform: scale(0.95);
-        }
-
-        .activation-button.active {
-            background: linear-gradient(135deg, #ff0066 0%, #cc0052 100%);
-            border-color: #ff0066;
-            box-shadow: 0 0 50px rgba(255, 0, 102, 0.8);
-            animation: buttonPulse 1s ease-in-out infinite;
-        }
-
-        @keyframes buttonPulse {
-            0%, 100% { box-shadow: 0 0 30px rgba(255, 0, 102, 0.5); }
-            50% { box-shadow: 0 0 50px rgba(255, 0, 102, 0.8); }
-        }
-
-        /* Histórico de conversas */
-        .conversation-history {
-            background: rgba(0, 212, 255, 0.05);
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            border-radius: 10px;
-            padding: 15px;
-            max-height: 200px;
-            overflow-y: auto;
-            margin-top: 20px;
-        }
-
-        .conversation-history::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        .conversation-history::-webkit-scrollbar-track {
-            background: rgba(0, 212, 255, 0.1);
-        }
-
-        .conversation-history::-webkit-scrollbar-thumb {
-            background: #00d4ff;
-            border-radius: 5px;
-        }
-
-        .message {
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 5px;
-            animation: messageSlide 0.3s ease;
-        }
-
-        @keyframes messageSlide {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .message.user {
-            background: rgba(0, 212, 255, 0.1);
-            border-left: 3px solid #00d4ff;
-        }
-
-        .message.assistant {
-            background: rgba(255, 255, 255, 0.05);
-            border-left: 3px solid #fff;
-        }
-
-        .message-label {
-            font-size: 0.8em;
-            opacity: 0.7;
-            margin-bottom: 5px;
-        }
-
-        .message-text {
-            font-size: 0.95em;
-        }
-
-        /* Status do sistema */
-        .system-status {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(0, 212, 255, 0.05);
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            border-radius: 10px;
-        }
-
-        .status-item {
-            text-align: center;
-        }
-
-        .status-label {
-            font-size: 0.7em;
-            opacity: 0.7;
-            margin-bottom: 5px;
-        }
-
-        .status-value {
-            font-size: 1.2em;
-            color: #00ff88;
-        }
-
-        /* Modal de comandos */
-        .commands-panel {            position: fixed;
-            top: 0;
-            right: -400px;
-            width: 400px;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.95);
-            border-left: 1px solid #00d4ff;
-            padding: 20px;
-            transition: right 0.3s ease;
-            overflow-y: auto;
-            z-index: 100;
-        }
-
-        .commands-panel.open {
-            right: 0;
-        }
-
-        .commands-panel h2 {
-            margin-bottom: 20px;
-            border-bottom: 1px solid #00d4ff;
-            padding-bottom: 10px;
-        }
-
-        .command-item {
-            padding: 10px;
-            margin: 10px 0;
-            background: rgba(0, 212, 255, 0.1);
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .command-item:hover {
-            background: rgba(0, 212, 255, 0.2);
-            transform: translateX(5px);
-        }
-
-        .close-panel {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: none;
-            border: none;
-            color: #00d4ff;
-            font-size: 1.5em;
-            cursor: pointer;
-        }
-
-        /* Botão de menu */
-        .menu-button {            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(0, 212, 255, 0.2);
-            border: 1px solid #00d4ff;
-            color: #00d4ff;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            z-index: 99;
-        }
-
-        /* Botão de login */
-        .login-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: rgba(0, 212, 255, 0.2);
-            border: 1px solid #00d4ff;
-            color: #00d4ff;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            z-index: 99;
-        }
-
-        /* Notificação */
-        .notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-100px);
-            background: rgba(0, 212, 255, 0.9);
-            color: #000;
-            padding: 15px 30px;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: transform 0.3s ease;
-            z-index: 200;
-        }
-
-        .notification.show {
-            transform: translateX(-50%) translateY(0);
-        }
-
-        /* Modal de Login */
-        .login-modal {
-            position: fixed;
-            top: 0;
-            left: 0;            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 300;
-        }
-
-        .login-modal.show {
-            display: flex;
-        }
-
-        .login-content {
-            background: rgba(0, 20, 40, 0.95);
-            border: 2px solid #00d4ff;
-            border-radius: 15px;
-            padding: 40px;
-            max-width: 400px;
-            width: 90%;
-            box-shadow: 0 0 50px rgba(0, 212, 255, 0.5);
-        }
-
-        .login-content h2 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #00d4ff;
-            text-shadow: 0 0 10px #00d4ff;
-        }
-
-        .login-form input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            background: rgba(0, 212, 255, 0.1);
-            border: 1px solid #00d4ff;
-            border-radius: 5px;
-            color: #00d4ff;
-            font-family: 'Courier New', monospace;
-        }
-
-        .login-form input::placeholder {
-            color: rgba(0, 212, 255, 0.5);
-        }
-
-        .login-form button {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);            border: none;
-            border-radius: 5px;
-            color: #000;
-            font-weight: bold;
-            cursor: pointer;
-            font-family: 'Courier New', monospace;
-            transition: all 0.3s ease;
-        }
-
-        .login-form button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
-        }
-
-        .login-form .google-btn {
-            background: #fff;
-            color: #000;
-        }
-
-        .login-form .anonymous-btn {
-            background: rgba(255, 255, 255, 0.2);
-            color: #00d4ff;
-            border: 1px solid #00d4ff;
-        }
-
-        .login-divider {
-            text-align: center;
-            margin: 20px 0;
-            color: rgba(0, 212, 255, 0.5);
-        }
-
-        .close-login {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: none;
-            border: none;
-            color: #00d4ff;
-            font-size: 2em;
-            cursor: pointer;
-        }
-
-        /* User info */
-        .user-info {
-            position: fixed;
-            top: 70px;
-            left: 20px;
-            background: rgba(0, 212, 255, 0.1);
-            border: 1px solid #00d4ff;
-            padding: 10px;            border-radius: 5px;
-            font-size: 0.8em;
-            display: none;
-            z-index: 99;
-        }
-
-        .user-info.show {
-            display: block;
-        }
-
-        /* Responsivo */
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.8em;
-                letter-spacing: 5px;
-            }
-
-            .avatar {
-                width: 150px;
-                height: 150px;
-            }
-
-            .activation-button {
-                width: 100px;
-                height: 100px;
-            }
-
-            .commands-panel {
-                width: 100%;
-                right: -100%;
-            }
-
-            .login-content {
-                padding: 20px;
-            }
-        }
-
-        /* Loading */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(0, 212, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #00d4ff;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0a101b">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>ITV Segurança — Câmera & Monitoramento</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 3 42 9v13c0 11-7.6 19.4-18 23C13.6 41.4 6 33 6 22V9z' fill='%230f1826' stroke='%23ffb02e' stroke-width='2'/%3E%3Ccircle cx='24' cy='22' r='8' fill='none' stroke='%238fa8c7' stroke-width='2'/%3E%3Ccircle cx='24' cy='22' r='3' fill='%23ff4757'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Rubik:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="https://unpkg.com/jsqr@1.4.0/dist/jsQR.js"></script>
+<script src="https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js"></script>
+<style>
+:root{
+  --bg0:#0a101b; --bg1:#0e1626; --panel:#131e30; --panel2:#182640; --line:#26374f;
+  --txt:#e9eff8; --steel:#8fa8c7; --dim:#65798f; --amber:#ffb02e; --amber2:#ffcf70;
+  --red:#ff4757; --green:#2fd573; --mono:'JetBrains Mono',monospace;
+  --disp:'Chakra Petch',sans-serif; --body:'Rubik',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:var(--body); color:var(--txt); background:var(--bg0);
+  height:100dvh; overflow:hidden; display:flex; flex-direction:column;
+  padding-top:env(safe-area-inset-top);
+}
+body::before{ /* grade técnica */
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:linear-gradient(rgba(143,168,199,.05) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(143,168,199,.05) 1px,transparent 1px);
+  background-size:34px 34px;
+}
+#bgfx{position:fixed;inset:-20%;z-index:0;pointer-events:none;
+  background:radial-gradient(600px 420px at 12% 8%,rgba(255,176,46,.09),transparent 60%),
+             radial-gradient(700px 520px at 88% 92%,rgba(80,130,190,.12),transparent 60%),
+             radial-gradient(500px 400px at 70% 15%,rgba(255,71,87,.05),transparent 60%);
+  animation:drift 26s ease-in-out infinite alternate;}
+@keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(2.5%,-2%) scale(1.06)}}
+::selection{background:var(--amber);color:#161006}
+
+/* ---------- TOPBAR ---------- */
+#topbar{position:relative;z-index:5;flex:none;display:flex;align-items:center;gap:10px;
+  height:52px;padding:0 14px;background:linear-gradient(180deg,#101a2b,#0d1522);
+  border-bottom:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.35);}
+#topbar.hidden{display:none}
+.brand{display:flex;align-items:center;gap:8px;font-family:var(--disp);font-weight:700;
+  letter-spacing:.14em;font-size:14px}
+.brand svg{width:22px;height:22px}
+.brand b{color:var(--amber)}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.clock{font-family:var(--mono);font-size:12px;color:var(--steel);letter-spacing:.06em}
+.chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--disp);font-size:10px;
+  font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--steel);
+  background:rgba(9,14,24,.78);border:1px solid var(--line);border-radius:6px;
+  padding:5px 9px;white-space:nowrap;cursor:default}
+button.chip{cursor:pointer}
+button.chip:hover{border-color:var(--amber);color:var(--txt)}
+.led{width:8px;height:8px;border-radius:50%;display:inline-block;background:#3a4a60}
+.led.g{background:var(--green);box-shadow:0 0 8px rgba(47,213,115,.8)}
+.led.a{background:var(--amber);box-shadow:0 0 8px rgba(255,176,46,.8)}
+.led.r{background:var(--red);box-shadow:0 0 8px rgba(255,71,87,.8)}
+.led.blink{animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.25}}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:blink 1.1s steps(2) infinite}
+.chip.live .dot{background:var(--green)}
+
+/* ---------- ESTRUTURA ---------- */
+main{position:relative;z-index:1;flex:1;min-height:0}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;overflow-y:auto;
+  padding:16px clamp(14px,4vw,28px) calc(18px + env(safe-area-inset-bottom));
+  opacity:0;pointer-events:none;transform:translateY(10px);
+  transition:opacity .35s ease,transform .35s ease}
+.screen.active{opacity:1;pointer-events:auto;transform:none}
+h1,h2,h3,h4{font-family:var(--disp);letter-spacing:.08em}
+.sub{color:var(--dim);font-size:13px;margin-top:3px}
+.mono{font-family:var(--mono)}
+.spacer{flex:1}
+.row{display:flex;gap:10px;align-items:center}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%)}
+.warnbox{border:1px solid rgba(255,176,46,.4);background:rgba(255,176,46,.08);
+  color:var(--amber2);font-size:12.5px;padding:10px 12px;border-radius:8px;margin-bottom:14px}
+
+/* ---------- BOTÕES ---------- */
+.btn{font-family:var(--disp);font-weight:600;font-size:12px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--txt);background:var(--panel2);
+  border:1px solid var(--line);border-radius:8px;padding:12px 14px;cursor:pointer;
+  transition:transform .12s ease,border-color .2s,background .2s,box-shadow .2s;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover{border-color:var(--amber);transform:translateY(-1px)}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:linear-gradient(180deg,var(--amber),#f09a12);color:#1c1204;
+  border-color:var(--amber);box-shadow:0 4px 16px rgba(255,176,46,.28)}
+.btn.primary:hover{box-shadow:0 6px 22px rgba(255,176,46,.4)}
+.btn.danger{border-color:rgba(255,71,87,.5);color:#ff9aa4}
+.btn.ghost{background:transparent}
+.btn.sm{padding:8px 11px;font-size:11px}
+.btn.on{border-color:var(--green);color:var(--green);box-shadow:inset 0 0 12px rgba(47,213,115,.15)}
+.btn.warn{color:var(--amber);border-color:rgba(255,176,46,.4)}
+.btn:disabled{opacity:.45;pointer-events:none}
+.btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.btn-grid .btn:nth-child(1){grid-column:1/-1}
+.badge{background:var(--red);color:#fff;border-radius:9px;font-size:10px;padding:1px 7px}
+
+/* ---------- BOOT ---------- */
+#scr-boot{align-items:center;justify-content:center;text-align:center;cursor:pointer}
+.boot-logo{width:96px;height:96px;margin-bottom:18px}
+.boot-logo path,.boot-logo circle{fill:none;stroke:var(--amber);stroke-width:2;
+  stroke-dasharray:220;stroke-dashoffset:220;animation:draw 1.6s ease forwards}
+.boot-logo .lens{fill:var(--red);stroke:none;opacity:0;animation:appear .4s 1.3s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes appear{to{opacity:1}}
+.boot-title{font-family:var(--disp);font-weight:700;font-size:clamp(26px,7vw,40px);
+  letter-spacing:.32em;text-indent:.32em}
+.boot-title b{color:var(--amber)}
+.boot-sub{color:var(--dim);font-size:11px;letter-spacing:.34em;text-transform:uppercase;margin-top:6px}
+#bootLog{font-family:var(--mono);font-size:11px;color:var(--steel);margin-top:26px;
+  min-height:78px;text-align:left;width:min(320px,84vw)}
+#bootLog div{opacity:0;animation:fadein .3s forwards}
+#bootLog b{color:var(--green)}
+@keyframes fadein{to{opacity:1}}
+.boot-bar{width:min(320px,84vw);height:3px;background:var(--line);margin-top:16px;border-radius:2px;overflow:hidden}
+.boot-bar i{display:block;height:100%;width:0;background:var(--amber);animation:load 2.2s ease forwards}
+@keyframes load{to{width:100%}}
+
+/* ---------- SETUP / PERMISSÕES ---------- */
+.step-tag{font-family:var(--disp);font-size:10px;letter-spacing:.3em;color:var(--amber);margin-bottom:6px}
+.page-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px}
+.page-head h2{font-size:clamp(20px,5vw,26px)}
+.perm{display:flex;gap:13px;align-items:center;padding:14px;margin-bottom:10px}
+.perm .ic{width:40px;height:40px;flex:none;display:grid;place-items:center;
+  background:var(--panel2);border:1px solid var(--line);border-radius:9px}
+.perm .ic svg{width:20px;height:20px;stroke:var(--steel)}
+.perm h4{font-size:13px;letter-spacing:.06em}
+.perm p{font-size:12px;color:var(--dim);margin-top:2px;line-height:1.4}
+.perm .stat{margin-left:auto;display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex:none}
+.pchip{font-family:var(--disp);font-size:9px;letter-spacing:.14em;padding:3px 8px;border-radius:5px;
+  border:1px solid var(--line);color:var(--dim)}
+.pchip.ok{color:var(--green);border-color:rgba(47,213,115,.4)}
+.pchip.no{color:var(--red);border-color:rgba(255,71,87,.4)}
+
+/* ---------- FUNÇÃO ---------- */
+.role-grid{display:grid;gap:14px;margin-top:8px}
+.role-card{position:relative;padding:22px 20px 20px;cursor:pointer;overflow:hidden;
+  transition:transform .2s,border-color .2s,box-shadow .2s;text-align:left;border-width:1px}
+.role-card:hover{transform:translateY(-3px)}
+.role-card h3{font-size:clamp(19px,4.6vw,24px);letter-spacing:.14em}
+.role-card p{color:var(--steel);font-size:13px;margin-top:8px;line-height:1.5;max-width:42ch}
+.role-card .tag{position:absolute;top:0;right:0;font-family:var(--disp);font-size:9px;
+  letter-spacing:.2em;padding:5px 12px;border-bottom-left-radius:8px}
+.role-card .glyph{position:absolute;right:-14px;bottom:-22px;width:130px;height:130px;opacity:.14}
+.role-cam:hover{border-color:var(--amber);box-shadow:0 10px 30px rgba(255,176,46,.14)}
+.role-cam .tag{background:var(--amber);color:#1c1204}
+.role-cam h3{color:var(--amber)}
+.role-mon:hover{border-color:var(--green);box-shadow:0 10px 30px rgba(47,213,115,.12)}
+.role-mon .tag{background:var(--green);color:#06220f}
+.role-mon h3{color:var(--green)}
+#resumeBar{display:none;align-items:center;gap:10px;margin-bottom:14px;padding:12px 14px;
+  border:1px dashed rgba(255,176,46,.5);background:rgba(255,176,46,.06);border-radius:10px}
+#resumeBar.show{display:flex}
+.mini-steps{display:flex;gap:18px;margin-top:20px;flex-wrap:wrap}
+.mini-steps span{font-family:var(--disp);font-size:10px;letter-spacing:.16em;color:var(--dim)}
+.mini-steps b{color:var(--amber);margin-right:6px}
+.marquee{margin-top:auto;padding-top:22px;overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.marquee-in{display:flex;gap:34px;width:max-content;animation:mq 24s linear infinite;
+  font-family:var(--disp);font-size:10.5px;letter-spacing:.22em;color:var(--dim);white-space:nowrap}
+.marquee-in i{color:var(--amber);font-style:normal}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+/* ---------- VIEWFINDER ---------- */
+.cam-layout,.live-layout{display:flex;flex-direction:column;gap:13px;flex:1;min-height:0}
+.viewfinder{position:relative;flex:1;min-height:280px;background:#05080f;overflow:hidden;border-radius:10px}
+.viewfinder video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:filter .4s}
+.video-noflex{flex:none;height:min(48vh,420px)}
+.video-noflex video{pointer-events:none}
+#liveVideo.nightview,#liveVideo.nightfb,#camVideo.night{filter:grayscale(1) brightness(1.7) contrast(1.3)}
+.scanlines{position:absolute;inset:0;pointer-events:none;mix-blend-mode:overlay;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 3px)}
+.vf-corners i{position:absolute;width:26px;height:26px;border:2px solid var(--amber);opacity:.9}
+.vf-corners i:nth-child(1){top:10px;left:10px;border-right:0;border-bottom:0}
+.vf-corners i:nth-child(2){top:10px;right:10px;border-left:0;border-bottom:0}
+.vf-corners i:nth-child(3){bottom:10px;left:10px;border-right:0;border-top:0}
+.vf-corners i:nth-child(4){bottom:10px;right:10px;border-left:0;border-top:0}
+.vf-top,.vf-bottom{position:absolute;left:0;right:0;display:flex;gap:8px;align-items:center;
+  padding:14px;z-index:3;flex-wrap:wrap}
+.vf-top{top:0}.vf-bottom{bottom:0}
+.chip.rec{color:#ff8f98;border-color:rgba(255,71,87,.55)}
+.motion-flash{position:absolute;inset:0;border:3px solid var(--red);opacity:0;pointer-events:none;z-index:4}
+.motion-flash.on{animation:mflash 1.4s ease}
+@keyframes mflash{0%{opacity:1}70%{opacity:1}100%{opacity:0}}
+.big-start{position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;gap:10px;
+  align-items:center;justify-content:center;background:rgba(6,10,18,.82);border:0;cursor:pointer;
+  font-family:var(--disp);font-weight:700;letter-spacing:.18em;color:var(--amber);font-size:15px}
+.big-start small{font-family:var(--body);font-weight:400;letter-spacing:0;color:var(--dim);font-size:12px}
+.big-start .ring{width:74px;height:74px;border-radius:50%;border:2px solid var(--amber);
+  display:grid;place-items:center;font-size:24px;animation:pulse 2s ease infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,176,46,.35)}50%{box-shadow:0 0 0 16px rgba(255,176,46,0)}}
+.buffer{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;gap:14px;
+  align-items:center;justify-content:center;background:rgba(6,10,18,.7);
+  font-family:var(--disp);font-size:11px;letter-spacing:.24em;color:var(--steel)}
+.buffer.hidden{display:none}
+.spinner{width:38px;height:38px;border-radius:50%;border:3px solid var(--line);
+  border-top-color:var(--amber);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- CÂMERA: trilho ---------- */
+.cam-rail,.live-rail{display:flex;flex-direction:column;gap:13px}
+.stat-panel{padding:13px 15px}
+.stat-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;
+  font-family:var(--disp);font-size:10.5px;letter-spacing:.16em;color:var(--dim)}
+.stat-row b{font-family:var(--mono);font-size:12px;color:var(--steel);letter-spacing:0}
+.stat-row b.ok{color:var(--green)}.stat-row b.warn{color:var(--amber)}.stat-row b.bad{color:var(--red)}
+.log-panel{padding:12px 14px;flex:1;min-height:110px;display:flex;flex-direction:column}
+.log-title{font-family:var(--disp);font-size:9.5px;letter-spacing:.26em;color:var(--dim);margin-bottom:8px}
+.syslog{font-size:10.5px;line-height:1.7;color:var(--steel);overflow:hidden;flex:1}
+.syslog div{opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.syslog div:first-child{color:var(--amber2)}
+.syslog .err{color:#ff9aa4}
+
+/* ---------- HOME (monitor) ---------- */
+.cam-list{display:flex;flex-direction:column;gap:11px}
+.cam-card{display:flex;align-items:center;gap:13px;padding:13px 14px;animation:slidein .35s ease}
+@keyframes slidein{from{opacity:0;transform:translateY(8px)}}
+.cam-thumb{width:52px;height:52px;flex:none;border-radius:9px;background:var(--panel2);
+  border:1px solid var(--line);display:grid;place-items:center}
+.cam-thumb svg{width:26px;height:26px}
+.cam-info{min-width:0}
+.cam-info h4{font-size:14px;letter-spacing:.05em}
+.cam-info .mono{font-size:11px;color:var(--dim);display:block;margin-top:2px}
+.cam-state{display:inline-flex;align-items:center;gap:6px;font-family:var(--disp);
+  font-size:9.5px;letter-spacing:.16em;margin-top:5px}
+.cam-actions{margin-left:auto;display:flex;gap:7px;flex:none}
+.icon-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--line);
+  background:var(--panel2);color:var(--steel);cursor:pointer;font-size:14px;
+  display:grid;place-items:center;transition:border-color .2s}
+.icon-btn:hover{border-color:var(--amber);color:var(--txt)}
+.add-tile{border:1.5px dashed var(--line);background:transparent;border-radius:10px;
+  padding:22px;text-align:center;cursor:pointer;color:var(--steel);
+  font-family:var(--disp);font-size:12px;letter-spacing:.16em;transition:.25s}
+.add-tile:hover{border-color:var(--amber);color:var(--amber);background:rgba(255,176,46,.05)}
+.add-tile b{display:block;font-size:26px;margin-bottom:6px;color:var(--amber)}
+.steps-panel{margin-top:18px;padding:14px 16px}
+.steps-panel p{font-size:12px;color:var(--dim);line-height:1.6}
+.steps-panel p b{color:var(--amber)}
+.trust{margin-top:16px;text-align:center;font-size:11px;color:var(--dim);letter-spacing:.04em}
+
+/* ---------- SCANNER ---------- */
+.scan-frame{position:absolute;inset:14%;border:1.5px solid rgba(255,176,46,.65);border-radius:12px;
+  overflow:hidden;z-index:2;pointer-events:none}
+.scan-frame::after{content:"";position:absolute;left:0;right:0;height:2px;top:-2px;
+  background:linear-gradient(90deg,transparent,var(--amber),transparent);
+  box-shadow:0 0 14px var(--amber);animation:scanmv 2.2s ease-in-out infinite}
+@keyframes scanmv{0%,100%{top:0}50%{top:calc(100% - 2px)}}
+.manual-panel{padding:15px 16px}
+.manual-panel h4{font-size:11px;letter-spacing:.22em;color:var(--dim);margin-bottom:11px}
+.input{flex:1;background:#0b1322;border:1px solid var(--line);border-radius:8px;
+  color:var(--txt);padding:12px;font-size:14px;letter-spacing:.12em;outline:none;min-width:0}
+.input:focus{border-color:var(--amber)}
+
+/* ---------- LIVE ---------- */
+.ptt-wrap{display:flex;align-items:center;gap:14px}
+#pttBtn{width:92px;height:92px;flex:none;border-radius:50%;cursor:pointer;border:2px solid rgba(255,71,87,.6);
+  background:radial-gradient(circle at 34% 28%,#5a2028,#301016 70%);color:#ff8f98;
+  font-family:var(--disp);font-weight:700;font-size:10px;letter-spacing:.14em;line-height:1.5;
+  transition:transform .1s,box-shadow .2s;touch-action:none;user-select:none;-webkit-user-select:none}
+#pttBtn:active,#pttBtn.talking{transform:scale(.94);background:radial-gradient(circle at 34% 28%,#ff6b78,#a3202c 70%);
+  color:#fff;box-shadow:0 0 0 8px rgba(255,71,87,.18),0 0 34px rgba(255,71,87,.5)}
+.ptt-state{font-family:var(--disp);font-size:10px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase}
+.ptt-state.live{color:var(--red);animation:blink 1s steps(2) infinite}
+.zoom-panel{display:flex;align-items:center;gap:12px;padding:12px 15px;
+  font-family:var(--disp);font-size:10px;letter-spacing:.22em;color:var(--dim)}
+input[type=range]{flex:1;accent-color:var(--amber);height:26px;background:transparent}
+.timeline-panel{padding:12px 15px}
+.tl-head{display:flex;justify-content:space-between;font-family:var(--disp);font-size:9.5px;
+  letter-spacing:.2em;color:var(--dim);margin-bottom:10px}
+.tl-strip{position:relative;height:34px;background:#0b1322;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.tl-strip::before{content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(90deg,transparent 0 calc(16.66% - 1px),rgba(143,168,199,.18) calc(16.66% - 1px) 16.66%)}
+.tl-marker{position:absolute;top:5px;bottom:5px;width:4px;background:var(--red);border-radius:2px;
+  cursor:pointer;box-shadow:0 0 8px rgba(255,71,87,.7);transition:transform .15s}
+.tl-marker:hover{transform:scaleY(1.2) scaleX(2)}
+.tl-marker.manual{background:var(--amber);box-shadow:0 0 8px rgba(255,176,46,.7)}
+.tl-now{position:absolute;right:0;top:0;bottom:0;width:2px;background:var(--green)}
+
+/* ---------- SHEETS / MODAL ---------- */
+.sheet{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center;
+  background:rgba(4,7,13,.72);opacity:0;pointer-events:none;transition:opacity .3s}
+.sheet.open{opacity:1;pointer-events:auto}
+.sheet-card{width:min(520px,100%);max-height:86dvh;overflow-y:auto;background:var(--bg1);
+  border:1px solid var(--line);border-bottom:0;border-radius:16px 16px 0 0;padding:20px 20px calc(24px + env(safe-area-inset-bottom));
+  transform:translateY(40px);transition:transform .32s cubic-bezier(.2,.8,.25,1)}
+.sheet.open .sheet-card{transform:none}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sheet-head h3{font-size:15px;letter-spacing:.18em}
+.x{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);
+  color:var(--steel);cursor:pointer;font-size:14px}
+.x:hover{border-color:var(--red);color:var(--red)}
+.hint{font-size:13px;color:var(--steel);line-height:1.55;margin-bottom:14px}
+.hint b{color:var(--amber)}
+.qr-frame{background:#f4f7fb;border-radius:12px;padding:16px;display:grid;place-items:center;margin:4px auto 14px;
+  width:min(260px,72vw);box-shadow:0 8px 30px rgba(0,0,0,.4)}
+.qr-frame img{width:100%;image-rendering:pixelated}
+.code-line{text-align:center;font-size:19px;font-weight:700;letter-spacing:.3em;color:var(--amber);
+  background:#0b1322;border:1px dashed rgba(255,176,46,.4);border-radius:8px;padding:12px;margin-bottom:13px}
+.center-row{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}
+.cfg-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(38,55,79,.5)}
+.cfg-row:last-child{border:0}
+.cfg-row label{font-family:var(--disp);font-size:11px;letter-spacing:.16em;color:var(--steel);flex:1}
+.ev-item{display:flex;gap:12px;align-items:center;padding:11px;border:1px solid var(--line);
+  border-radius:9px;margin-bottom:9px;background:var(--panel);animation:slidein .3s ease}
+.ev-item img{width:74px;height:44px;object-fit:cover;border-radius:6px;border:1px solid var(--line);background:#000}
+.ev-item .t{font-family:var(--disp);font-size:11.5px;letter-spacing:.08em}
+.ev-item .m{font-size:11px;color:var(--dim);margin-top:3px}
+.ev-item .acts{margin-left:auto;display:flex;gap:7px}
+.empty{color:var(--dim);font-size:13px;text-align:center;padding:24px 0}
+.modal{position:fixed;inset:0;z-index:70;background:rgba(4,7,13,.9);display:grid;place-items:center;
+  padding:20px;opacity:0;pointer-events:none;transition:opacity .25s}
+.modal.open{opacity:1;pointer-events:auto}
+.modal-card{width:min(640px,100%)}
+.modal-card video{width:100%;border-radius:10px;border:1px solid var(--line);background:#000}
+.modal-bar{display:flex;gap:10px;align-items:center;margin-top:12px}
+
+/* ---------- BLACKOUT / TOAST ---------- */
+#blackout{position:fixed;inset:0;z-index:100;background:#000;display:none;
+  flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:34px}
+#blackout.on{display:flex}
+.bo-dot{width:10px;height:10px;border-radius:50%;background:var(--red);
+  position:absolute;top:calc(16px + env(safe-area-inset-top));left:18px;
+  box-shadow:0 0 12px var(--red);animation:blink 2.4s steps(2) infinite}
+#blackout span{font-size:10px;color:rgba(255,255,255,.16);letter-spacing:.2em;font-family:var(--disp)}
+#toasts{position:fixed;top:calc(60px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);
+  z-index:120;display:flex;flex-direction:column;gap:8px;align-items:center;width:min(420px,92vw);pointer-events:none}
+.toast{background:#111c2e;border:1px solid var(--line);border-left:3px solid var(--steel);
+  color:var(--txt);font-size:13px;padding:11px 15px;border-radius:8px;width:100%;
+  box-shadow:0 10px 30px rgba(0,0,0,.5);animation:tin .3s ease}
+.toast.ok{border-left-color:var(--green)}
+.toast.err{border-left-color:var(--red)}
+.toast.warn{border-left-color:var(--amber)}
+@keyframes tin{from{opacity:0;transform:translateY(-8px)}}
+
+/* ---------- DESKTOP ---------- */
+@media(min-width:980px){
+  .cam-layout,.live-layout{display:grid;grid-template-columns:1fr 350px;align-items:stretch}
+  .viewfinder{min-height:0;height:100%}
+  .cam-rail,.live-rail{overflow-y:auto}
+  .role-grid{grid-template-columns:1.15fr 1fr}
+  #scr-boot .boot-title{font-size:44px}
+}
+</style>
 </head>
 <body>
-    <div class="background-grid"></div>
-    
-    <button class="login-button" id="loginBtn" onclick="showLoginModal()">🔐 LOGIN</button>
-    <button class="menu-button" onclick="toggleCommands()">☰ COMANDOS</button>
-    
-    <div class="user-info" id="userInfo">
-        <div id="userEmail"></div>
-        <button onclick="logout()" style="background: none; border: none; color: #ff0066; cursor: pointer; margin-top: 5px;">Sair</button>
+<div id="bgfx"></div>
+
+<!-- ======= TOPBAR ======= -->
+<header id="topbar" class="hidden">
+  <div class="brand">
+    <svg viewBox="0 0 48 48"><path d="M24 3 42 9v13c0 11-7.6 19.4-18 23C13.6 41.4 6 33 6 22V9z" fill="none" stroke="#ffb02e" stroke-width="2.5"/><circle cx="24" cy="22" r="8" fill="none" stroke="#8fa8c7" stroke-width="2.5"/><circle cx="24" cy="22" r="3" fill="#ff4757"/></svg>
+    ITV&nbsp;<b>SEGURANÇA</b>
+  </div>
+  <div class="tb-right">
+    <span class="chip" id="netType">—</span>
+    <span class="clock" id="clock">--:--:--</span>
+    <span><i class="led g" id="ledSys"></i></span>
+    <span><i class="led r" id="ledLink"></i></span>
+  </div>
+</header>
+
+<main id="app">
+
+<!-- ======= BOOT ======= -->
+<section id="scr-boot" class="screen active">
+  <svg class="boot-logo" viewBox="0 0 48 48">
+    <path d="M24 3 42 9v13c0 11-7.6 19.4-18 23C13.6 41.4 6 33 6 22V9z"/>
+    <circle cx="24" cy="22" r="8"/>
+    <circle class="lens" cx="24" cy="22" r="3"/>
+  </svg>
+  <div class="boot-title">ITV <b>SEGURANÇA</b></div>
+  <div class="boot-sub">monitoramento residencial</div>
+  <div id="bootLog"></div>
+  <div class="boot-bar"><i></i></div>
+</section>
+
+<!-- ======= SETUP / PERMISSÕES ======= -->
+<section id="scr-setup" class="screen">
+  <div class="step-tag">PASSO 1 DE 2 · PERMISSÕES</div>
+  <div class="page-head"><div>
+    <h2>CONFIGURAÇÃO INICIAL</h2>
+    <p class="sub">O ITV Segurança precisa destes acessos para funcionar nos dois aparelhos.</p>
+  </div></div>
+  <div class="warnbox" id="httpWarn" hidden>⚠ Este app exige <b>HTTPS</b> para acessar câmera e microfone. Publique em um endereço seguro (ou abra via localhost).</div>
+  <div id="permList"></div>
+  <div class="row" style="margin-top:16px">
+    <button class="btn primary" id="btnSetupDone" style="flex:1">CONCLUIR CONFIGURAÇÃO →</button>
+    <button class="btn ghost" id="btnSetupSkip">PULAR</button>
+  </div>
+  <p class="trust">Dica: para o teste rápido, você pode usar duas abas do navegador. No uso real, instale nos dois celulares pela tela inicial (“Adicionar à Tela de Início”).</p>
+</section>
+
+<!-- ======= FUNÇÃO DO APARELHO ======= -->
+<section id="scr-role" class="screen">
+  <div class="step-tag">PASSO 2 DE 2 · FUNÇÃO DO APARELHO</div>
+  <div class="page-head"><div>
+    <h2>COMO ESTE APARELHO SERÁ USADO?</h2>
+    <p class="sub">Instale o ITV Segurança em dois dispositivos e pareie em alguns toques — sem instalação complicada e sem assinatura para começar.</p>
+  </div></div>
+  <div id="resumeBar"><span style="font-size:13px" id="resumeTxt"></span><span class="spacer"></span><button class="btn primary sm" id="resumeBtn">RETOMAR →</button></div>
+  <div class="role-grid">
+    <button class="role-card panel role-cam" id="roleCam">
+      <span class="tag">TRANSMITE</span>
+      <h3>📷 SER CÂMERA</h3>
+      <p>Este aparelho vira a câmera de segurança: gera o QR Code de pareamento e transmite em FHD, mesmo com a tela apagada*</p>
+      <svg class="glyph" viewBox="0 0 24 24" fill="none" stroke="#ffb02e" stroke-width="1"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="m16 10 6-3v10l-6-3"/></svg>
+    </button>
+    <button class="role-card panel role-mon" id="roleMon">
+      <span class="tag">ASSISTE</span>
+      <h3>🖥 SER MONITOR</h3>
+      <p>Este aparelho assiste: lê o QR Code da câmera, recebe o vídeo ao vivo, fala pelo walkie-talkie e recebe alertas de movimento.</p>
+      <svg class="glyph" viewBox="0 0 24 24" fill="none" stroke="#2fd573" stroke-width="1"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    </button>
+  </div>
+  <div class="mini-steps">
+    <span><b>1</b>INSTALE NOS DOIS</span><span><b>2</b>PAREIE PELO QR CODE</span><span><b>3</b>MONITORE DE QUALQUER LUGAR</span>
+  </div>
+  <div class="marquee"><div class="marquee-in" id="mq"></div></div>
+</section>
+
+<!-- ======= MODO CÂMERA ======= -->
+<section id="scr-camera" class="screen">
+  <div class="cam-layout">
+    <div class="viewfinder" id="camVF">
+      <video id="camVideo" autoplay muted playsinline></video>
+      <div class="scanlines"></div>
+      <div class="vf-corners"><i></i><i></i><i></i><i></i></div>
+      <div class="vf-top">
+        <span class="chip live"><i class="dot"></i>AO VIVO</span>
+        <span class="chip mono" id="camUptime">00:00:00</span>
+        <span class="chip rec" id="camRecChip" hidden><i class="dot"></i>REC</span>
+        <span class="chip" id="camTalkChip" hidden>📢 MONITOR FALANDO</span>
+        <span class="spacer"></span>
+        <span class="chip mono" id="camRes">—</span>
+      </div>
+      <div class="vf-bottom">
+        <span class="chip" id="camViewers">0 monitores</span>
+        <span class="chip mono" id="camIdChip">—</span>
+      </div>
+      <div class="motion-flash" id="camMotionFlash"></div>
+      <button class="big-start" id="camStartBig">
+        <span class="ring">▶</span>INICIAR TRANSMISSÃO
+        <small>toque para liberar câmera e microfone</small>
+      </button>
     </div>
-    
-    <div class="container">
-        <div class="header">
-            <h1>ZACK.</h1>
-            <div class="status" id="status">SISTEMA ONLINE - AGUARDANDO COMANDO</div>
-        </div>
+    <aside class="cam-rail">
+      <div class="panel stat-panel">
+        <div class="stat-row"><span>SINAL</span><b id="camPeerState" class="bad">AGUARDANDO</b></div>
+        <div class="stat-row"><span>ENVIANDO</span><b id="camBitrate">— kb/s</b></div>
+        <div class="stat-row"><span>BATERIA</span><b id="camBattery">—</b></div>
+        <div class="stat-row"><span>SENSIBILIDADE</span><b id="camSensVal">60</b></div>
+      </div>
+      <div class="btn-grid">
+        <button class="btn primary" id="btnQR">⬡ EMPARELHAR · QR CODE</button>
+        <button class="btn" id="btnNight">🌙 VISÃO NOTURNA</button>
+        <button class="btn" id="btnTorch">🔦 LANTERNA</button>
+        <button class="btn" id="btnBlackout">◼ TELA APAGADA</button>
+        <button class="btn" id="btnFlip">🔄 INVERTER CÂMERA</button>
+        <button class="btn" id="btnSens">🎚 SENSIBILIDADE</button>
+        <button class="btn ghost danger" id="btnCamRestart">REINICIAR CÂMERA</button>
+        <button class="btn ghost" id="btnChangeRole1">TROCAR FUNÇÃO</button>
+      </div>
+      <div class="panel log-panel">
+        <div class="log-title">REGISTRO DO SISTEMA</div>
+        <div class="syslog" id="camLog"></div>
+      </div>
+    </aside>
+  </div>
+</section>
 
-        <div class="avatar-container">
-            <div class="avatar">
-                <div class="avatar-icon">⬡</div>
-                <div class="audio-indicator idle" id="audioIndicator">
-                    <div class="audio-bar"></div>
-                    <div class="audio-bar"></div>
-                    <div class="audio-bar"></div>
-                    <div class="audio-bar"></div>
-                    <div class="audio-bar"></div>
-                </div>
-            </div>
-        </div>
+<!-- ======= HOME MONITOR ======= -->
+<section id="scr-home" class="screen">
+  <div class="page-head">
+    <div><h2>MINHAS CÂMERAS</h2><p class="sub">Conexão automática ao reabrir o app — só entrar e assistir.</p></div>
+    <span class="spacer"></span>
+    <button class="btn primary sm" id="btnAddCam">+ ADICIONAR</button>
+  </div>
+  <div class="cam-list" id="camList"></div>
+  <div class="panel steps-panel">
+    <p><b>Como parear:</b> no aparelho-câmera, toque em <b>EMPARELHAR · QR CODE</b>. Aqui no monitor, toque em <b>+ ADICIONAR</b> e aponte a câmera para o código. Pronto — os dois ficam conectados mesmo depois de sair do app.</p>
+  </div>
+  <p class="trust">ITV Segurança — o app de câmera de segurança residencial em que as famílias confiam todos os dias.</p>
+</section>
 
-        <button class="activation-button" id="activationButton" onclick="toggleListening()">
-            🎤
-        </button>
-
-        <div class="conversation-history" id="conversationHistory">
-            <div class="message assistant">
-                <div class="message-label">ZACK.</div>
-                <div class="message-text">Sistema inicializado. Diga "ZACK" para ativar o modo de escuta.</div>
-            </div>
-        </div>
-
-        <div class="system-status">
-            <div class="status-item">
-                <div class="status-label">CPU</div>
-                <div class="status-value" id="cpuStatus">12%</div>
-            </div>
-            <div class="status-item">                <div class="status-label">MEMÓRIA</div>
-                <div class="status-value" id="memoryStatus">2.4GB</div>
-            </div>
-            <div class="status-item">
-                <div class="status-label">REDE</div>
-                <div class="status-value" id="networkStatus">ATIVO</div>
-            </div>
-        </div>
+<!-- ======= SCANNER ======= -->
+<section id="scr-scan" class="screen">
+  <div class="viewfinder video-noflex">
+    <video id="scanVideo" autoplay playsinline muted></video>
+    <div class="scan-frame"></div>
+    <div class="vf-top">
+      <button class="chip" id="btnScanBack">← VOLTAR</button>
+      <span class="chip">ALINHE O QR CODE DA CÂMERA</span>
     </div>
-
-    <div class="commands-panel" id="commandsPanel">
-        <button class="close-panel" onclick="toggleCommands()">✕</button>
-        <h2>COMANDOS DISPONÍVEIS</h2>
-        
-        <div class="command-item" onclick="executeCommand('Abrir WhatsApp')">
-            📱 Abrir WhatsApp
-        </div>
-        <div class="command-item" onclick="executeCommand('Fazer uma ligação')">
-            📞 Fazer uma ligação
-        </div>
-        <div class="command-item" onclick="executeCommand('Enviar mensagem')">
-            💬 Enviar mensagem
-        </div>
-        <div class="command-item" onclick="executeCommand('Qual a previsão do tempo?')">
-            🌤️ Previsão do tempo
-        </div>
-        <div class="command-item" onclick="executeCommand('Criar um lembrete')">
-            ⏰ Criar lembrete
-        </div>
-        <div class="command-item" onclick="executeCommand('Abrir câmera')">
-            📷 Abrir câmera
-        </div>
-        <div class="command-item" onclick="executeCommand('Ajustar brilho')">
-            💡 Ajustar brilho
-        </div>
-        <div class="command-item" onclick="executeCommand('Ativar modo silencioso')">
-            🔇 Modo silencioso
-        </div>
-        <div class="command-item" onclick="executeCommand('Ativar Wi-Fi')">
-            📶 Ativar Wi-Fi
-        </div>
-        <div class="command-item" onclick="executeCommand('Ativar Bluetooth')">
-            🔵 Ativar Bluetooth
-        </div>
-        <div class="command-item" onclick="executeCommand('Ler notificações')">
-            🔔 Ler notificações
-        </div>
-        <div class="command-item" onclick="executeCommand('Abrir mapas')">
-            🗺️ Abrir mapas
-        </div>    </div>
-
-    <!-- Modal de Login -->
-    <div class="login-modal" id="loginModal">
-        <button class="close-login" onclick="hideLoginModal()">✕</button>
-        <div class="login-content">
-            <h2>🔐 AUTENTICAÇÃO ZACK.</h2>
-            <div class="login-form">
-                <input type="email" id="emailInput" placeholder="Email">
-                <input type="password" id="passwordInput" placeholder="Senha">
-                <button onclick="loginWithEmail()">Entrar com Email</button>
-                <button onclick="registerWithEmail()">Criar Conta</button>
-                
-                <div class="login-divider">OU</div>
-                
-                <button class="google-btn" onclick="loginWithGoogle()">🔵 Entrar com Google</button>
-                <button class="anonymous-btn" onclick="loginAnonymously()">👤 Entrar como Anônimo</button>
-            </div>
-        </div>
+  </div>
+  <div class="panel manual-panel">
+    <h4>OU DIGITE / COLE O CÓDIGO</h4>
+    <div class="row">
+      <input class="input mono" id="manualCode" placeholder="ITV-XXXXXX" autocapitalize="characters" spellcheck="false">
+      <button class="btn primary" id="btnManualGo">CONECTAR</button>
     </div>
-
-    <div class="notification" id="notification"></div>
-
-    <script>
-        // ============================================
-        // CONFIGURAÇÃO FIREBASE
-        // ============================================
-        
-        const firebaseConfig = {
-            apiKey: "AIzaSyDhSM8iopBkh8i5cwLiZSlS-wO5X3Izd5A",
-            authDomain: "assistente-virtual-19ab8.firebaseapp.com",
-            projectId: "assistente-virtual-19ab8",
-            storageBucket: "assistente-virtual-19ab8.firebasestorage.app",
-            messagingSenderId: "978811638277",
-            appId: "1:978811638277:web:1fb1e58abaf197cfe1426c"
-        };
-
-        // Inicializar Firebase
-        firebase.initializeApp(firebaseConfig);
-
-        // Inicializar serviços
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-        const storage = firebase.storage();
-        const messaging = firebase.messaging();
-
-        // ============================================
-        // VARIÁVEIS GLOBAIS
-        // ============================================
-                let currentUser = null;
-        let conversationId = null;
-
-        // Configurações do sistema
-        const config = {
-            activationWord: 'ZACK',
-            language: 'pt-BR',
-            voiceEnabled: true,
-            continuousListening: true
-        };
-
-        // Estado do sistema
-        let isListening = false;
-        let recognition = null;
-        let synthesis = window.speechSynthesis;
-        let conversationHistory = [];
-        let userPreferences = {};
-
-        // ============================================
-        // AUTENTICAÇÃO FIREBASE
-        // ============================================
-
-        // Monitorar estado de autenticação
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                currentUser = user;
-                console.log('Usuário autenticado:', user.email || 'Anônimo');
-                document.getElementById('loginBtn').style.display = 'none';
-                document.getElementById('userInfo').classList.add('show');
-                document.getElementById('userEmail').textContent = user.email || 'Usuário Anônimo';
-                
-                // Carregar dados do usuário
-                loadUserData();
-                loadConversationHistory();
-                
-                showNotification('✅ Login realizado com sucesso!');
-            } else {
-                currentUser = null;
-                console.log('Usuário deslogado');
-                document.getElementById('loginBtn').style.display = 'block';
-                document.getElementById('userInfo').classList.remove('show');
-            }
-        });
-
-        // Login com Email
-        async function loginWithEmail() {
-            const email = document.getElementById('emailInput').value;
-            const password = document.getElementById('passwordInput').value;
-            
-            if (!email || !password) {                showNotification('⚠️ Preencha email e senha');
-                return;
-            }
-
-            try {
-                await auth.signInWithEmailAndPassword(email, password);
-                hideLoginModal();
-            } catch (error) {
-                console.error('Erro no login:', error);
-                showNotification('❌ Erro: ' + error.message);
-            }
-        }
-
-        // Registro com Email
-        async function registerWithEmail() {
-            const email = document.getElementById('emailInput').value;
-            const password = document.getElementById('passwordInput').value;
-            
-            if (!email || !password) {
-                showNotification('⚠️ Preencha email e senha');
-                return;
-            }
-
-            try {
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                
-                // Criar documento do usuário no Firestore
-                await db.collection('users').doc(userCredential.user.uid).set({
-                    email: email,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    preferences: {
-                        voiceEnabled: true,
-                        language: 'pt-BR',
-                        theme: 'dark'
-                    },
-                    memories: [],
-                    tasks: []
-                });
-                
-                hideLoginModal();
-                showNotification('✅ Conta criada com sucesso!');
-            } catch (error) {
-                console.error('Erro no registro:', error);
-                showNotification('❌ Erro: ' + error.message);
-            }
-        }
-
-        // Login com Google
-        async function loginWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();            
-            try {
-                const result = await auth.signInWithPopup(provider);
-                
-                // Verificar se é primeiro login
-                const userDoc = await db.collection('users').doc(result.user.uid).get();
-                if (!userDoc.exists) {
-                    await db.collection('users').doc(result.user.uid).set({
-                        email: result.user.email,
-                        displayName: result.user.displayName,
-                        photoURL: result.user.photoURL,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        preferences: {
-                            voiceEnabled: true,
-                            language: 'pt-BR',
-                            theme: 'dark'
-                        },
-                        memories: [],
-                        tasks: []
-                    });
-                }
-                
-                hideLoginModal();
-            } catch (error) {
-                console.error('Erro no login Google:', error);
-                showNotification('❌ Erro: ' + error.message);
-            }
-        }
-
-        // Login Anônimo
-        async function loginAnonymously() {
-            try {
-                await auth.signInAnonymously();
-                hideLoginModal();
-            } catch (error) {
-                console.error('Erro no login anônimo:', error);
-                showNotification('❌ Erro: ' + error.message);
-            }
-        }
-
-        // Logout
-        async function logout() {
-            try {
-                await auth.signOut();
-                showNotification('👋 Logout realizado');
-            } catch (error) {
-                console.error('Erro no logout:', error);
-                showNotification('❌ Erro: ' + error.message);
-            }
-        }
-        // Mostrar modal de login
-        function showLoginModal() {
-            document.getElementById('loginModal').classList.add('show');
-        }
-
-        // Esconder modal de login
-        function hideLoginModal() {
-            document.getElementById('loginModal').classList.remove('show');
-        }
-
-        // ============================================
-        // FIRESTORE - CARREGAR E SALVAR DADOS
-        // ============================================
-
-        // Carregar dados do usuário
-        async function loadUserData() {
-            if (!currentUser) return;
-
-            try {
-                const userDoc = await db.collection('users').doc(currentUser.uid).get();
-                if (userDoc.exists) {
-                    const data = userDoc.data();
-                    userPreferences = data.preferences || {};
-                    console.log('Preferências carregadas:', userPreferences);
-                }
-            } catch (error) {
-                console.error('Erro ao carregar dados:', error);
-            }
-        }
-
-        // Salvar preferências do usuário
-        async function saveUserPreferences() {
-            if (!currentUser) return;
-
-            try {
-                await db.collection('users').doc(currentUser.uid).update({
-                    preferences: userPreferences,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-            } catch (error) {
-                console.error('Erro ao salvar preferências:', error);
-            }
-        }
-
-        // Carregar histórico de conversas
-        async function loadConversationHistory() {
-            if (!currentUser) return;
-
-            try {                const snapshot = await db.collection('conversations')
-                    .where('userId', '==', currentUser.uid)
-                    .orderBy('timestamp', 'desc')
-                    .limit(20)
-                    .get();
-
-                const historyDiv = document.getElementById('conversationHistory');
-                historyDiv.innerHTML = '';
-
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    const messageDiv = document.createElement('div');
-                    messageDiv.className = `message ${data.type}`;
-                    messageDiv.innerHTML = `
-                        <div class="message-label">${data.type === 'user' ? 'VOCÊ' : 'ZACK.'}</div>
-                        <div class="message-text">${data.text}</div>
-                    `;
-                    historyDiv.insertBefore(messageDiv, historyDiv.firstChild);
-                });
-            } catch (error) {
-                console.error('Erro ao carregar histórico:', error);
-            }
-        }
-
-        // Salvar mensagem no Firestore
-        async function saveMessageToFirestore(type, text) {
-            if (!currentUser) return;
-
-            try {
-                await db.collection('conversations').add({
-                    userId: currentUser.uid,
-                    type: type,
-                    text: text,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
-            } catch (error) {
-                console.error('Erro ao salvar mensagem:', error);
-            }
-        }
-
-        // Salvar memória do usuário
-        async function saveMemory(memory) {
-            if (!currentUser) return;
-
-            try {
-                await db.collection('memories').add({
-                    userId: currentUser.uid,
-                    content: memory,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });            } catch (error) {
-                console.error('Erro ao salvar memória:', error);
-            }
-        }
-
-        // Salvar tarefa/lembrete
-        async function saveTask(task) {
-            if (!currentUser) return;
-
-            try {
-                await db.collection('tasks').add({
-                    userId: currentUser.uid,
-                    title: task.title,
-                    description: task.description,
-                    dueDate: task.dueDate,
-                    completed: false,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-            } catch (error) {
-                console.error('Erro ao salvar tarefa:', error);
-            }
-        }
-
-        // ============================================
-        // FIREBASE STORAGE - UPLOAD DE ÁUDIO
-        // ============================================
-
-        // Salvar gravação de áudio
-        async function saveAudioRecording(audioBlob) {
-            if (!currentUser) return;
-
-            try {
-                const timestamp = Date.now();
-                const fileName = `audio_${currentUser.uid}_${timestamp}.webm`;
-                const storageRef = storage.ref(`audio_recordings/${fileName}`);
-                
-                await storageRef.put(audioBlob);
-                
-                const url = await storageRef.getDownloadURL();
-                
-                // Salvar referência no Firestore
-                await db.collection('audio_files').add({
-                    userId: currentUser.uid,
-                    fileName: fileName,
-                    url: url,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                console.log('Áudio salvo com sucesso:', url);
-            } catch (error) {                console.error('Erro ao salvar áudio:', error);
-            }
-        }
-
-        // ============================================
-        // FIREBASE CLOUD MESSAGING - NOTIFICAÇÕES
-        // ============================================
-
-        // Solicitar permissão para notificações
-        async function requestNotificationPermission() {
-            try {
-                const permission = await Notification.requestPermission();
-                if (permission === 'granted') {
-                    console.log('Permissão para notificações concedida');
-                    
-                    // Obter token FCM
-                    const token = await messaging.getToken({
-                        vapidKey: 'SUA_VAPID_KEY_AQUI' // Substitua pela sua VAPID key
-                    });
-                    
-                    console.log('FCM Token:', token);
-                    
-                    // Salvar token no Firestore
-                    if (currentUser) {
-                        await db.collection('users').doc(currentUser.uid).update({
-                            fcmToken: token
-                        });
-                    }
-                } else {
-                    console.log('Permissão para notificações negada');
-                }
-            } catch (error) {
-                console.error('Erro ao solicitar permissão:', error);
-            }
-        }
-
-        // Enviar notificação local
-        function sendLocalNotification(title, body) {
-            if (Notification.permission === 'granted') {
-                new Notification(title, {
-                    body: body,
-                    icon: '/icon.png',
-                    badge: '/badge.png'
-                });
-            }
-        }
-
-        // ============================================
-        // INICIALIZAÇÃO
-        // ============================================
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeSpeechRecognition();
-            updateSystemStatus();
-            setInterval(updateSystemStatus, 5000);
-            
-            // Solicitar permissão de notificação após 3 segundos
-            setTimeout(requestNotificationPermission, 3000);
-            
-            // Verificar suporte a voz
-            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                showNotification('⚠️ Reconhecimento de voz não suportado neste navegador');
-            }
-        });
-
-        // ============================================
-        // RECONHECIMENTO DE VOZ
-        // ============================================
-
-        function initializeSpeechRecognition() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            
-            if (SpeechRecognition) {
-                recognition = new SpeechRecognition();
-                recognition.continuous = config.continuousListening;
-                recognition.interimResults = true;
-                recognition.lang = config.language;
-
-                recognition.onstart = function() {
-                    console.log('Reconhecimento de voz iniciado');
-                };
-
-                recognition.onresult = function(event) {
-                    let finalTranscript = '';
-                    let interimTranscript = '';
-
-                    for (let i = event.resultIndex; i < event.results.length; i++) {
-                        const transcript = event.results[i][0].transcript;
-                        if (event.results[i].isFinal) {
-                            finalTranscript += transcript;
-                        } else {
-                            interimTranscript += transcript;
-                        }
-                    }
-
-                    if (finalTranscript) {
-                        processCommand(finalTranscript.toLowerCase());
-                    }
-                };
-                recognition.onerror = function(event) {
-                    console.error('Erro no reconhecimento de voz:', event.error);
-                    if (event.error === 'no-speech') {
-                        if (isListening) {
-                            setTimeout(() => recognition.start(), 100);
-                        }
-                    }
-                };
-
-                recognition.onend = function() {
-                    if (isListening) {
-                        setTimeout(() => recognition.start(), 100);
-                    }
-                };
-            }
-        }
-
-        // ============================================
-        // CONTROLES DE ESCUTA
-        // ============================================
-
-        function toggleListening() {
-            const button = document.getElementById('activationButton');
-            const indicator = document.getElementById('audioIndicator');
-            const status = document.getElementById('status');
-
-            if (!recognition) {
-                showNotification('⚠️ Reconhecimento de voz não disponível');
-                return;
-            }
-
-            if (isListening) {
-                recognition.stop();
-                isListening = false;
-                button.classList.remove('active');
-                indicator.classList.remove('listening');
-                indicator.classList.add('idle');
-                status.textContent = 'SISTEMA ONLINE - AGUARDANDO COMANDO';
-                showNotification('🔇 Escuta desativada');
-            } else {
-                try {
-                    recognition.start();
-                    isListening = true;
-                    button.classList.add('active');
-                    indicator.classList.remove('idle');
-                    indicator.classList.add('listening');
-                    status.textContent = '🎤 ESCUTANDO...';
-                    showNotification('🎤 Escuta ativada - Diga "ZACK" para ativar');
-                } catch (error) {
-                    console.error('Erro ao iniciar reconhecimento:', error);                    showNotification('⚠️ Erro ao ativar escuta');
-                }
-            }
-        }
-
-        // ============================================
-        // PROCESSAMENTO DE COMANDOS
-        // ============================================
-
-        function processCommand(command) {
-            console.log('Comando recebido:', command);
-            
-            if (command.includes(config.activationWord.toLowerCase())) {
-                addMessage('user', command);
-                
-                const activationResponses = [
-                    'Sim, senhor. Como posso ajudá-lo?',
-                    'Às suas ordens.',
-                    'Como posso ser útil?',
-                    'Estou à disposição.',
-                    'Diga, senhor.'
-                ];
-                
-                const response = activationResponses[Math.floor(Math.random() * activationResponses.length)];
-                respond(response);
-                
-                setTimeout(() => {
-                    if (isListening) {
-                        status.textContent = '🎤 ESCUTANDO COMANDO...';
-                    }
-                }, 2000);
-            } else if (isListening) {
-                addMessage('user', command);
-                executeCommand(command);
-            }
-        }
-
-        function executeCommand(command) {
-            const lowerCommand = command.toLowerCase();
-            let response = '';
-            let action = null;
-
-            if (lowerCommand.includes('whatsapp')) {
-                response = 'Abrindo WhatsApp.';
-                action = () => {
-                    showNotification('📱 Abrindo WhatsApp...');
-                };
-            } else if (lowerCommand.includes('previsão') || lowerCommand.includes('tempo')) {
-                response = 'Consultando os dados meteorológicos. A previsão para hoje é de céu parcialmente nublado com temperatura máxima de 28 graus.';
-                action = () => {                    showNotification('🌤️ Consultando previsão do tempo...');
-                };
-            } else if (lowerCommand.includes('ligação') || lowerCommand.includes('ligar')) {
-                response = 'Para quem deseja ligar?';
-                action = () => {
-                    showNotification('📞 Preparando ligação...');
-                };
-            } else if (lowerCommand.includes('mensagem') || lowerCommand.includes('enviar')) {
-                response = 'Para quem deseja enviar a mensagem e qual o conteúdo?';
-                action = () => {
-                    showNotification('💬 Preparando mensagem...');
-                };
-            } else if (lowerCommand.includes('lembrete') || lowerCommand.includes('lembrar')) {
-                response = 'Lembrete criado com sucesso.';
-                action = () => {
-                    showNotification('⏰ Lembrete criado!');
-                    // Salvar tarefa no Firestore
-                    saveTask({
-                        title: 'Lembrete',
-                        description: command,
-                        dueDate: new Date()
-                    });
-                };
-            } else if (lowerCommand.includes('câmera') || lowerCommand.includes('foto')) {
-                response = 'Abrindo câmera.';
-                action = () => {
-                    showNotification('📷 Abrindo câmera...');
-                };
-            } else if (lowerCommand.includes('brilho')) {
-                response = 'Ajustando brilho da tela.';
-                action = () => {
-                    showNotification('💡 Ajustando brilho...');
-                };
-            } else if (lowerCommand.includes('silencioso') || lowerCommand.includes('silêncio')) {
-                response = 'Modo silencioso ativado.';
-                action = () => {
-                    showNotification('🔇 Modo silencioso ativado');
-                };
-            } else if (lowerCommand.includes('wi-fi') || lowerCommand.includes('wifi')) {
-                response = 'Wi-Fi ativado.';
-                action = () => {
-                    showNotification('📶 Wi-Fi ativado');
-                };
-            } else if (lowerCommand.includes('bluetooth')) {
-                response = 'Bluetooth ativado.';
-                action = () => {
-                    showNotification('🔵 Bluetooth ativado');
-                };
-            } else if (lowerCommand.includes('notificações') || lowerCommand.includes('notificação')) {
-                response = 'Você tem 3 notificações não lidas.';                action = () => {
-                    showNotification('🔔 Lendo notificações...');
-                };
-            } else if (lowerCommand.includes('mapa') || lowerCommand.includes('mapas')) {
-                response = 'Abrindo mapas.';
-                action = () => {
-                    showNotification('🗺️ Abrindo mapas...');
-                };
-            } else if (lowerCommand.includes('hora') || lowerCommand.includes('horas')) {
-                const now = new Date();
-                response = `Agora são ${now.getHours()} horas e ${now.getMinutes()} minutos.`;
-            } else if (lowerCommand.includes('data') || lowerCommand.includes('dia')) {
-                const now = new Date();
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                response = `Hoje é ${now.toLocaleDateString('pt-BR', options)}.`;
-            } else if (lowerCommand.includes('parar') || lowerCommand.includes('pare')) {
-                response = 'Entendido. Desativando escuta.';
-                action = () => {
-                    setTimeout(toggleListening, 1000);
-                };
-            } else {
-                response = processWithAI(command);
-            }
-
-            if (action) {
-                setTimeout(action, 500);
-            }
-
-            respond(response);
-        }
-
-        function processWithAI(command) {
-            const responses = [
-                'Entendi seu comando. Processando solicitação.',
-                'Analisando sua solicitação. Um momento, por favor.',
-                'Comando recebido. Executando ação solicitada.',
-                'Processando. Como posso ajudar melhor?'
-            ];
-            return responses[Math.floor(Math.random() * responses.length)];
-        }
-
-        // ============================================
-        // RESPOSTAS E MENSAGENS
-        // ============================================
-
-        function respond(text) {
-            addMessage('assistant', text);
-            
-            if (config.voiceEnabled && synthesis) {
-                const utterance = new SpeechSynthesisUtterance(text);                utterance.lang = config.language;
-                utterance.rate = 1.0;
-                utterance.pitch = 1.0;
-                utterance.volume = 1.0;
-                
-                const voices = synthesis.getVoices();
-                const portugueseVoice = voices.find(voice => 
-                    voice.lang.includes('pt') && voice.name.toLowerCase().includes('male')
-                );
-                if (portugueseVoice) {
-                    utterance.voice = portugueseVoice;
-                }
-                
-                synthesis.speak(utterance);
-            }
-        }
-
-        function addMessage(type, text) {
-            const history = document.getElementById('conversationHistory');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${type}`;
-            
-            const label = type === 'user' ? 'VOCÊ' : 'ZACK.';
-            
-            messageDiv.innerHTML = `
-                <div class="message-label">${label}</div>
-                <div class="message-text">${text}</div>
-            `;
-            
-            history.appendChild(messageDiv);
-            history.scrollTop = history.scrollHeight;
-            
-            // Salvar no Firestore
-            saveMessageToFirestore(type, text);
-            
-            const messages = history.querySelectorAll('.message');
-            if (messages.length > 20) {
-                messages[0].remove();
-            }
-        }
-
-        // ============================================
-        // STATUS DO SISTEMA
-        // ============================================
-
-        function updateSystemStatus() {
-            document.getElementById('cpuStatus').textContent = 
-                Math.floor(Math.random() * 30 + 10) + '%';
-            document.getElementById('memoryStatus').textContent = 
-                (Math.random() * 2 + 2).toFixed(1) + 'GB';            document.getElementById('networkStatus').textContent = 
-                navigator.onLine ? 'ATIVO' : 'OFFLINE';
-        }
-
-        // ============================================
-        // NOTIFICAÇÕES E INTERFACE
-        // ============================================
-
-        function showNotification(message) {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        }
-
-        function toggleCommands() {
-            const panel = document.getElementById('commandsPanel');
-            panel.classList.toggle('open');
-        }
-
-        // ============================================
-        // VOZES E DETECÇÃO DE WAKE WORD
-        // ============================================
-
-        if (synthesis) {
-            synthesis.onvoiceschanged = function() {
-                const voices = synthesis.getVoices();
-                console.log('Vozes disponíveis:', voices.length);
-            };
-        }
-
-        document.addEventListener('keydown', function(event) {
-            if (event.code === 'Space' && event.target === document.body) {
-                event.preventDefault();
-                toggleListening();
-            }
-            
-            if (event.code === 'Escape') {
-                const panel = document.getElementById('commandsPanel');
-                if (panel.classList.contains('open')) {
-                    toggleCommands();
-                }
-            }
-        });
-
-        let wakeWordRecognition = null;
-        function startWakeWordDetection() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            
-            if (SpeechRecognition) {
-                wakeWordRecognition = new SpeechRecognition();
-                wakeWordRecognition.continuous = true;
-                wakeWordRecognition.interimResults = false;
-                wakeWordRecognition.lang = config.language;
-
-                wakeWordRecognition.onresult = function(event) {
-                    const lastResult = event.results[event.results.length - 1];
-                    const transcript = lastResult[0].transcript.toLowerCase().trim();
-                    
-                    if (transcript.includes(config.activationWord.toLowerCase())) {
-                        if (!isListening) {
-                            toggleListening();
-                            showNotification('🎤 Palavra de ativação detectada!');
-                        }
-                    }
-                };
-
-                wakeWordRecognition.onerror = function(event) {
-                    console.log('Erro na detecção de wake word:', event.error);
-                };
-
-                wakeWordRecognition.onend = function() {
-                    setTimeout(() => {
-                        if (wakeWordRecognition) {
-                            try {
-                                wakeWordRecognition.start();
-                            } catch (e) {
-                                console.log('Erro ao reiniciar wake word detection');
-                            }
-                        }
-                    }, 1000);
-                };
-
-                try {
-                    wakeWordRecognition.start();
-                } catch (e) {
-                    console.log('Não foi possível iniciar detecção de wake word');
-                }
-            }
-        }
-
-        setTimeout(startWakeWordDetection, 2000);
-
-        console.log('ZACK. Sistema inicializado com Firebase');
-    </script>
-</body></html>
+  </div>
+</section>
+
+<!-- ======= AO VIVO ======= -->
+<section id="scr-live" class="screen">
+  <div class="live-layout">
+    <div class="viewfinder" id="liveVF">
+      <video id="liveVideo" autoplay playsinline></video>
+      <div class="scanlines"></div>
+      <div class="vf-corners"><i></i><i></i><i></i><i></i></div>
+      <div class="vf-top">
+        <button class="chip" id="btnLiveBack">←</button>
+        <span class="chip name" id="liveName">CÂMERA</span>
+        <span class="chip live" id="liveChip"><i class="dot"></i>CONECTANDO</span>
+        <span class="spacer"></span>
+        <span class="chip mono" id="liveClock">--:--</span>
+      </div>
+      <div class="vf-bottom">
+        <span class="chip mono" id="liveStats">— kb/s</span>
+        <span class="chip" id="liveBatt" hidden></span>
+        <span class="chip rec" id="liveRecChip" hidden><i class="dot"></i>REC</span>
+        <span class="chip" id="liveMotionChip" hidden style="color:#ff8f98">⚠ MOVIMENTO</span>
+        <span class="spacer"></span>
+        <span class="chip mono" id="zoomLbl">1.0×</span>
+      </div>
+      <div class="motion-flash" id="liveMotionFlash"></div>
+      <div class="buffer" id="liveBuffer"><div class="spinner"></div>ESTABELECENDO CONEXÃO…</div>
+    </div>
+    <aside class="live-rail">
+      <div class="ptt-wrap">
+        <button id="pttBtn">SEGURE<br>PARA<br>FALAR</button>
+        <div><div class="ptt-state" id="pttState">WALKIE-TALKIE</div>
+        <p class="sub" style="max-width:20ch;margin-top:6px">Áudio bidirecional: segure para falar, solte para ouvir.</p></div>
+      </div>
+      <div class="btn-grid">
+        <button class="btn" id="btnLiveNight">🌙 FILTRO NOTURNO</button>
+        <button class="btn" id="btnSnap">📸 FOTO</button>
+        <button class="btn" id="btnRec">⏺ GRAVAR CLIPE</button>
+        <button class="btn" id="btnEvents">🕒 EVENTOS <b class="badge" id="evCount">0</b></button>
+        <button class="btn" id="btnLiveCfg">⚙ AJUSTES DA CÂMERA</button>
+        <button class="btn ghost danger" id="btnLiveDisc">DESCONECTAR</button>
+      </div>
+      <div class="panel zoom-panel"><span>ZOOM</span><input type="range" id="zoomRange" min="1" max="4" step="0.1" value="1"></div>
+      <div class="panel timeline-panel">
+        <div class="tl-head"><span>LINHA DO TEMPO · ÚLTIMOS 60 MIN</span><span class="mono" id="tlNow"></span></div>
+        <div class="tl-strip" id="tlStrip"><div class="tl-now"></div></div>
+      </div>
+    </aside>
+  </div>
+</section>
+</main>
+
+<!-- ======= SHEET: QR ======= -->
+<div class="sheet" id="sheetQR"><div class="sheet-card">
+  <div class="sheet-head"><h3>PAREAR MONITOR</h3><button class="x" data-close="sheetQR">✕</button></div>
+  <p class="hint">No outro aparelho (modo <b>MONITOR</b>), toque em <b>+ Adicionar</b> e aponte a câmera para este código. Depois de pareado, os dois voltam a se conectar sozinhos sempre que o app abrir.</p>
+  <div class="qr-frame"><img id="qrImg" alt="QR Code de pareamento"></div>
+  <div class="code-line mono" id="qrCodeText">—</div>
+  <div class="center-row">
+    <button class="btn ghost sm" id="btnCopyCode">COPIAR CÓDIGO</button>
+    <button class="btn ghost sm" id="btnShareCode">COMPARTILHAR</button>
+    <button class="btn ghost sm warn" id="btnNewCode">GERAR NOVO CÓDIGO</button>
+  </div>
+</div></div>
+
+<!-- ======= SHEET: SENSIBILIDADE ======= -->
+<div class="sheet" id="sheetSens"><div class="sheet-card">
+  <div class="sheet-head"><h3>DETECÇÃO DE MOVIMENTO</h3><button class="x" data-close="sheetSens">✕</button></div>
+  <p class="hint">Quanto maior a sensibilidade, menor a mudança de cena necessária para disparar o alerta e a gravação do evento.</p>
+  <div class="panel zoom-panel"><span>SENS.</span><input type="range" id="sensRange" min="5" max="95" value="60"><b class="mono" id="sensVal" style="color:var(--amber)">60</b></div>
+  <div class="center-row" style="margin-top:14px"><button class="btn primary sm" data-close="sheetSens">OK</button></div>
+</div></div>
+
+<!-- ======= SHEET: AJUSTES DA CÂMERA (remoto) ======= -->
+<div class="sheet" id="sheetCfg"><div class="sheet-card">
+  <div class="sheet-head"><h3>AJUSTES DA CÂMERA</h3><button class="x" data-close="sheetCfg">✕</button></div>
+  <div class="cfg-row"><label>🔦 LANTERNA (REMOTO)</label><button class="btn sm" id="cfgTorch" style="width:92px">OFF</button></div>
+  <div class="cfg-row"><label>🌙 VISÃO NOTURNA (CÂMERA)</label><button class="btn sm" id="cfgNight" style="width:92px">OFF</button></div>
+  <div class="cfg-row"><label>🎚 SENSIBILIDADE</label><input type="range" id="cfgSens" min="5" max="95" value="60" style="max-width:170px"></div>
+  <div class="cfg-row"><label>✏ NOME DA CÂMERA</label><input class="input" id="cfgName" style="max-width:170px" maxlength="24"></div>
+  <div class="center-row" style="margin-top:16px">
+    <button class="btn primary sm" id="cfgSaveName">SALVAR NOME</button>
+    <button class="btn ghost sm danger" id="btnRemoveCam">REMOVER CÂMERA</button>
+  </div>
+</div></div>
+
+<!-- ======= SHEET: EVENTOS ======= -->
+<div class="sheet" id="sheetEvents"><div class="sheet-card">
+  <div class="sheet-head"><h3>EVENTOS GRAVADOS</h3><button class="x" data-close="sheetEvents">✕</button></div>
+  <div id="evList"></div>
+  <div class="center-row"><button class="btn ghost sm danger" id="btnClearEv">LIMPAR TUDO</button></div>
+</div></div>
+
+<!-- ======= MODAL: REPRODUZIR EVENTO ======= -->
+<div class="modal" id="modalEvent"><div class="modal-card">
+  <video id="evVideo" controls playsinline></video>
+  <div class="modal-bar">
+    <span class="chip" id="evTitle">EVENTO</span><span class="spacer"></span>
+    <a class="btn ghost sm" id="evDownload" download>⬇ BAIXAR</a>
+    <button class="btn ghost sm" id="modalClose">FECHAR</button>
+  </div>
+</div></div>
+
+<div id="blackout"><div class="bo-dot"></div><span>TOQUE 3× PARA SAIR · TRANSMISSÃO ATIVA</span></div>
+<div id="toasts"></div>
+
+<script>
+'use strict';
+/* ================= HELPERS ================= */
+const $=(s,el=document)=>el.querySelector(s), $$=(s,el=document)=>[...el.querySelectorAll(s)];
+const store={get:(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const pad=n=>String(n).padStart(2,'0');
+const hhmmss=d=>pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+const ICON='data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path d="M24 3 42 9v13c0 11-7.6 19.4-18 23C13.6 41.4 6 33 6 22V9z" fill="#0f1826" stroke="#ffb02e" stroke-width="2"/><circle cx="24" cy="22" r="8" fill="none" stroke="#8fa8c7" stroke-width="2"/><circle cx="24" cy="22" r="3" fill="#ff4757"/></svg>`);
+function toast(msg,type='info',ms=2800){const t=document.createElement('div');t.className='toast '+type;t.textContent=msg;$('#toasts').appendChild(t);setTimeout(()=>{t.style.opacity=0;t.style.transition='opacity .4s';setTimeout(()=>t.remove(),400)},ms)}
+let audioCtx=null;
+function beep(f=880,d=.12){try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.frequency.value=f;o.connect(g);g.connect(audioCtx.destination);g.gain.setValueAtTime(.0001,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.25,audioCtx.currentTime+.01);g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+d);o.start();o.stop(audioCtx.currentTime+d+.02)}catch(e){}}
+function vibrate(p){try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}}
+const IDCH='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+const genId=()=>'ITV-'+Array.from({length:6},()=>IDCH[Math.random()*IDCH.length|0]).join('');
+const PEERCFG={debug:0,config:{iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302','stun:stun2.l.google.com:19302']}]}};
+function go(id){$$('.screen').forEach(s=>s.classList.toggle('active',s.id===id))}
+function openSheet(id){$('#'+id).classList.add('open')} function closeSheet(id){$('#'+id).classList.remove('open')}
+$$('[data-close]').forEach(b=>b.addEventListener('click',()=>closeSheet(b.dataset.close)));
+$$('.sheet').forEach(s=>s.addEventListener('click',e=>{if(e.target===s)s.classList.remove('open')}));
+
+/* ================= TOPBAR / AMBIENTE ================= */
+setInterval(()=>{const d=new Date();$('#clock').textContent=hhmmss(d);$('#liveClock').textContent=pad(d.getHours())+':'+pad(d.getMinutes());$('#tlNow').textContent=pad(d.getHours())+':'+pad(d.getMinutes())},1000);
+function netLabel(){const c=navigator.connection||{};const t=(c.type||'').toUpperCase();if(t)return t;if(c.effectiveType)return c.effectiveType.includes('4g')||c.effectiveType.includes('5g')?'DADOS':'REDE';return location.protocol==='http:'?'LOCAL':'ONLINE'}
+function updNet(){$('#netType').textContent=netLabel()}
+updNet();navigator.connection&&navigator.connection.addEventListener&&navigator.connection.addEventListener('change',updNet);
+
+/* ================= BOOT ================= */
+const BOOT=['inicializando núcleo de segurança… <b>ok</b>','verificando sensores do dispositivo… <b>ok</b>','canal P2P criptografado… <b>pronto</b>','ITV SEGURANÇA v2.4 · sessão local'];
+let bootDone=false;
+BOOT.forEach((l,i)=>setTimeout(()=>{const d=document.createElement('div');d.innerHTML='&gt; '+l;$('#bootLog').appendChild(d)},350+i*420));
+setTimeout(finishBoot,2500);
+$('#scr-boot').addEventListener('click',finishBoot);
+function finishBoot(){if(bootDone)return;bootDone=true;$('#topbar').classList.remove('hidden');
+  if(!location.protocol.startsWith('https')&&location.hostname!=='localhost'&&location.hostname!=='127.0.0.1')$('#httpWarn').hidden=false;
+  if(store.get('itv_setup',false)){go('scr-role');prepRole()}else go('scr-setup')}
+
+/* ================= PERMISSÕES ================= */
+const PERMS=[
+ {id:'cam',t:'Câmera',d:'Transmissão FHD ao vivo e leitura de QR Code.',svg:'<rect x="2" y="6" width="14" height="12" rx="2"/><path d="m16 10 6-3v10l-6-3"/>',
+  ask:async()=>{const s=await navigator.mediaDevices.getUserMedia({video:true});s.getTracks().forEach(t=>t.stop())}},
+ {id:'mic',t:'Microfone',d:'Áudio bidirecional e modo walkie-talkie.',svg:'<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 19v3"/>',
+  ask:async()=>{const s=await navigator.mediaDevices.getUserMedia({audio:true});s.getTracks().forEach(t=>t.stop())}},
+ {id:'notif',t:'Notificações',d:'Alertas push quando a câmera detecta movimento.',svg:'<path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M10 21a2 2 0 0 0 4 0"/>',
+  ask:async()=>{if(!('Notification'in window))throw{un:1};const r=await Notification.requestPermission();if(r!=='granted')throw{dn:1}}},
+ {id:'wake',t:'Manter tela ativa',d:'Evita que o aparelho durma enquanto transmite.',svg:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>',
+  ask:async()=>{if(!('wakeLock'in navigator))throw{un:1};const w=await navigator.wakeLock.request('screen');setTimeout(()=>w.release().catch(()=>{}),800)}},
+];
+const permState={};
+PERMS.forEach(p=>{const row=document.createElement('div');row.className='perm panel';row.id='perm-'+p.id;
+ row.innerHTML=`<div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6">${p.svg}</svg></div>
+ <div><h4>${p.t}</h4><p>${p.d}</p></div>
+ <div class="stat"><span class="pchip" id="pc-${p.id}">PENDENTE</span><button class="btn sm" id="pb-${p.id}">PERMITIR</button></div>`;
+ $('#permList').appendChild(row);
+ $('#pb-'+p.id).addEventListener('click',async()=>{const chip=$('#pc-'+p.id),btn=$('#pb-'+p.id);btn.disabled=true;btn.textContent='…';
+  try{await p.ask();chip.textContent='CONCEDIDA';chip.className='pchip ok';permState[p.id]=true;toast('Permissão de '+p.t.toLowerCase()+' concedida','ok');beep(1040,.08)}
+  catch(e){chip.textContent=e&&e.un?'INDISPONÍVEL':'NEGADA';chip.className='pchip no';toast('Permissão de '+p.t.toLowerCase()+' não concedida','warn')}
+  btn.disabled=false;btn.textContent='REPETIR'});});
+$('#btnSetupDone').addEventListener('click',()=>{store.set('itv_setup',true);go('scr-role');prepRole()});
+$('#btnSetupSkip').addEventListener('click',()=>{store.set('itv_setup',true);go('scr-role');prepRole()});
+
+/* ================= FUNÇÃO ================= */
+const MQTXT='FHD AO VIVO <i>◆</i> DETECÇÃO DE MOVIMENTO <i>◆</i> NOTIFICAÇÕES PUSH <i>◆</i> ÁUDIO BIDIRECIONAL <i>◆</i> VISÃO NOTURNA <i>◆</i> LINHA DO TEMPO <i>◆</i> ZOOM <i>◆</i> MÚLTIPLAS CÂMERAS <i>◆</i> WALKIE-TALKIE <i>◆</i> WI-FI E DADOS MÓVEIS <i>◆</i> ';
+$('#mq').innerHTML=MQTXT+MQTXT;
+let role=store.get('itv_role',null);
+function prepRole(){const r=store.get('itv_role',null);const bar=$('#resumeBar');
+ if(r){$('#resumeTxt').textContent='Última sessão: este aparelho era '+(r==='camera'?'a CÂMERA':'o MONITOR')+'. Continuar?';bar.classList.add('show');
+  $('#resumeBtn').onclick=()=>enterRole(r,true)}else bar.classList.remove('show');
+ if(!window.Peer)toast('Bibliotecas de rede não carregaram — verifique a internet e recarregue','err')}
+$('#roleCam').addEventListener('click',()=>enterRole('camera',false));
+$('#roleMon').addEventListener('click',()=>enterRole('monitor',false));
+function enterRole(r,resume){role=r;store.set('itv_role',r);beep(920,.09);
+ if(r==='camera'){go('scr-camera');$('#camStartBig').style.display=camStream?'none':'flex';}
+ else{renderHome();go('scr-home');
+   const last=store.get('itv_lastcam',null);
+   if(resume&&last&&cams.find(c=>c.id===last))setTimeout(()=>connectCam(last,{bg:true}),900)}}
+$('#btnChangeRole1').addEventListener('click',()=>{if(confirm('Trocar a função deste aparelho?')){stopCameraAll();go('scr-role');prepRole()}});
+
+/* ================= MODO CÂMERA ================= */
+let camStream=null,camPeer=null,camId=store.get('itv_camid',null);
+let dataConns=new Set(),viewCalls=new Set();
+let nightOn=false,torchOn=false,facing='environment',nightTrack=null,nightRAF=0;
+let sens=store.get('itv_sens',60),lastMotion=0,mPrev=null,startTs=0,battLevel=null,wakeLock=null;
+let lastBytes=0,lastStatT=0;
+$('#camIdChip').textContent=camId||'—';$('#camSensVal').textContent=sens;
+function clog(msg,err){const el=$('#camLog');const d=document.createElement('div');if(err)d.className='err';
+ d.textContent=hhmmss(new Date())+'  '+msg;el.prepend(d);while(el.children.length>30)el.lastChild.remove()}
+function setCamState(txt,cls){const el=$('#camPeerState');el.textContent=txt;el.className=cls}
+function updViewers(){const n=dataConns.size;$('#camViewers').textContent=n+(n===1?' monitor':' monitores')}
+async function keepAwake(){try{wakeLock=await navigator.wakeLock.request('screen')}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){keepAwake();if($('#liveVideo').srcObject)$('#liveVideo').play().catch(()=>{});if(audioCtx)audioCtx.resume()}});
+function silentAudio(){try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+ const o=audioCtx.createOscillator(),g=audioCtx.createGain();g.gain.value=0.0001;o.connect(g);g.connect(audioCtx.destination);o.start()}catch(e){}}
+
+$('#camStartBig').addEventListener('click',initCamera);
+async function initCamera(){
+ if(camStream)return; $('#camStartBig').style.display='none';
+ try{camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing,width:{ideal:1920},height:{ideal:1080},frameRate:{ideal:30}},audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}})}
+ catch(e){toast('Câmera/microfone indisponíveis. Conceda as permissões.','err');$('#camStartBig').style.display='flex';return}
+ const v=$('#camVideo');v.srcObject=camStream;v.play().catch(()=>{});
+ const st=camStream.getVideoTracks()[0].getSettings();
+ $('#camRes').textContent=(st.width||'?')+'×'+(st.height||'?');
+ if(!startTs)startTs=Date.now();
+ setInterval(()=>{if(!camStream)return;const s=Math.floor((Date.now()-startTs)/1000);
+  $('#camUptime').textContent=pad(Math.floor(s/3600))+':'+pad(Math.floor(s%3600/60))+':'+pad(s%60)},1000);
+ keepAwake();silentAudio();setupCamPeer();startMotionLoop();
+ setInterval(camStatsTick,2000);
+ if(navigator.getBattery)navigator.getBattery().then(b=>{const f=()=>{battLevel=Math.round(b.level*100);$('#camBattery').textContent=battLevel+'%'+(b.charging?' ⚡':'')};f();b.addEventListener('levelchange',f);b.addEventListener('chargingchange',f)});
+ clog('Câmera ativa · áudio + vídeo prontos');
+}
+function setupCamPeer(){
+ if(!camId){camId=genId();store.set('itv_camid',camId)}
+ $('#camIdChip').textContent=camId;$('#qrCodeText').textContent=camId;
+ if(camPeer){try{camPeer.destroy()}catch(e){}}
+ if(!window.Peer){setCamState('SEM REDE','bad');clog('PeerJS não carregou',true);return}
+ setCamState('CONECTANDO…','warn');
+ camPeer=new Peer(camId,PEERCFG);
+ camPeer.on('open',()=>{setCamState('PRONTO P/ PAREAR','ok');$('#ledLink').className='led g';clog('Sinal aberto · código '+camId);buildQR()});
+ camPeer.on('connection',dc=>{dataConns.add(dc);updViewers();clog('Monitor pareado/conectado');beep(1180,.09);
+  dc.on('open',()=>{try{dc.send({t:'hello',name:camId})}catch(e){}});
+  setTimeout(()=>{try{dc.send({t:'cfg',night:nightOn,torch:torchOn,sens:sens})}catch(e){}},600);
+  dc.on('data',d=>onCamData(dc,d));
+  const drop=()=>{dataConns.delete(dc);updViewers()};dc.on('close',drop);dc.on('error',drop)});
+ camPeer.on('call',call=>{
+  const kind=call.metadata&&call.metadata.kind;
+  if(kind==='talk'){call.answer();attachTalk(call);clog('Walkie-talkie do monitor aberto');return}
+  call.answer(getSendStream());viewCalls.add(call);
+  call.on('close',()=>viewCalls.delete(call));call.on('error',()=>viewCalls.delete(call));
+  clog('Transmissão FHD iniciada');$('#ledLink').className='led g blink'});
+ camPeer.on('disconnected',()=>{setCamState('RECONECTANDO…','warn');try{camPeer.reconnect()}catch(e){}});
+ camPeer.on('error',e=>{clog('Erro: '+(e.type||e.message),true);
+  if(e.type==='unavailable-id'){camId=genId();store.set('itv_camid',camId);setTimeout(setupCamPeer,900)}});
+ setInterval(()=>{dataConns.forEach(dc=>{try{dc.send({t:'hb',night:nightOn,torch:torchOn,bat:battLevel,ts:Date.now()})}catch(e){}})},8000);
+}
+function getSendStream(){const vt=(nightOn&&nightTrack)?nightTrack:camStream.getVideoTracks()[0];
+ const s=new MediaStream();if(vt)s.addTrack(vt);camStream.getAudioTracks().forEach(a=>s.addTrack(a));return s}
+function onCamData(dc,d){if(!d||!d.t)return;
+ if(d.t==='torch'){setTorch(!!d.on);ackCfg(dc)}
+ else if(d.t==='night'){setNight(!!d.on);ackCfg(dc)}
+ else if(d.t==='sens'){sens=clamp(+d.v||60,5,95);store.set('itv_sens',sens);$('#camSensVal').textContent=sens;$('#sensRange').value=sens;ackCfg(dc)}
+ else if(d.t==='getcfg'){ackCfg(dc)}
+ else if(d.t==='rec'){$('#camRecChip').hidden=!d.on}
+ else if(d.t==='talk'){$('#camTalkChip').hidden=!d.on}
+ else if(d.t==='bye'){try{dc.close()}catch(e){}}}
+function ackCfg(dc){try{dc.send({t:'cfg',night:nightOn,torch:torchOn,sens:sens})}catch(e){}}
+function broadcast(o){dataConns.forEach(dc=>{try{dc.send(o)}catch(e){}})}
+/* visão noturna */
+function setNight(on){nightOn=on;$('#btnNight').classList.toggle('on',on);$('#camVideo').classList.toggle('night',on);
+ if(on){if(startNightPipeline()){swapTrackTo(nightTrack);clog('Visão noturna ativa (pipeline)')}else{broadcast({t:'nightfb',on:true});clog('Visão noturna (filtro no monitor)')}}
+ else{stopNightPipeline();if(camStream)swapTrackTo(camStream.getVideoTracks()[0]);broadcast({t:'nightfb',on:false});clog('Visão noturna desligada')}}
+function startNightPipeline(){const v=$('#camVideo');const c=document.createElement('canvas');
+ c.width=v.videoWidth||1280;c.height=v.videoHeight||720;const ctx=c.getContext('2d');
+ if(typeof ctx.filter!=='string')return false;
+ const loop=()=>{if(!nightOn)return;ctx.filter='grayscale(1) brightness(1.75) contrast(1.3)';ctx.drawImage(v,0,0,c.width,c.height);nightRAF=requestAnimationFrame(loop)};loop();
+ nightTrack=c.captureStream(20).getVideoTracks()[0];return true}
+function stopNightPipeline(){nightOn=false;cancelAnimationFrame(nightRAF);if(nightTrack){nightTrack.stop();nightTrack=null}}
+function swapTrackTo(t){viewCalls.forEach(call=>{try{call.peerConnection.getSenders().forEach(sd=>{if(sd.track&&sd.track.kind==='video')sd.replaceTrack(t)})}catch(e){}})}
+/* lanterna */
+async function setTorch(on){const t=camStream&&camStream.getVideoTracks()[0];if(!t)return toast('Câmera ainda não iniciada','warn');
+ try{await t.applyConstraints({advanced:[{torch:on}]});torchOn=on;$('#btnTorch').classList.toggle('on',on);clog('Lanterna '+(on?'ligada':'desligada'))}
+ catch(e){toast('Lanterna indisponível neste aparelho/câmera','warn')}}
+/* detecção de movimento */
+const mCanvas=document.createElement('canvas');mCanvas.width=96;mCanvas.height=54;
+function startMotionLoop(){setInterval(detectMotion,500)}
+function detectMotion(){if(!camStream||nightOn===undefined)return;const v=$('#camVideo');if(!v.videoWidth)return;
+ const ctx=mCanvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(v,0,0,96,54);
+ const d=ctx.getImageData(0,0,96,54).data;
+ if(mPrev){let diff=0;const total=d.length/16;
+  for(let i=0;i<d.length;i+=16){const dr=Math.abs(d[i]-mPrev[i]),dg=Math.abs(d[i+1]-mPrev[i+1]),db=Math.abs(d[i+2]-mPrev[i+2]);if(dr+dg+db>90)diff++}
+  const pct=diff/total*100,thr=60-sens*0.5;
+  if(pct>thr&&Date.now()-lastMotion>5000){lastMotion=Date.now();
+   const f=$('#camMotionFlash');f.classList.remove('on');void f.offsetWidth;f.classList.add('on');
+   broadcast({t:'motion',p:+pct.toFixed(1),ts:Date.now()});beep(660,.1);clog('⚠ Movimento detectado ('+pct.toFixed(1)+'%)')}}
+ mPrev=d}
+/* estatísticas */
+async function camStatsTick(){const call=[...viewCalls][0];
+ if(!call||!call.peerConnection){$('#camBitrate').textContent='— kb/s';lastBytes=0;return}
+ try{const stats=await call.peerConnection.getStats();let bytes=0;
+  stats.forEach(r=>{if(r.type==='outbound-rtp'&&r.kind==='video')bytes=r.bytesSent});
+  const now=Date.now();if(lastBytes&&bytes>lastBytes)$('#camBitrate').textContent=Math.round((bytes-lastBytes)*8/(now-lastStatT))+' kb/s';
+  lastBytes=bytes;lastStatT=now}catch(e){}}
+/* controles da câmera */
+$('#btnNight').addEventListener('click',()=>setNight(!nightOn));
+$('#btnTorch').addEventListener('click',()=>setTorch(!torchOn));
+$('#btnFlip').addEventListener('click',async()=>{facing=facing==='environment'?'user':'environment';
+ if(!camStream)return;const old=camStream;
+ try{camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing,width:{ideal:1920},height:{ideal:1080}},audio:{echoCancellation:true,noiseSuppression:true}})}
+ catch(e){toast('Não foi possível inverter a câmera','warn');camStream=old;return}
+ old.getTracks().forEach(t=>t.stop());$('#camVideo').srcObject=camStream;$('#camVideo').play().catch(()=>{});
+ stopNightPipeline();nightOn=false;$('#btnNight').classList.remove('on');
+ swapTrackTo(camStream.getVideoTracks()[0]);clog('Câmera invertida')});
+$('#btnCamRestart').addEventListener('click',()=>{stopCameraAll();setTimeout(initCamera,300)});
+function stopCameraAll(){if(camPeer){try{camPeer.destroy()}catch(e){}camPeer=null}
+ if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null}
+ stopNightPipeline();dataConns.clear();viewCalls.clear();mPrev=null;
+ $('#camRecChip').hidden=true;$('#camTalkChip').hidden=true;setCamState('AGUARDANDO','bad');$('#ledLink').className='led r'}
+/* QR */
+$('#btnQR').addEventListener('click',()=>{buildQR();openSheet('sheetQR')});
+function buildQR(){if(!window.QRCode||!camId)return;
+ QRCode.toDataURL('ITVSEG:'+camId,{width:560,margin:1,errorCorrectionLevel:'M',color:{dark:'#0a101b',light:'#f4f7fb'}})
+ .then(u=>{$('#qrImg').src=u}).catch(()=>toast('Falha ao gerar QR Code','err'))}
+$('#btnCopyCode').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(camId);toast('Código copiado','ok')}catch(e){toast(camId,'info',4000)}});
+$('#btnShareCode').addEventListener('click',()=>{const txt='Código da câmera ITV Segurança: '+camId;
+ if(navigator.share)navigator.share({text:txt}).catch(()=>{});else toast(txt,'info',4500)});
+$('#btnNewCode').addEventListener('click',()=>{if(!confirm('Gerar novo código? Monitores pareados com o código antigo perderão a conexão.'))return;
+ camId=genId();store.set('itv_camid',camId);setupCamPeer();buildQR();$('#qrCodeText').textContent=camId;toast('Novo código gerado','ok')});
+/* sensibilidade */
+$('#btnSens').addEventListener('click',()=>{$('#sensRange').value=sens;$('#sensVal').textContent=sens;openSheet('sheetSens')});
+$('#sensRange').addEventListener('input',e=>{sens=+e.target.value;$('#sensVal').textContent=sens;$('#camSensVal').textContent=sens;store.set('itv_sens',sens)});
+/* blackout */
+let boTaps=0,boTimer=null;
+$('#btnBlackout').addEventListener('click',()=>{keepAwake();$('#blackout').classList.add('on');boTaps=0;clog('Modo tela apagada ativo')});
+$('#blackout').addEventListener('click',()=>{boTaps++;clearTimeout(boTimer);boTimer=setTimeout(()=>boTaps=0,1500);
+ if(boTaps>=3){$('#blackout').classList.remove('on');keepAwake();toast('Transmissão continua ativa','ok')}});
+
+/* ================= MODO MONITOR ================= */
+let cams=store.get('itv_cams',[]),vPeer=null,vConn=null,vCall=null,remoteStream=null;
+let activeCamId=null,lastHb=0,connecting=false,manualLeft=false;
+let talkCall=null,talkMic=null,events=[],rec=null,recChunks=[],recStart=0,manRec=false;
+let zoom=1,curOX=50,curOY=50;
+const nameOf=id=>(cams.find(c=>c.id===id)||{}).name||id;
+function saveCams(){store.set('itv_cams',cams)}
+function addCamEntry(id){if(!cams.find(c=>c.id===id)){cams.push({id,name:'Câmera '+(cams.length+1)});saveCams()}}
+function renderHome(){const el=$('#camList');el.innerHTML='';
+ cams.forEach(c=>{const live=activeCamId===c.id&&remoteStream;
+  const card=document.createElement('article');card.className='cam-card panel';
+  card.innerHTML=`<div class="cam-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="${live?'#2fd573':'#8fa8c7'}" stroke-width="1.6"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="m16 10 6-3v10l-6-3"/><circle cx="9" cy="12" r="2.6"/></svg></div>
+  <div class="cam-info"><h4>${c.name}</h4><span class="mono">${c.id}</span>
+  <span class="cam-state" style="color:${live?'var(--green)':'var(--dim)'}"><i class="led ${live?'g':'r'}" style="width:6px;height:6px"></i>${live?'AO VIVO AGORA':'TOQUE PARA ASSISTIR'}</span></div>
+  <div class="cam-actions"><button class="btn sm primary">▶</button></div>`;
+  card.querySelector('button').addEventListener('click',()=>{manualLeft=false;connectCam(c.id,{bg:false})});
+  el.appendChild(card)});
+ const add=document.createElement('div');add.className='add-tile';add.innerHTML='<b>⬡</b>ADICIONAR CÂMERA — LER QR CODE';
+ add.addEventListener('click',startScan);el.appendChild(add)}
+$('#btnAddCam').addEventListener('click',startScan);
+
+function ensureVPeer(cb){if(vPeer&&vPeer.open){cb();return}
+ if(vPeer){try{vPeer.destroy()}catch(e){}}
+ if(!window.Peer){toast('Rede indisponível','err');return}
+ vPeer=new Peer(PEERCFG);
+ vPeer.on('open',cb);
+ vPeer.on('disconnected',()=>{try{vPeer.reconnect()}catch(e){}});
+ vPeer.on('error',e=>{if(e.type==='peer-unavailable'){setLiveChip('CÂMERA OFFLINE','r');showBuffer(false);connecting=false;
+  if($('#scr-live').classList.contains('active'))toast('Câmera não encontrada — confira se ela está aberta','err')}})}
+function setLiveChip(txt,cls){const c=$('#liveChip');c.innerHTML='<i class="dot"></i>'+txt;
+ c.className='chip '+(cls==='g'?'live':cls==='r'?'rec':'')}
+function showBuffer(b){$('#liveBuffer').classList.toggle('hidden',!b)}
+function cleanupLive(){if(vCall){try{vCall.close()}catch(e){}vCall=null}
+ if(vConn){try{vConn.close()}catch(e){}vConn=null}
+ remoteStream=null;stopTalk();if(rec){try{rec.stop()}catch(e){}}manRec=false;setRecUI(false)}
+
+function connectCam(id,opt={}){const bg=!!opt.bg;
+ if(connecting)return;connecting=true;manualLeft=false;activeCamId=id;store.set('itv_lastcam',id);
+ if(!bg){go('scr-live');$('#liveName').textContent=nameOf(id).toUpperCase();setLiveChip('CONECTANDO','a');showBuffer(true)}
+ ensureVPeer(()=>{
+  cleanupLiveKeepPeer();
+  try{vConn=vPeer.connect(id,{reliable:true})}catch(e){}
+  vConn.on('open',()=>{lastHb=Date.now();if(!bg){setLiveChip('CONECTADO','g')}});
+  vConn.on('data',onViewerData);
+  vConn.on('close',()=>{if(activeCamId!==id)return;setLiveChip('DESCONECTADO','r');if(!bg)showBuffer(true)});
+  try{vCall=vPeer.call(id,undefined,{metadata:{kind:'view'}})}catch(e){connecting=false;return}
+  vCall.on('stream',rs=>{connecting=false;remoteStream=rs;const lv=$('#liveVideo');lv.srcObject=rs;lv.play().catch(()=>{});
+   setLiveChip('AO VIVO','g');showBuffer(false);if(bg){go('scr-live');$('#liveName').textContent=nameOf(id).toUpperCase()}
+   toast('Conectado a '+nameOf(id),'ok');beep(1180,.09);vibrate(120);renderHome();
+   setInterval(viewerStaleCheck,5000)});
+  vCall.on('close',()=>{if(activeCamId===id&&!manualLeft){setLiveChip('SEM SINAL','r');showBuffer(true)}});
+  setTimeout(()=>{if(connecting){connecting=false;
+   if(!remoteStream){setLiveChip('SEM RESPOSTA','r');if(!bg){showBuffer(false);toast('A câmera não respondeu. Ela precisa estar aberta.','warn')}}}},15000);
+ })}
+function cleanupLiveKeepPeer(){if(vCall){try{vCall.close()}catch(e){}vCall=null}
+ if(vConn){try{vConn.close()}catch(e){}vConn=null}remoteStream=null}
+function viewerStaleCheck(){if(!vConn||!vConn.open)return;
+ if(Date.now()-lastHb>22000)setLiveChip('INSTÁVEL','a')}
+/* reconexão automática */
+setInterval(()=>{if(role!=='monitor'||!activeCamId||manualLeft||connecting||remoteStream)return;
+ connectCam(activeCamId,{bg:!$('#scr-live').classList.contains('active')})},6000);
+
+function onViewerData(d){if(!d||!d.t)return;
+ if(d.t==='hb'){lastHb=Date.now();if(d.bat!=null){$('#liveBatt').hidden=false;$('#liveBatt').textContent='🔋 '+d.bat+'%'}}
+ else if(d.t==='cfg'){$('#cfgTorch').textContent=d.torch?'ON':'OFF';$('#cfgTorch').classList.toggle('on',!!d.torch);
+  $('#cfgNight').textContent=d.night?'ON':'OFF';$('#cfgNight').classList.toggle('on',!!d.night);
+  if(d.sens)$('#cfgSens').value=d.sens}
+ else if(d.t==='motion')onMotionViewer(d)
+ else if(d.t==='nightfb'){$('#liveVideo').classList.toggle('nightfb',!!d.on)}}
+function onMotionViewer(d){const f=$('#liveMotionFlash');f.classList.remove('on');void f.offsetWidth;f.classList.add('on');
+ const mc=$('#liveMotionChip');mc.hidden=false;clearTimeout(mc._t);mc._t=setTimeout(()=>mc.hidden=true,3500);
+ beep(660,.12);setTimeout(()=>beep(660,.12),180);vibrate([220,90,220]);
+ if('Notification'in window&&Notification.permission==='granted')
+  try{new Notification('ITV Segurança',{body:'⚠ Movimento detectado em '+nameOf(activeCamId)+' às '+hhmmss(new Date()),icon:ICON})}catch(e){}
+ startRec(false);renderMarkers()}
+/* gravação */
+function pickMime(){if(!window.MediaRecorder)return'';
+ for(const m of['video/mp4;codecs=avc1','video/mp4','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'])
+  if(MediaRecorder.isTypeSupported(m))return m;return''}
+function startRec(manual){if(!remoteStream){if(manual)toast('Sem vídeo para gravar','warn');return}
+ if(rec){if(manual){manRec=false;try{rec.stop()}catch(e){}}return}
+ const mime=pickMime();if(!mime)return toast('Gravação não suportada neste navegador','warn');
+ recChunks=[];recStart=Date.now();
+ try{rec=new MediaRecorder(remoteStream,{mimeType:mime,videoBitsPerSecond:2500000})}
+ catch(e){try{rec=new MediaRecorder(remoteStream)}catch(e2){return toast('Falha ao iniciar gravação','err')}}
+ rec.ondataavailable=e=>{if(e.data&&e.data.size)recChunks.push(e.data)};
+ rec.onstop=()=>{const blob=new Blob(recChunks,{type:rec.mimeType||'video/webm'});
+  const kind=manRec?'manual':'movimento';manRec=false;rec=null;setRecUI(false);
+  finalizeEvent(blob,kind)};
+ rec.start(1000);
+ if(manual){manRec=true;setRecUI(true);sendToCam({t:'rec',on:true})}
+ else setTimeout(()=>{if(rec&&!manRec){try{rec.stop()}catch(e){}}},12000)}
+function setRecUI(on){$('#btnRec').classList.toggle('on',on);$('#btnRec').innerHTML=on?'⏹ PARAR':'⏺ GRAVAR CLIPE';
+ $('#liveRecChip').hidden=!on}
+function snapThumb(){const lv=$('#liveVideo');if(!lv.videoWidth)return'';
+ const c=document.createElement('canvas');c.width=160;c.height=Math.round(160*lv.videoHeight/lv.videoWidth)||90;
+ c.getContext('2d').drawImage(lv,0,0,c.width,c.height);
+ try{return c.toDataURL('image/jpeg',.6)}catch(e){return''}}
+function finalizeEvent(blob,kind){const ev={id:Date.now(),ts:Date.now(),dur:Math.round((Date.now()-recStart)/1000),
+ url:URL.createObjectURL(blob),mime:blob.type,thumb:snapThumb(),kind};
+ events.unshift(ev);if(events.length>30){const old=events.pop();URL.revokeObjectURL(old.url)}
+ $('#evCount').textContent=events.length;renderEvents();renderMarkers();
+ toast((kind==='manual'?'Clipe salvo':'Evento de movimento salvo')+' na linha do tempo ('+ev.dur+'s)','ok')}
+$('#btnRec').addEventListener('click',()=>startRec(true));
+/* eventos UI */
+function renderEvents(){const el=$('#evList');
+ if(!events.length){el.innerHTML='<p class="empty">Nenhum evento ainda.<br>Movimentos detectados e gravações manuais aparecem aqui.</p>';return}
+ el.innerHTML='';events.forEach(ev=>{const d=new Date(ev.ts);
+  const it=document.createElement('div');it.className='ev-item';
+  it.innerHTML=`${ev.thumb?'<img src="'+ev.thumb+'">':'<div style="width:74px;height:44px;background:#000;border-radius:6px"></div>'}
+  <div><div class="t">${ev.kind==='manual'?'⏺ GRAVAÇÃO MANUAL':'⚠ MOVIMENTO DETECTADO'}</div>
+  <div class="m">${hhmmss(d)} · ${ev.dur}s</div></div>
+  <div class="acts"><button class="icon-btn" title="Reproduzir">▶</button><a class="icon-btn" href="${ev.url}" download="itv-evento-${ev.id}.${ev.mime.includes('mp4')?'mp4':'webm'}" title="Baixar">⬇</a></div>`;
+  it.querySelector('button').addEventListener('click',()=>openEvent(ev));el.appendChild(it)})}
+function renderMarkers(){const strip=$('#tlStrip');$$('.tl-marker',strip).forEach(m=>m.remove());
+ const win=3600000,now=Date.now();
+ events.forEach(ev=>{const age=now-ev.ts;if(age>win)return;
+  const m=document.createElement('div');m.className='tl-marker'+(ev.kind==='manual'?' manual':'');
+  m.style.left=clamp((1-age/win)*100,1,98)+'%';m.title=hhmmss(new Date(ev.ts));
+  m.addEventListener('click',()=>openEvent(ev));strip.appendChild(m)})}
+setInterval(renderMarkers,30000);
+$('#btnEvents').addEventListener('click',()=>{renderEvents();openSheet('sheetEvents')});
+$('#btnClearEv').addEventListener('click',()=>{if(!confirm('Apagar todos os eventos?'))return;
+ events.forEach(e=>URL.revokeObjectURL(e.url));events=[];renderEvents();renderMarkers();$('#evCount').textContent=0});
+function openEvent(ev){$('#evVideo').src=ev.url;$('#evVideo').play().catch(()=>{});
+ $('#evTitle').textContent=(ev.kind==='manual'?'GRAVAÇÃO':'MOVIMENTO')+' · '+hhmmss(new Date(ev.ts));
+ const a=$('#evDownload');a.href=ev.url;a.download='itv-evento-'+ev.id+'.'+(ev.mime.includes('mp4')?'mp4':'webm');
+ $('#modalEvent').classList.add('open')}
+$('#modalClose').addEventListener('click',()=>{$('#modalEvent').classList.remove('open');$('#evVideo').pause()});
+$('#modalEvent').addEventListener('click',e=>{if(e.target.id==='modalEvent'){$('#modalEvent').classList.remove('open');$('#evVideo').pause()}});
+/* foto */
+$('#btnSnap').addEventListener('click',()=>{const lv=$('#liveVideo');if(!lv.videoWidth)return toast('Sem vídeo ainda','warn');
+ const c=document.createElement('canvas');c.width=lv.videoWidth;c.height=lv.videoHeight;
+ c.getContext('2d').drawImage(lv,0,0);
+ c.toBlob(b=>{const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;
+  a.download='itv-foto-'+Date.now()+'.png';a.click();toast('📸 Foto salva','ok')},'image/png')});
+/* filtro noturno local */
+$('#btnLiveNight').addEventListener('click',()=>{const lv=$('#liveVideo');
+ lv.classList.toggle('nightview');$('#btnLiveNight').classList.toggle('on',lv.classList.contains('nightview'))});
+/* zoom + pan */
+function applyZoom(){$('#liveVideo').style.transform=zoom>1?`scale(${zoom})`:'';
+ $('#zoomLbl').textContent=zoom.toFixed(1)+'×';if(zoom<=1)setOrigin(50,50)}
+function setOrigin(x,y){curOX=clamp(x,0,100);curOY=clamp(y,0,100);
+ $('#liveVideo').style.transformOrigin=curOX+'% '+curOY+'%'}
+$('#zoomRange').addEventListener('input',e=>{zoom=+e.target.value;applyZoom()});
+let panSt=null,lastTap=0;const lv=$('#liveVideo');
+lv.addEventListener('pointerdown',e=>{if(zoom<=1)return;lv.setPointerCapture(e.pointerId);
+ panSt={x:e.clientX,y:e.clientY,ox:curOX,oy:curOY}});
+lv.addEventListener('pointermove',e=>{if(!panSt)return;const r=lv.getBoundingClientRect();
+ setOrigin(panSt.ox-(e.clientX-panSt.x)/r.width*100*zoom,panSt.oy-(e.clientY-panSt.y)/r.height*100*zoom)});
+lv.addEventListener('pointerup',e=>{panSt=null;
+ const now=Date.now();if(zoom<=1&&now-lastTap<320){zoom=2.2;$('#zoomRange').value=2.2;applyZoom()}lastTap=now});
+lv.addEventListener('click',()=>lv.play().catch(()=>{}));
+/* walkie-talkie */
+const ptt=$('#pttBtn');
+function setPttState(on){ptt.classList.toggle('talking',on);const s=$('#pttState');
+ s.textContent=on?'TRANSMITINDO VOZ…':'WALKIE-TALKIE';s.classList.toggle('live',on)}
+async function startTalk(){if(talkCall||!vPeer||!vPeer.open||!activeCamId)return;
+ try{if(!talkMic||!talkMic.active)talkMic=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true}});
+  talkCall=vPeer.call(activeCamId,talkMic,{metadata:{kind:'talk'}});
+  talkCall.on('close',()=>{talkCall=null;setPttState(false)});
+  setPttState(true);vibrate(60)}
+ catch(e){toast('Microfone indisponível','err')}}
+function stopTalk(){if(!talkCall)return;try{talkCall.close()}catch(e){}talkCall=null;setPttState(false)}
+ptt.addEventListener('pointerdown',e=>{e.preventDefault();startTalk()});
+['pointerup','pointercancel','pointerleave'].forEach(ev=>ptt.addEventListener(ev,stopTalk));
+/* ajustes remotos */
+$('#btnLiveCfg').addEventListener('click',()=>{sendToCam({t:'getcfg'});
+ const c=cams.find(x=>x.id===activeCamId);$('#cfgName').value=c?c.name:'';openSheet('sheetCfg')});
+function sendToCam(o){if(vConn&&vConn.open){try{vConn.send(o)}catch(e){}}}
+$('#cfgTorch').addEventListener('click',()=>{sendToCam({t:'torch',on:!$('#cfgTorch').classList.contains('on')})});
+$('#cfgNight').addEventListener('click',()=>{sendToCam({t:'night',on:!$('#cfgNight').classList.contains('on')})});
+let cfgSensT=null;$('#cfgSens').addEventListener('input',e=>{clearTimeout(cfgSensT);
+ cfgSensT=setTimeout(()=>sendToCam({t:'sens',v:+e.target.value}),350)});
+$('#cfgSaveName').addEventListener('click',()=>{const c=cams.find(x=>x.id===activeCamId);
+ if(c){c.name=$('#cfgName').value.trim()||c.name;saveCams();$('#liveName').textContent=c.name.toUpperCase();renderHome();toast('Nome salvo','ok')}});
+$('#btnRemoveCam').addEventListener('click',()=>{if(!confirm('Remover esta câmera do monitor?'))return;
+ cams=cams.filter(c=>c.id!==activeCamId);saveCams();disconnectLive();closeSheet('sheetCfg');toast('Câmera removida','ok')});
+/* sair / desconectar */
+function disconnectLive(){manualLeft=true;sendToCam({t:'bye'});cleanupLive();
+ activeCamId=null;setLiveChip('DESCONECTADO','r');renderHome();go('scr-home')}
+$('#btnLiveBack').addEventListener('click',()=>{manualLeft=true;if(rec){try{rec.stop()}catch(e){}}
+ cleanupLiveKeepPeer();go('scr-home');renderHome()});
+$('#btnLiveDisc').addEventListener('click',disconnectLive);
+/* estatísticas do monitor */
+let vLastBytes=0,vLastT=0;
+setInterval(async()=>{if(!vCall||!vCall.peerConnection||!remoteStream){$('#liveStats').textContent='— kb/s';vLastBytes=0;return}
+ try{const st=await vCall.peerConnection.getStats();let b=0;
+  st.forEach(r=>{if(r.type==='inbound-rtp'&&(r.kind==='video'))b=r.bytesReceived});
+  const now=Date.now();if(vLastBytes&&b>vLastBytes)$('#liveStats').textContent=Math.round((b-vLastBytes)*8/(now-vLastT))+' kb/s';
+  vLastBytes=b;vLastT=now}catch(e){}},2000);
+
+/* ================= SCANNER ================= */
+let scanStream=null,scanning=false,scanRAF=0;const scanCv=document.createElement('canvas');
+async function startScan(){go('scr-scan');$('#manualCode').value='';
+ if(!window.jsQR){toast('Leitor QR não carregou — digite o código abaixo','warn');return}
+ try{scanStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+  const v=$('#scanVideo');v.srcObject=scanStream;await v.play();scanning=true;scanLoop()}
+ catch(e){toast('Câmera indisponível para leitura — digite o código manualmente','warn')}}
+function stopScan(){scanning=false;cancelAnimationFrame(scanRAF);
+ if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null}}
+function scanLoop(){if(!scanning)return;const v=$('#scanVideo');
+ if(v.readyState===v.HAVE_ENOUGH_DATA){scanCv.width=v.videoWidth;scanCv.height=v.videoHeight;
+  const ctx=scanCv.getContext('2d',{willReadFrequently:true});ctx.drawImage(v,0,0);
+  const img=ctx.getImageData(0,0,scanCv.width,scanCv.height);
+  let code=null;try{code=jsQR(img.data,img.width,img.height,{inversionAttempts:'dontInvert'})}catch(e){}
+  if(code&&code.data){onQR(code.data);return}}
+ scanRAF=requestAnimationFrame(scanLoop)}
+function parseCode(data){data=(data||'').trim();
+ if(data.startsWith('ITVSEG:'))return data.slice(7).trim();
+ if(/^[A-Za-z0-9_-]{5,}$/.test(data))return data;return null}
+function onQR(raw){const id=parseCode(raw);stopScan();
+ if(!id){toast('Código não reconhecido','warn');return}
+ beep(1240,.1);vibrate(90);addCamEntry(id);manualLeft=false;connectCam(id,{bg:false})}
+$('#btnScanBack').addEventListener('click',()=>{stopScan();renderHome();go('scr-home')});
+$('#btnManualGo').addEventListener('click',()=>{const id=parseCode($('#manualCode').value);
+ if(!id)return toast('Código inválido — use o formato ITV-XXXXXX','warn');
+ stopScan();addCamEntry(id);manualLeft=false;connectCam(id,{bg:false})});
+$('#manualCode').addEventListener('keydown',e=>{if(e.key==='Enter')$('#btnManualGo').click()});
+
+/* câmera anexa áudio do walkie-talkie */
+function attachTalk(call){const a=new Audio();a.autoplay=true;a.playsInline=true;
+ call.on('stream',rs=>{a.srcObject=rs;a.play().catch(()=>{})});
+ call.on('close',()=>{a.pause();a.srcObject=null});a._call=call}
+
+/* init */
+(function init(){$('#sensRange').value=sens;
+ if(location.protocol.startsWith('https')||location.hostname==='localhost')$('#httpWarn').hidden=true;
+})();
+</script>
+</body>
+</html>
