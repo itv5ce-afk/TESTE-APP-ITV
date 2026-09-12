@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<link rel="icon" type="image/png" href="favicon.png"><link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🩺</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🩺</text></svg>">
 <title>Minha Saúde Digital</title>
 <style>
 :root{--bg:#262b3f;--card:#3a4159;--card2:#4a5170;--blue:#4d7cf3;--muted:#9aa3c0;--radius:22px}
@@ -63,7 +63,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Ar
 .nav-btn{background:none;border:none;color:var(--muted);font-size:11px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;width:70px}
 .nav-btn .ico{font-size:20px}
 .nav-btn.active{color:#fff}
-.fab{width:58px;height:58px;border-radius:50%;background:var(--blue);border:none;color:#fff;font-size:28px;font-weight:800;margin-top:-34px;box-shadow:0 8px 20px rgba(77,124,243,.45);cursor:pointer}
+.fab{width:58px;height:58px;border-radius:50%;background:var(--blue);border:none;color:#fff;font-size:28px;font-weight:800;margin-top:-34px;box-shadow:0 8px 20px rgba(77,124,243,.45);cursor:pointer;display:none}
 #overlay{position:fixed;inset:0;background:rgba(10,12,24,.6);display:none;align-items:flex-end;justify-content:center;z-index:50;backdrop-filter:blur(2px)}
 #overlay.show{display:flex}
 .modal{background:var(--card);width:100%;max-width:520px;border-radius:26px 26px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom));animation:up .28s ease}
@@ -115,6 +115,83 @@ background:linear-gradient(90deg,#f87171 0%,#f87171 7.1%,#fb923c 7.1%,#fb923c 16
 .agua-meta{font-size:13px;color:var(--muted);font-weight:700;display:flex;justify-content:space-between;width:100%}
 .agua-actions{display:flex;gap:8px;margin-top:4px;flex-wrap:wrap}
 .agua-actions .btn{flex:1;min-width:80px}
+
+/* ============ CRONÓMETRO DE EXERCÍCIOS ============ */
+.ex-top-banner{background:#FFD700;border-radius:var(--radius);overflow:hidden;margin-bottom:16px}
+.ex-banner-title{background:#2C3E50;color:#fff;padding:16px;text-align:center;font-size:20px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+.ex-banner-sub{background:linear-gradient(90deg,#FF0000 0%,#FF8C00 100%);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px;font-size:16px;font-weight:800}
+.ex-no-equip{width:28px;height:28px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#FF0000;font-size:16px}
+.ex-image{width:100%;height:200px;background:var(--card2);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;display:flex;align-items:center;justify-content:center}
+.ex-image img{width:100%;height:100%;object-fit:cover}
+.ex-placeholder{color:var(--muted);text-align:center;font-size:50px}
+.ex-workout-list{margin-bottom:16px}
+.ex-card{background:var(--card);border-radius:16px;padding:16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.ex-card-content{flex:1}
+.ex-card-title{font-size:16px;font-weight:800;margin-bottom:4px;text-transform:uppercase}
+.ex-card-details{font-size:13px;color:var(--muted);line-height:1.4}
+.ex-card-actions{display:flex;gap:8px}
+.ex-btn{width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:transform .12s}
+.ex-btn:active{transform:scale(.95)}
+.ex-btn.play{background:#2ed573;color:#fff}
+.ex-btn.edit{background:#fbbf24;color:#fff}
+.ex-btn.del{background:rgba(248,113,113,.15);color:#f87171}
+.ex-create-btn{background:var(--blue);color:#fff;padding:16px;text-align:center;border-radius:16px;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 4px 15px rgba(77,124,243,.4)}
+.ex-empty{text-align:center;color:var(--muted);padding:40px 20px}
+
+/* Timer Styles */
+.ex-timer-screen{text-align:center}
+.ex-timer-info{background:var(--card);border-radius:16px;padding:20px;margin-bottom:20px}
+.ex-timer-name{font-size:18px;font-weight:800;margin-bottom:8px}
+.ex-timer-reps{font-size:18px;font-weight:800;color:var(--blue)}
+.ex-timer-circle{width:220px;height:220px;border-radius:50%;background:var(--card);margin:0 auto 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.ex-timer-circle::before{content:'';position:absolute;inset:0;border-radius:50%;background:conic-gradient(var(--blue) var(--progress),var(--card2) 0);z-index:0}
+.ex-timer-inner{position:relative;z-index:1;background:var(--card);width:200px;height:200px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ex-timer-time{font-size:42px;font-weight:800;color:var(--blue);line-height:1}
+.ex-timer-label{font-size:12px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+.ex-timer-phase{font-size:20px;font-weight:800;margin-bottom:16px;color:#fff;text-transform:uppercase}
+.ex-badges{display:flex;gap:8px;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
+.ex-badge{padding:6px 12px;border-radius:999px;font-size:12px;font-weight:800}
+.ex-badge.ex{background:var(--blue);color:#fff}
+.ex-badge.rest{background:#fb923c;color:#fff}
+.ex-config-card{background:var(--card);border-radius:var(--radius);padding:18px;margin-bottom:16px}
+.ex-config-title{font-size:18px;font-weight:800;margin-bottom:16px;color:var(--blue)}
+.ex-section-title{font-size:14px;font-weight:800;color:var(--muted);margin:16px 0 10px;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--card2);padding-bottom:4px}
+.ex-radio-group,.ex-check-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.ex-radio-opt,.ex-check-opt{flex:1;min-width:80px}
+.ex-radio-opt input,.ex-check-opt input{display:none}
+.ex-radio-opt label,.ex-check-opt label{display:block;padding:10px;text-align:center;background:var(--card2);border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s}
+.ex-radio-opt input:checked+label,.ex-check-opt input:checked+label{background:var(--blue);color:#fff}
+.ex-time-inputs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* ============ META DE EMAGRECIMENTO ============ */
+.goal-card{margin-top:14px;margin-bottom:20px}
+.goal-header{margin-bottom:12px}
+.goal-title{font-size:18px;font-weight:800;letter-spacing:.3px}
+.goal-body{display:flex;align-items:center;gap:20px;margin-bottom:16px}
+.goal-circle{position:relative;width:100px;height:100px;flex-shrink:0}
+.goal-svg{width:100%;height:100%;transform:rotate(-90deg)}
+.goal-svg circle{fill:none;stroke-width:8;stroke-linecap:round}
+.goal-svg .bg{stroke:var(--card2)}
+.goal-svg .progress{stroke:var(--blue);transition:stroke-dashoffset 0.5s ease}
+.goal-circle-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.goal-percent{font-size:28px;font-weight:800;line-height:1;color:#fff}
+.goal-percent small{font-size:14px;font-weight:700;color:var(--muted)}
+.goal-weights{display:flex;flex-direction:column;gap:2px;flex:1}
+.goal-weight{font-size:18px;font-weight:800;display:flex;justify-content:space-between;padding:2px 0}
+.goal-weight span{color:#fff}
+.goal-weight .label{color:var(--muted);font-weight:600;font-size:13px}
+.goal-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:14px}
+.goal-stat{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.goal-stat-label{color:var(--muted);font-size:13px;font-weight:600}
+.goal-stat-value{font-size:14px;font-weight:700;color:#fff}
+.goal-stat-value.change{color:#4ade80}
+.goal-stat-value.change.neg{color:#f87171}
+@media(max-width:420px){
+.goal-body{flex-wrap:wrap;justify-content:center}
+.goal-weights{flex:1 1 100%;flex-direction:row;justify-content:space-around}
+.goal-stats{grid-template-columns:1fr;gap:2px}
+.goal-weight{font-size:16px}
+}
 </style>
 </head>
 <body>
@@ -124,7 +201,6 @@ background:linear-gradient(90deg,#f87171 0%,#f87171 7.1%,#fb923c 7.1%,#fb923c 16
   <section id="screen-home" class="screen active">
     <h1 class="page-title">PÁGINA INICIAL</h1>
     
-    <!-- OCULTADO: Conjunto superior (Coração, Medir agora, Último Registro, Histórico) -->
     <div class="card" style="display:none;">
       <div class="hero-top">
         <div class="heart">❤️</div>
@@ -208,6 +284,36 @@ background:linear-gradient(90deg,#f87171 0%,#f87171 7.1%,#fb923c 7.1%,#fb923c 16
       <div class="muted imc-hint" id="imcHint">Registre seu <b>peso</b> e sua <b>altura</b> para calcular o IMC e o peso ideal.</div>
     </div>
 
+    <!-- META DE EMAGRECIMENTO (reposicionada para baixo do IMC) -->
+    <div class="card goal-card" id="goalCard">
+      <div class="goal-header">
+        <span class="goal-title">Progresso do objetivo</span>
+      </div>
+      <div class="goal-body">
+        <div class="goal-circle">
+          <svg viewBox="0 0 120 120" class="goal-svg">
+            <circle cx="60" cy="60" r="54" class="bg"/>
+            <circle cx="60" cy="60" r="54" class="progress" id="goalCircleProgress"/>
+          </svg>
+          <div class="goal-circle-inner">
+            <span class="goal-percent" id="goalPercent">0<small>%</small></span>
+          </div>
+        </div>
+        <div class="goal-weights">
+          <div class="goal-weight"><span class="label">Atual</span> <span id="goalCurrentWeight">--</span><span class="label">Kg</span></div>
+          <div class="goal-weight"><span class="label">Meta</span> <span id="goalTargetWeight">--</span><span class="label">Kg</span></div>
+        </div>
+      </div>
+      <div class="goal-stats">
+        <div class="goal-stat"><span class="goal-stat-label">Peso inicial</span><span class="goal-stat-value" id="goalInitial">--</span></div>
+        <div class="goal-stat"><span class="goal-stat-label">Peso objetivo</span><span class="goal-stat-value" id="goalTarget">--</span></div>
+        <div class="goal-stat"><span class="goal-stat-label">Data de início</span><span class="goal-stat-value" id="goalStartDate">--</span></div>
+        <div class="goal-stat"><span class="goal-stat-label">Peso mais recente</span><span class="goal-stat-value" id="goalLatest">--</span></div>
+        <div class="goal-stat"><span class="goal-stat-label">durante a mudança</span><span class="goal-stat-value change" id="goalChange">--</span></div>
+      </div>
+      <button class="btn primary block" onclick="openGoalModal()">Modificar Alvo</button>
+    </div>
+
     <div class="disclaimer">⚠️ App para registro pessoal — não substitui orientação médica.</div>
   </section>
 
@@ -223,6 +329,135 @@ background:linear-gradient(90deg,#f87171 0%,#f87171 7.1%,#fb923c 7.1%,#fb923c 16
       <button class="btn danger sm" onclick="clearAll()">🗑 Limpar tudo</button>
     </div>
   </section>
+
+  <!-- ============ CRONÓMETRO DE EXERCÍCIOS ============ -->
+  <section id="screen-exercicios" class="screen">
+    <h1 class="page-title">CRONÓMETRO</h1>
+    
+    <!-- Banner Superior -->
+    <div class="ex-top-banner">
+      <div class="ex-banner-title">Cronómetro para Exercícios</div>
+      <div class="ex-banner-sub">
+        <div class="ex-no-equip">🚫</div>
+        ITV Saude
+      </div>
+    </div>
+
+    <!-- Imagem do Exercício -->
+    <div class="ex-image">
+      <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=300&fit=crop" alt="Exercício" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+      <div class="ex-placeholder" style="display:none">🏋️</div>
+    </div>
+
+    <!-- Lista de Treinos -->
+    <div id="exWorkoutList" class="ex-workout-list">
+      <div class="ex-empty">Nenhum treino salvo. Crie seu primeiro treino!</div>
+    </div>
+    
+    <div class="ex-create-btn" onclick="showExConfig()">
+      + Criar Novo Treino
+    </div>
+  </section>
+
+  <!-- ============ CONFIGURAÇÃO DE EXERCÍCIOS ============ -->
+  <section id="screen-ex-config" class="screen">
+    <h1 class="page-title">CONFIGURAR TREINO</h1>
+    
+    <div class="ex-config-card">
+      <div class="ex-config-title">⚙️ Configuração do Treino</div>
+      
+      <div class="field">
+        <label>Nome do Treino</label>
+        <input type="text" id="exWorkoutName" placeholder="Ex: Treino Full Body">
+      </div>
+
+      <div class="ex-section-title">Tempos do Treino</div>
+      
+      <div class="field">
+        <label>Aquecimento (segundos)</label>
+        <input type="number" id="exTempoAquecimento" placeholder="Ex: 60" value="60">
+      </div>
+
+      <div class="field">
+        <label>Exercício (segundos)</label>
+        <input type="number" id="exTempoExercicio" placeholder="Ex: 30" value="30">
+      </div>
+
+      <div class="field">
+        <label>Descanso entre exercícios (segundos)</label>
+        <input type="number" id="exTempoDescanso" placeholder="Ex: 15" value="15">
+      </div>
+
+      <div class="ex-section-title">Estrutura</div>
+
+      <div class="form-row">
+        <div class="field">
+          <label>Repetições</label>
+          <input type="number" id="exRepeticoes" placeholder="Ex: 10" value="10">
+        </div>
+        <div class="field">
+          <label>Rodadas</label>
+          <input type="number" id="exRodadas" placeholder="Ex: 3" value="3">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Descanso entre as Rodadas (segundos)</label>
+        <input type="number" id="exTempoDescansoRodada" placeholder="Ex: 60" value="60">
+      </div>
+
+      <div class="field">
+        <label>Desaceleração (segundos)</label>
+        <input type="number" id="exTempoDesaceleracao" placeholder="Ex: 60" value="60">
+      </div>
+
+      <!-- NOVO: Seletor de Música de Fundo -->
+      <div class="field">
+        <label>Música de Fundo (Opcional)</label>
+        <input type="file" id="exMusicFile" accept=".mp3, .mp4, .m4a, audio/*, video/mp4" style="padding:12px 14px;background:var(--card2);border:none;border-radius:14px;color:#fff;font-size:14px;font-weight:700;width:100%;outline:none;cursor:pointer;">
+        <div id="exMusicFileName" class="muted" style="font-size:12px;margin-top:6px;font-weight:600;"></div>
+      </div>
+
+      <div style="margin-top:20px;display:flex;gap:10px">
+        <button class="btn primary block" id="exSaveBtn" onclick="saveExWorkout()">💾 SALVAR TREINO</button>
+        <button class="btn ghost" onclick="resetExForm(); show('exercicios')">← Voltar</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TIMER DE EXERCÍCIOS ============ -->
+  <section id="screen-ex-timer" class="screen ex-timer-screen">
+    <h1 class="page-title">TREINO</h1>
+    
+    <div class="ex-timer-info">
+      <div class="ex-timer-name" id="exDisplayWorkoutName">Nome do Treino</div>
+      <div class="ex-timer-reps">
+        Rodada <span id="exCurrentRound">1</span>/<span id="exTotalRounds">3</span> &nbsp;|&nbsp; 
+        Rep <span id="exCurrentRep">1</span>/<span id="exTotalReps">10</span>
+      </div>
+    </div>
+
+    <div class="ex-timer-phase" id="exTimerPhase">PREPARAR</div>
+    
+    <div class="ex-timer-circle" id="exTimerCircle" style="--progress:0deg">
+      <div class="ex-timer-inner">
+        <div class="ex-timer-time" id="exTimerTime">00:00</div>
+        <div class="ex-timer-label" id="exTimerLabel">Segundos</div>
+      </div>
+    </div>
+
+    <div class="ex-badges">
+      <span class="ex-badge ex">Ex: <span id="exDisplayTempoExercicio">30</span>s</span>
+      <span class="ex-badge rest">Desc: <span id="exDisplayTempoDescanso">15</span>s</span>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="btn primary big" id="exBtnStartPause" onclick="toggleExTimer()">▶ INICIAR</button>
+      <button class="btn ghost" onclick="resetExTimer()">🔄 Reiniciar</button>
+      <button class="btn danger" onclick="resetExForm(); show('exercicios')">← Voltar</button>
+    </div>
+  </section>
+
 </div>
 
 <!-- ============ NAVEGAÇÃO INFERIOR ============ -->
@@ -230,6 +465,7 @@ background:linear-gradient(90deg,#f87171 0%,#f87171 7.1%,#fb923c 7.1%,#fb923c 16
   <button id="nav-home" class="nav-btn active" onclick="goHome()"><span class="ico">🏠</span>Início</button>
   <button class="fab" onclick="openQuick()">+</button>
   <button id="nav-hist" class="nav-btn" onclick="goHist()"><span class="ico">📊</span>Histórico</button>
+  <button id="nav-ex" class="nav-btn" onclick="goExercicios()"><span class="ico">⏱️</span>Exercícios</button>
 </nav>
 
 <div id="overlay" onclick="if(event.target===this)closeModal()"><div id="modalBox" class="modal"></div></div>
@@ -239,7 +475,7 @@ background:linear-gradient(90deg,#f87171 0%,#f87171 7.1%,#fb923c 7.1%,#fb923c 16
 /* ================= DADOS ================= */
 const KEY='minhaSaudeDB_v1';
 let db=loadDB();
-function loadDB(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d){d.peso=d.peso||[];d.pressao=d.pressao||[];d.acucar=d.acucar||[];d.fc=d.fc||[];d.altura=d.altura||[];d.agua=d.agua||[];d.metaAgua=d.metaAgua||2000;return d;}}catch(e){}return{peso:[],pressao:[],acucar:[],fc:[],altura:[],agua:[],metaAgua:2000};}
+function loadDB(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d){d.peso=d.peso||[];d.pressao=d.pressao||[];d.acucar=d.acucar||[];d.fc=d.fc||[];d.altura=d.altura||[];d.agua=d.agua||[];d.metaAgua=d.metaAgua||2000;d.exWorkouts=d.exWorkouts||[];d.metaPesoInicial=d.metaPesoInicial||null;d.metaPesoObjetivo=d.metaPesoObjetivo||null;d.metaDataInicio=d.metaDataInicio||null;return d;}}catch(e){}return{peso:[],pressao:[],acucar:[],fc:[],altura:[],agua:[],metaAgua:2000,exWorkouts:[],metaPesoInicial:null,metaPesoObjetivo:null,metaDataInicio:null};}
 function saveDB(){localStorage.setItem(KEY,JSON.stringify(db));}
 const uid=()=>Date.now().toString(36)+Math.floor(Math.random()*1e6).toString(36);
 const q=id=>document.getElementById(id);
@@ -308,6 +544,88 @@ function saveAguaModal(){
   renderAll();
 }
 
+/* ================= META DE EMAGRECIMENTO ================= */
+function renderGoal(){
+  const initial = db.metaPesoInicial;
+  const target = db.metaPesoObjetivo;
+  const startDate = db.metaDataInicio;
+  const latest = last('peso');
+  const latestWeight = latest ? latest.v : null;
+
+  q('goalInitial').textContent = initial ? fmt1(initial)+'Kg' : '--';
+  q('goalTarget').textContent = target ? fmt1(target)+'Kg' : '--';
+  q('goalStartDate').textContent = startDate ? fmtDateShort(startDate) : '--';
+  q('goalLatest').textContent = latestWeight ? fmt1(latestWeight)+'Kg' : '--';
+  q('goalCurrentWeight').textContent = latestWeight ? fmt1(latestWeight) : '--';
+  q('goalTargetWeight').textContent = target ? fmt1(target) : '--';
+
+  let change = null;
+  let changeText = '--';
+  let changeClass = '';
+  if(initial !== null && latestWeight !== null){
+    change = latestWeight - initial;
+    changeText = (change >= 0 ? '+' : '') + fmt1(change) + 'Kg';
+    changeClass = change < 0 ? 'change' : 'change neg';
+  }
+  const changeEl = q('goalChange');
+  changeEl.textContent = changeText;
+  changeEl.className = 'goal-stat-value ' + changeClass;
+
+  let percent = 0;
+  if(initial !== null && target !== null && latestWeight !== null){
+    const total = initial - target;
+    if(total > 0){
+      const done = initial - latestWeight;
+      percent = Math.min(100, Math.max(0, (done / total) * 100));
+    } else if(total === 0){
+      percent = 100;
+    } else {
+      percent = 0;
+    }
+  }
+  q('goalPercent').innerHTML = Math.round(percent) + '<small>%</small>';
+  const circumference = 2 * Math.PI * 54;
+  const offset = circumference - (percent / 100) * circumference;
+  const circle = q('goalCircleProgress');
+  circle.style.strokeDasharray = circumference;
+  circle.style.strokeDashoffset = offset;
+}
+
+function openGoalModal(){
+  const initial = db.metaPesoInicial !== null ? db.metaPesoInicial : '';
+  const target = db.metaPesoObjetivo !== null ? db.metaPesoObjetivo : '';
+  const startDate = db.metaDataInicio ? fmtDateShort(db.metaDataInicio) : '';
+  q('modalBox').innerHTML=`
+    <div class="m-head"><span class="m-ico">🎯</span><h2>Meta de Emagrecimento</h2><button class="x" onclick="closeModal()">✕</button></div>
+    <div class="field"><label>Peso inicial (kg)</label><input id="f-goal-initial" type="number" inputmode="decimal" step="0.1" min="1" max="400" value="${initial}" placeholder="Ex.: 114.9"></div>
+    <div class="field"><label>Peso objetivo (kg)</label><input id="f-goal-target" type="number" inputmode="decimal" step="0.1" min="1" max="400" value="${target}" placeholder="Ex.: 80.0"></div>
+    <div class="field"><label>Data de início</label><input id="f-goal-start" type="date" value="${db.metaDataInicio ? new Date(db.metaDataInicio).toISOString().split('T')[0] : ''}"></div>
+    <div class="m-foot">
+      <button class="btn ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn primary" onclick="saveGoalModal()">Salvar</button>
+    </div>
+  `;
+  q('overlay').classList.add('show');
+}
+
+function saveGoalModal(){
+  const initial = parseFloat(q('f-goal-initial').value.replace(',','.'));
+  const target = parseFloat(q('f-goal-target').value.replace(',','.'));
+  const start = q('f-goal-start').value;
+  if(isNaN(initial) || initial <= 0) return toast('⚠️ Peso inicial inválido');
+  if(isNaN(target) || target <= 0) return toast('⚠️ Peso objetivo inválido');
+  if(target >= initial) return toast('⚠️ O peso objetivo deve ser menor que o inicial');
+  if(!start) return toast('⚠️ Selecione uma data de início');
+
+  db.metaPesoInicial = initial;
+  db.metaPesoObjetivo = target;
+  db.metaDataInicio = new Date(start + 'T00:00:00').getTime();
+  saveDB();
+  closeModal();
+  renderAll();
+  toast('🎯 Meta atualizada!');
+}
+
 /* ================= HOME ================= */
 function renderHome(){
   const p=last('peso'),pr=last('pressao'),a=last('acucar'),f=last('fc'),h=last('altura');
@@ -324,7 +642,6 @@ function renderHome(){
   q('b-acucar').innerHTML=a?badgeHTML(...classAcucar(a.v,a.ctx)):'';
   q('b-fc').innerHTML=f?badgeHTML(...classFC(f.v)):'';
 
-  // IMC
   if(p&&h){
     const hm=h.v/100, imc=p.v/(hm*hm);
     q('v-imc').textContent=fmt1(imc);
@@ -347,12 +664,11 @@ function renderHome(){
     q('imcHint').style.display='block';
   }
 
-  // Último registro geral
   const all=[...db.peso,...db.pressao,...db.acucar,...db.fc,...db.altura,...db.agua];
   q('lastTime').textContent=all.length?fmtTime(Math.max(...all.map(r=>r.d))):'--:--';
 
-  // Água
   renderAgua();
+  renderGoal();
 }
 
 /* ================ HISTÓRICO ================ */
@@ -367,7 +683,6 @@ const TABS=[
 let curTab='peso';
 function setTab(t){curTab=t;renderHistory();}
 
-/* ---- Agrupamento diário para água ---- */
 function agruparAguaPorDia(registros){
   const mapa={};
   registros.forEach(r=>{
@@ -385,22 +700,18 @@ function renderHistory(){
   q('tabs').innerHTML=TABS.map(t=>`<button class="${t.id===curTab?'active':''}" onclick="setTab('${t.id}')">${t.icon} ${t.name}</button>`).join('');
   let recs=[...db[curTab]].sort((a,b)=>b.d-a.d);
   let listItems=[];
-  let statsData=[];
 
   if(curTab==='agua'){
-    // Agrupa por dia
     const dias = agruparAguaPorDia(db.agua);
     if(dias.length){
       const totais = dias.map(d=>d.total);
       const min=Math.min(...totais), max=Math.max(...totais), med=totais.reduce((s,v)=>s+v,0)/totais.length;
       q('stats').innerHTML=`<div class="stat"><b>${dias.length}</b><span>Dias</span></div><div class="stat"><b>${fmt1(totais[0])} ml</b><span>Último dia</span></div><div class="stat"><b>${fmt1(med)}</b><span>Média dia</span></div><div class="stat"><b>${fmt1(min)}–${fmt1(max)}</b><span>Faixa</span></div>`;
-      // Monta lista de dias
       listItems = dias.map(d=>{
         const dataStr = fmtDateShort(d.data);
-        return `<div class="h-item"><div><div class="h-val">${fmt1(d.total)} <small>ml</small></div><div class="h-date">${dataStr}</div></div><div class="h-right">${badgeHTML('💧','blue')}<button class="del" onclick="delDiaAgua('${d.data}')">🗑️</button></div></div>`;
+        return `<div class="h-item"><div><div class="h-val">${fmt1(d.total)} <small>ml</small></div><div class="h-date">${dataStr}</div></div><div class="h-right">${badgeHTML('💧','blue')}<button class="del" onclick="delDiaAgua(${d.data})">🗑️</button></div></div>`;
       });
-      // Para o gráfico, usamos os totais diários (ordenados cronologicamente)
-      const diasAsc = dias.slice().reverse(); // mais antigo primeiro
+      const diasAsc = dias.slice().reverse();
       const pts = diasAsc.map(d=>({x:d.data, y:d.total}));
       drawChartAgua(pts);
     }else{
@@ -409,11 +720,9 @@ function renderHistory(){
       drawChartAgua([]);
     }
     q('list').innerHTML=listItems.join('');
-    // O drawChart normal será substituído pelo específico para água
     return;
   }
 
-  // --- Para outros tipos (não água) ---
   const fmtV=v=>(curTab==='peso'||curTab==='acucar'||curTab==='altura')?fmt1(v):Math.round(v);
   if(recs.length){
     let vals;
@@ -426,7 +735,7 @@ function renderHistory(){
     else lastTxt=fmt1(recs[0].v);
     q('stats').innerHTML=`<div class="stat"><b>${recs.length}</b><span>Registros</span></div><div class="stat"><b>${lastTxt}</b><span>Último</span></div><div class="stat"><b>${fmtV(med)}</b><span>Média</span></div><div class="stat"><b>${fmtV(min)}–${fmtV(max)}</b><span>Faixa</span></div>`;
   }else q('stats').innerHTML='';
-  // Lista padrão
+  
   listItems = recs.map(itemHTML);
   q('list').innerHTML=listItems.length?listItems.join(''):`<div class="empty">Nenhum registro ainda.<br>Toque em <b>+</b> para adicionar.</div>`;
   drawChart(recs);
@@ -444,14 +753,17 @@ function itemHTML(r){
 
 function delRec(id){if(!confirm('Excluir este registro?'))return;db[curTab]=db[curTab].filter(r=>r.id!==id);saveDB();renderAll();toast('Registro excluído');}
 
-// Deletar um dia inteiro de água
 function delDiaAgua(dataTimestamp){
-  if(!confirm('Excluir todos os registros de água deste dia?'))return;
-  const inicio = new Date(dataTimestamp);
-  inicio.setHours(0,0,0,0);
+  if(!confirm('Excluir todos os registros de água deste dia?')) return;
+  const ts = Number(dataTimestamp);
+  const inicio = new Date(ts);
+  inicio.setHours(0, 0, 0, 0);
   const fim = new Date(inicio);
-  fim.setDate(fim.getDate()+1);
-  db.agua = db.agua.filter(r=>!(r.d>=inicio.getTime() && r.d<fim.getTime()));
+  fim.setDate(fim.getDate() + 1);
+  const startTs = inicio.getTime();
+  const endTs = fim.getTime();
+  
+  db.agua = db.agua.filter(r => !(r.d >= startTs && r.d < endTs));
   saveDB();
   renderAll();
   toast('Dia excluído');
@@ -474,7 +786,6 @@ function clearAll(){
 }
 
 /* ================= GRÁFICOS ================= */
-// Gráfico padrão (para os outros tipos)
 function drawChart(recs){
   const cv=q('chart'),ctx=cv.getContext('2d'),dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
   cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
@@ -500,7 +811,6 @@ function drawChart(recs){
     s.pts.forEach(p=>{ctx.fillStyle=s.cor;ctx.beginPath();ctx.arc(X(p.x),Y(p.y),3.2,0,7);ctx.fill();});});
 }
 
-// Gráfico específico para água (usando totais diários)
 function drawChartAgua(dias){
   const cv=q('chart'),ctx=cv.getContext('2d'),dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
   cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
@@ -548,7 +858,27 @@ function saveForm(){const t=curForm;if(!t)return;
 /* ============== NAVEGAÇÃO / UTIL ============== */
 function goHome(){show('home');}
 function goHist(){show('hist');renderHistory();}
-function show(s){q('screen-home').classList.toggle('active',s==='home');q('screen-hist').classList.toggle('active',s==='hist');q('nav-home').classList.toggle('active',s==='home');q('nav-hist').classList.toggle('active',s==='hist');window.scrollTo({top:0});}
+function goExercicios(){show('exercicios');loadExWorkouts();}
+function showExConfig(){resetExForm(); show('ex-config');}
+function showExTimer(){show('ex-timer');}
+function show(s){
+  // Interromper música se sair da tela do timer
+  if (s !== 'ex-timer' && exCurrentAudio) {
+    exCurrentAudio.pause();
+    if (exCurrentAudio.src) URL.revokeObjectURL(exCurrentAudio.src);
+    exCurrentAudio = null;
+  }
+  
+  q('screen-home').classList.toggle('active',s==='home');
+  q('screen-hist').classList.toggle('active',s==='hist');
+  q('screen-exercicios').classList.toggle('active',s==='exercicios');
+  q('screen-ex-config').classList.toggle('active',s==='ex-config');
+  q('screen-ex-timer').classList.toggle('active',s==='ex-timer');
+  q('nav-home').classList.toggle('active',s==='home');
+  q('nav-hist').classList.toggle('active',s==='hist');
+  q('nav-ex').classList.toggle('active',s==='exercicios'||s==='ex-config'||s==='ex-timer');
+  window.scrollTo({top:0});
+}
 let toastTimer;function toast(m){const el=q('toast');el.textContent=m;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2200);}
 function exportCSV(){
   if(curTab==='agua'){
@@ -589,7 +919,412 @@ window.addEventListener('resize',()=>{
     drawChart([...db[curTab]].sort((a,b)=>b.d-a.d));
   }
 });
-renderAll();
+
+/* ============ CRONÔMETRO DE EXERCÍCIOS ============ */
+let exCurrentWorkout = null;
+let exTimerInterval = null;
+let exCurrentTime = 0;
+let exTotalTime = 0;
+let exCurrentPhase = 'preparar';
+let exCurrentRep = 1;
+let exCurrentRound = 1;
+let exIsRunning = false;
+let exAudioContext = null;
+let editingWorkoutId = null;
+
+// NOVO: Variáveis para música de fundo
+let exAudioFiles = {}; // Armazena os arquivos de áudio por ID do treino (sessão)
+let exCurrentAudio = null; // Instância do áudio tocando atualmente
+
+function initExAudio(){
+  if(!exAudioContext){
+    exAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if(exAudioContext.state === 'suspended'){
+    exAudioContext.resume();
+  }
+}
+
+function playExBeep(type = 'short') {
+  if (!exAudioContext) return;
+  const oscillator = exAudioContext.createOscillator();
+  const gainNode = exAudioContext.createGain();
+  oscillator.type = 'sine';
+  
+  const now = exAudioContext.currentTime;
+  if (type === 'short') {
+    oscillator.frequency.value = 1000;
+    gainNode.gain.setValueAtTime(0.3, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+    oscillator.start(now);
+    oscillator.stop(now + 0.1);
+  } else if (type === 'high') {
+    oscillator.frequency.value = 1500; // Agudo
+    gainNode.gain.setValueAtTime(0.6, now); // Alto
+    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+    oscillator.start(now);
+    oscillator.stop(now + 0.25);
+  } else { // long
+    oscillator.frequency.value = 600;
+    gainNode.gain.setValueAtTime(0.4, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+    oscillator.start(now);
+    oscillator.stop(now + 0.4);
+  }
+  
+  oscillator.connect(gainNode);
+  gainNode.connect(exAudioContext.destination);
+}
+
+function loadExWorkouts(){
+  const list = q('exWorkoutList');
+  if(db.exWorkouts.length === 0){
+    list.innerHTML = '<div class="ex-empty">Nenhum treino salvo. Crie seu primeiro treino!</div>';
+    return;
+  }
+  list.innerHTML = db.exWorkouts.map(workout => `
+    <div class="ex-card">
+      <div class="ex-card-content">
+        <div class="ex-card-title">${workout.name}</div>
+        <div class="ex-card-details">
+          ${workout.rodadas}x Rodadas | ${workout.repeticoes}x Repetições<br>
+          Ex: ${workout.tempoExercicio}s | Desc: ${workout.tempoDescanso}s
+        </div>
+      </div>
+      <div class="ex-card-actions">
+        <button class="ex-btn play" onclick="startExWorkout(${workout.id})">▶</button>
+        <button class="ex-btn edit" onclick="editExWorkout(${workout.id})">✏️</button>
+        <button class="ex-btn del" onclick="deleteExWorkout(${workout.id})">🗑</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function resetExForm(){
+  editingWorkoutId = null;
+  q('exWorkoutName').value = '';
+  q('exTempoAquecimento').value = '60';
+  q('exTempoExercicio').value = '30';
+  q('exTempoDescanso').value = '15';
+  q('exRepeticoes').value = '10';
+  q('exRodadas').value = '3';
+  q('exTempoDescansoRodada').value = '60';
+  q('exTempoDesaceleracao').value = '60';
+  
+  // Limpar seleção de música
+  const fileInput = q('exMusicFile');
+  if(fileInput) fileInput.value = '';
+  const fileNameDisplay = q('exMusicFileName');
+  if(fileNameDisplay) fileNameDisplay.textContent = '';
+  
+  const saveBtn = q('exSaveBtn');
+  if(saveBtn) saveBtn.textContent = '💾 SALVAR TREINO';
+}
+
+function editExWorkout(id){
+  const workout = db.exWorkouts.find(w => w.id === id);
+  if(!workout) return;
+  editingWorkoutId = id;
+  q('exWorkoutName').value = workout.name;
+  q('exTempoAquecimento').value = workout.tempoAquecimento;
+  q('exTempoExercicio').value = workout.tempoExercicio;
+  q('exTempoDescanso').value = workout.tempoDescanso;
+  q('exRepeticoes').value = workout.repeticoes;
+  q('exRodadas').value = workout.rodadas;
+  q('exTempoDescansoRodada').value = workout.tempoDescansoRodada;
+  q('exTempoDesaceleracao').value = workout.tempoDesaceleracao;
+  
+  // Exibir nome do arquivo de música se existir na sessão
+  const fileNameDisplay = q('exMusicFileName');
+  if(exAudioFiles[id] && fileNameDisplay) {
+    fileNameDisplay.textContent = '🎵 ' + exAudioFiles[id].name;
+  } else if (fileNameDisplay) {
+    fileNameDisplay.textContent = 'Nenhuma música selecionada para esta sessão';
+  }
+  
+  const saveBtn = q('exSaveBtn');
+  if(saveBtn) saveBtn.textContent = '💾 ATUALIZAR TREINO';
+  
+  show('ex-config');
+}
+
+function saveExWorkout(){
+  const name = q('exWorkoutName').value;
+  if(!name){
+    toast('⚠️ Por favor, digite o nome do treino');
+    return;
+  }
+  const workoutId = editingWorkoutId || Date.now();
+  const workoutData = {
+    id: workoutId,
+    name: name,
+    tempoAquecimento: parseInt(q('exTempoAquecimento').value) || 60,
+    tempoExercicio: parseInt(q('exTempoExercicio').value) || 30,
+    tempoDescanso: parseInt(q('exTempoDescanso').value) || 15,
+    repeticoes: parseInt(q('exRepeticoes').value) || 10,
+    rodadas: parseInt(q('exRodadas').value) || 3,
+    tempoDescansoRodada: parseInt(q('exTempoDescansoRodada').value) || 60,
+    tempoDesaceleracao: parseInt(q('exTempoDesaceleracao').value) || 60
+  };
+  
+  // Salvar arquivo de música na memória da sessão
+  const fileInput = q('exMusicFile');
+  if (fileInput && fileInput.files && fileInput.files.length > 0) {
+    exAudioFiles[workoutId] = fileInput.files[0];
+  }
+  
+  if (editingWorkoutId) {
+    const index = db.exWorkouts.findIndex(w => w.id === editingWorkoutId);
+    if (index !== -1) {
+      db.exWorkouts[index] = workoutData;
+    }
+    toast('✅ Treino atualizado com sucesso!');
+  } else {
+    db.exWorkouts.push(workoutData);
+    toast('✅ Treino salvo com sucesso!');
+  }
+  
+  saveDB();
+  resetExForm();
+  show('exercicios');
+  loadExWorkouts();
+}
+
+function deleteExWorkout(id){
+  if(confirm('Deseja excluir este treino?')){
+    db.exWorkouts = db.exWorkouts.filter(w => w.id !== id);
+    saveDB();
+    loadExWorkouts();
+  }
+}
+
+function startExWorkout(id){
+  exCurrentWorkout = db.exWorkouts.find(w => w.id === id);
+  if(!exCurrentWorkout) return;
+  
+  exCurrentRound = 1;
+  exCurrentRep = 1;
+  exCurrentPhase = 'preparar';
+  exCurrentTime = 3;
+  exTotalTime = 3;
+  exIsRunning = false;
+  
+  // Configurar música de fundo
+  if(exCurrentAudio) {
+    exCurrentAudio.pause();
+    if (exCurrentAudio.src) URL.revokeObjectURL(exCurrentAudio.src);
+    exCurrentAudio = null;
+  }
+  if(exAudioFiles[id]) {
+    const fileUrl = URL.createObjectURL(exAudioFiles[id]);
+    exCurrentAudio = new Audio(fileUrl);
+    exCurrentAudio.loop = true;
+  }
+  
+  q('exDisplayWorkoutName').textContent = exCurrentWorkout.name;
+  q('exTotalRounds').textContent = exCurrentWorkout.rodadas;
+  q('exCurrentRound').textContent = exCurrentRound;
+  q('exTotalReps').textContent = exCurrentWorkout.repeticoes;
+  q('exCurrentRep').textContent = exCurrentRep;
+  q('exDisplayTempoExercicio').textContent = exCurrentWorkout.tempoExercicio;
+  q('exDisplayTempoDescanso').textContent = exCurrentWorkout.tempoDescanso;
+  
+  showExTimer();
+  updateExTimerDisplay();
+}
+
+function toggleExTimer(){
+  if(exIsRunning){
+    pauseExTimer();
+  }else{
+    startExTimer();
+  }
+}
+
+function startExTimer(){
+  initExAudio();
+  exIsRunning = true;
+  q('exBtnStartPause').textContent = '⏸ PAUSAR';
+  
+  // Tocar música se existir
+  if(exCurrentAudio) {
+    exCurrentAudio.play().catch(e => console.log("Erro ao tocar áudio:", e));
+  }
+  
+  exTimerInterval = setInterval(() => {
+    // Lógica de bip nos últimos 3 segundos: 2 curtos e 1 agudo/alto
+    if (exCurrentTime === 3 || exCurrentTime === 2) {
+      playExBeep('short');
+    } else if (exCurrentTime === 1) {
+      playExBeep('high');
+    } else if (exCurrentTime === 0) {
+      playExBeep('long');
+    }
+    
+    exCurrentTime--;
+    if (exCurrentTime < 0) {
+      nextExPhase();
+    }
+    updateExTimerDisplay();
+  }, 1000);
+}
+
+function pauseExTimer(){
+  exIsRunning = false;
+  q('exBtnStartPause').textContent = '▶ CONTINUAR';
+  clearInterval(exTimerInterval);
+  
+  // Pausar música
+  if(exCurrentAudio) {
+    exCurrentAudio.pause();
+  }
+}
+
+function resetExTimer(){
+  pauseExTimer();
+  exCurrentRound = 1;
+  exCurrentRep = 1;
+  exCurrentPhase = 'preparar';
+  exCurrentTime = 3;
+  exTotalTime = 3;
+  q('exCurrentRound').textContent = exCurrentRound;
+  q('exCurrentRep').textContent = exCurrentRep;
+  q('exBtnStartPause').textContent = '▶ INICIAR';
+  
+  // Parar e limpar música
+  if(exCurrentAudio) {
+    exCurrentAudio.pause();
+    if (exCurrentAudio.src) URL.revokeObjectURL(exCurrentAudio.src);
+    exCurrentAudio = null;
+  }
+  
+  updateExTimerDisplay();
+}
+
+function nextExPhase(){
+  if(exCurrentPhase === 'preparar'){
+    if(exCurrentWorkout.tempoAquecimento > 0){
+      exCurrentPhase = 'aquecimento';
+      exCurrentTime = exCurrentWorkout.tempoAquecimento;
+    } else {
+      exCurrentPhase = 'exercicio';
+      exCurrentTime = exCurrentWorkout.tempoExercicio;
+    }
+  } else if(exCurrentPhase === 'aquecimento'){
+    exCurrentPhase = 'exercicio';
+    exCurrentTime = exCurrentWorkout.tempoExercicio;
+  } else if(exCurrentPhase === 'exercicio'){
+    if(exCurrentRep < exCurrentWorkout.repeticoes){
+      exCurrentPhase = 'descanso';
+      exCurrentTime = exCurrentWorkout.tempoDescanso;
+    } else {
+      if(exCurrentRound < exCurrentWorkout.rodadas){
+        exCurrentPhase = 'descanso_rodada';
+        exCurrentTime = exCurrentWorkout.tempoDescansoRodada;
+      } else {
+        if(exCurrentWorkout.tempoDesaceleracao > 0){
+          exCurrentPhase = 'desaceleracao';
+          exCurrentTime = exCurrentWorkout.tempoDesaceleracao;
+        } else {
+          finishExWorkout();
+          return;
+        }
+      }
+    }
+  } else if(exCurrentPhase === 'descanso'){
+    exCurrentRep++;
+    exCurrentPhase = 'exercicio';
+    exCurrentTime = exCurrentWorkout.tempoExercicio;
+    q('exCurrentRep').textContent = exCurrentRep;
+  } else if(exCurrentPhase === 'descanso_rodada'){
+    exCurrentRound++;
+    exCurrentRep = 1;
+    exCurrentPhase = 'exercicio';
+    exCurrentTime = exCurrentWorkout.tempoExercicio;
+    q('exCurrentRound').textContent = exCurrentRound;
+    q('exCurrentRep').textContent = exCurrentRep;
+  } else if(exCurrentPhase === 'desaceleracao'){
+    finishExWorkout();
+    return;
+  }
+  
+  exTotalTime = exCurrentTime;
+  updateExTimerDisplay();
+}
+
+function finishExWorkout(){
+  pauseExTimer();
+  q('exTimerPhase').textContent = 'TREINO CONCLUÍDO!';
+  q('exTimerTime').textContent = '✅';
+  q('exTimerLabel').textContent = 'Parabéns!';
+  q('exTimerCircle').style.setProperty('--progress', '360deg');
+  
+  // Parar música ao finalizar
+  if(exCurrentAudio) {
+    exCurrentAudio.pause();
+    if (exCurrentAudio.src) URL.revokeObjectURL(exCurrentAudio.src);
+    exCurrentAudio = null;
+  }
+  
+  setTimeout(() => {
+    if(confirm('Treino concluído! Deseja iniciar novamente?')){
+      resetExTimer();
+      startExTimer();
+    }else{
+      resetExForm();
+      show('exercicios');
+    }
+  }, 2000);
+}
+
+function updateExTimerDisplay(){
+  const minutes = Math.floor(exCurrentTime / 60);
+  const seconds = exCurrentTime % 60;
+  const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  q('exTimerTime').textContent = timeString;
+  
+  let phaseText = '';
+  let progress = 0;
+  
+  if(exCurrentPhase === 'preparar'){
+    phaseText = 'PREPARAR';
+    progress = ((exTotalTime - exCurrentTime) / exTotalTime) * 360;
+  } else if(exCurrentPhase === 'aquecimento'){
+    phaseText = 'AQUECIMENTO';
+    progress = ((exTotalTime - exCurrentTime) / exTotalTime) * 360;
+  } else if(exCurrentPhase === 'exercicio'){
+    phaseText = 'EXERCÍCIO';
+    progress = ((exTotalTime - exCurrentTime) / exTotalTime) * 360;
+  } else if(exCurrentPhase === 'descanso'){
+    phaseText = 'DESCANSO';
+    progress = ((exTotalTime - exCurrentTime) / exTotalTime) * 360;
+  } else if(exCurrentPhase === 'descanso_rodada'){
+    phaseText = 'DESCANSO DA RODADA';
+    progress = ((exTotalTime - exCurrentTime) / exTotalTime) * 360;
+  } else if(exCurrentPhase === 'desaceleracao'){
+    phaseText = 'DESACELERAÇÃO';
+    progress = ((exTotalTime - exCurrentTime) / exTotalTime) * 360;
+  }
+  
+  q('exTimerPhase').textContent = phaseText;
+  q('exTimerCircle').style.setProperty('--progress', progress + 'deg');
+}
+
+// Listener para mostrar o nome do arquivo selecionado imediatamente
+document.addEventListener('change', function(e) {
+  if (e.target && e.target.id === 'exMusicFile') {
+    const fileNameDisplay = q('exMusicFileName');
+    if (e.target.files.length > 0) {
+      fileNameDisplay.textContent = '🎵 ' + e.target.files[0].name;
+    } else {
+      fileNameDisplay.textContent = '';
+    }
+  }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderAll();
+});
 </script>
 </body>
 </html>
