@@ -1,1478 +1,3208 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
-<meta name="theme-color" content="#262b3f"/>
-<meta name="mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🩺</text></svg>">
-<title>Minha Saúde Digital</title>
-<style>
-:root{--bg:#262b3f;--card:#3a4159;--card2:#4a5170;--blue:#4d7cf3;--muted:#9aa3c0;--radius:22px}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
-input,select{user-select:text}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:#fff}
-#app{max-width:520px;margin:0 auto;padding:24px 16px 120px}
-.page-title{font-size:26px;font-weight:800;letter-spacing:.5px;margin:6px 4px 18px}
-.screen{display:none}.screen.active{display:block;animation:fade .25s ease}
-@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.card{background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
-.hero-top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px}
-.heart{font-size:62px;line-height:1;animation:beat 1.6s infinite}
-@keyframes beat{0%,100%{transform:scale(1)}12%{transform:scale(1.12)}24%{transform:scale(1)}36%{transform:scale(1.08)}48%{transform:scale(1)}}
-.btn{border:none;border-radius:16px;padding:14px 20px;font-size:16px;font-weight:700;color:#fff;cursor:pointer;transition:transform .12s,filter .15s;touch-action:manipulation}
-.btn:active{transform:scale(.97)}
-.btn.primary{background:var(--blue)}
-.btn.big{font-size:19px;padding:18px 26px;border-radius:18px}
-.btn.block{width:100%}
-.btn.ghost{background:var(--card2)}
-.btn.danger{background:rgba(248,113,113,.15);color:#f87171}
-.btn.sm{padding:11px 14px;font-size:14px;border-radius:12px}
-.chev{font-weight:800}
-.last-bar{background:var(--card2);border-radius:16px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;font-weight:700}
-.muted{color:var(--muted)}
-.link{background:none;border:none;color:#fff;font-size:16px;font-weight:700;cursor:pointer}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.metric{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:20px 14px}
-.m-icon{width:58px;height:58px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:30px}
-.m-title{font-weight:700;font-size:15px}
-.m-value{font-size:26px;font-weight:800}
-.m-value small{font-size:13px;color:var(--muted);font-weight:700;margin-left:4px}
-.badge-row{min-height:22px;display:flex;align-items:center}
-.badge{font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px;white-space:nowrap}
-.tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;-webkit-overflow-scrolling:touch}
-.tabs button{flex:0 0 auto;border:none;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:800;background:var(--card);color:var(--muted);cursor:pointer}
-.tabs button.active{background:var(--blue);color:#fff}
-.chart-card{padding:12px;margin-bottom:12px}
-#chart{width:100%;height:170px;display:block}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
-.stat{background:var(--card);border-radius:14px;padding:10px 6px;text-align:center}
-.stat b{display:block;font-size:15px;margin-bottom:2px}
-.stat span{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
-.h-item{background:var(--card);border-radius:16px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.h-val{font-size:18px;font-weight:800}
-.h-val small{color:var(--muted);font-size:12px;font-weight:700}
-.h-date{color:var(--muted);font-size:12px;margin-top:2px;font-weight:600}
-.h-right{display:flex;align-items:center;gap:10px}
-.del{background:rgba(248,113,113,.12);border:none;border-radius:10px;width:36px;height:36px;font-size:15px;cursor:pointer}
-.empty{text-align:center;color:var(--muted);padding:30px 0;font-weight:600}
-.actions-row{display:flex;gap:10px;justify-content:center;margin-top:16px}
-#bottomnav{position:fixed;left:0;right:0;bottom:0;background:#1f2437;border-top:1px solid rgba(255,255,255,.06);padding:10px 12px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:center;gap:26px;z-index:40}
-.nav-btn{background:none;border:none;color:var(--muted);font-size:11px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;width:70px}
-.nav-btn .ico{font-size:20px}
-.nav-btn.active{color:#fff}
-.fab{width:58px;height:58px;border-radius:50%;background:var(--blue);border:none;color:#fff;font-size:28px;font-weight:800;margin-top:-34px;box-shadow:0 8px 20px rgba(77,124,243,.45);cursor:pointer;display:none}
-#overlay{position:fixed;inset:0;background:rgba(10,12,24,.6);display:none;align-items:flex-end;justify-content:center;z-index:50;backdrop-filter:blur(2px)}
-#overlay.show{display:flex}
-.modal{background:var(--card);width:100%;max-width:520px;border-radius:26px 26px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom));animation:up .28s ease}
-@keyframes up{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
-.m-head{display:flex;align-items:center;gap:10px;margin-bottom:16px}
-.m-head h2{font-size:19px;flex:1}
-.m-ico{font-size:26px}
-.x{background:var(--card2);border:none;color:#fff;width:34px;height:34px;border-radius:12px;font-size:15px;cursor:pointer}
-.field{margin-bottom:14px}
-.field label{display:block;font-size:12px;font-weight:800;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px}
-.field input,.field select{width:100%;background:var(--card2);border:none;border-radius:14px;padding:13px 14px;color:#fff;font-size:16px;font-weight:700;outline:none}
-.field input:focus{box-shadow:0 0 0 2px var(--blue)}
-.form-row{display:flex;gap:10px}.form-row .field{flex:1}
-.m-foot{display:flex;gap:10px;margin-top:6px}.m-foot .btn{flex:1}
-.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.quick-btn{background:var(--card2);border:none;border-radius:18px;padding:18px 10px;color:#fff;font-weight:800;font-size:14px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer}
-.quick-btn .qi{font-size:30px}
-#toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:#171a28;color:#fff;padding:12px 20px;border-radius:999px;font-weight:700;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:60;box-shadow:0 8px 24px rgba(0,0,0,.4)}
-#toast.show{opacity:1;transform:translateX(-50%)}
-.disclaimer{text-align:center;color:var(--muted);font-size:11px;margin-top:22px;font-weight:600}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#26A69A">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="iMap">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="iMap">
+    <meta name="msapplication-TileColor" content="#26A69A">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="permissions-policy" content="geolocation=(self), camera=(self), microphone=()">
+    
+    <!-- PWA Manifest Inline -->
+    <link rel="manifest" href='data:application/manifest+json,{"name":"iMap - Gestão de Mapas","short_name":"iMap","description":"Gestão KML/KMZ/GPX com GPS, medição e mapas offline","start_url":".","display":"standalone","background_color":"#f5f5f5","theme_color":"#26A69A","orientation":"any","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22%3E%3Crect fill=%22%2326A69A%22 width=%22192%22 height=%22192%22 rx=%2232%22/%3E%3Ctext x=%2296%22 y=%22128%22 font-size=%22100%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22Arial%22%3E🗺%3C/text%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml"},{"src":"data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect fill=%22%2326A69A%22 width=%22512%22 height=%22512%22 rx=%2280%22/%3E%3Ctext x=%22256%22 y=%22340%22 font-size=%22260%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22Arial%22%3E🗺%3C/text%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml"}]}'>
+    
+    <link rel="apple-touch-icon" href='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180"%3E%3Crect fill="%2326A69A" width="180" height="180" rx="40"/%3E%3Ctext x="90" y="120" font-size="90" text-anchor="middle" fill="white" font-family="Arial"%3E🗺%3C/text%3E%3C/svg%3E'>
+    
+    <title>iMap - Gestão KML/KMZ/GPX</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-/* ============ NOVO: ALTURA (card largo) ============ */
-.metric.wide{grid-column:1/-1;flex-direction:row;justify-content:space-between;align-items:center;text-align:left;padding:16px 18px;flex-wrap:wrap;gap:12px}
-.w-mid{display:flex;flex-direction:column;align-items:flex-start;gap:2px;flex:1;min-width:110px}
+        :root {
+            --primary: #26A69A;
+            --primary-dark: #00897B;
+            --primary-light: #4DB6AC;
+            --accent: #FF7043;
+            --bg: #f5f5f5;
+            --card-bg: #ffffff;
+            --text: #212121;
+            --text-secondary: #757575;
+            --border: #e0e0e0;
+            --shadow: 0 2px 8px rgba(0,0,0,0.12);
+            --shadow-lg: 0 4px 16px rgba(0,0,0,0.15);
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
 
-/* ============ NOVO: CARD IMC & PESO IDEAL ============ */
-.imc-card{margin-top:14px}
-.imc-head{font-size:17px;font-weight:800;margin-bottom:14px;display:flex;gap:8px;align-items:center}
-.imc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;text-align:center;margin-bottom:6px}
-.imc-box{background:var(--card2);border-radius:14px;padding:12px 6px}
-.imc-label{font-size:10px;color:var(--muted);font-weight:800;letter-spacing:.4px;text-transform:uppercase;display:block;margin-bottom:4px}
-.imc-val{font-size:22px;font-weight:800}
-.imc-val.green{color:#4ade80}
-.imc-val small{font-size:12px;color:var(--muted);font-weight:700}
-.pi-range{font-size:11px;color:var(--muted);font-weight:700;text-align:center;margin-top:4px}
-.badge-center{justify-content:center}
-.gauge{position:relative;height:16px;border-radius:999px;margin:26px 4px 6px;
-background:linear-gradient(90deg,#f87171 0%,#f87171 7.1%,#fb923c 7.1%,#fb923c 16.1%,#4ade80 16.1%,#4ade80 39.3%,#fde047 39.3%,#fde047 57.1%,#fb923c 57.1%,#fb923c 75%,#f87171 75%,#f87171 92.9%,#dc2626 92.9%,#dc2626 100%)}
-.gauge-mark{position:absolute;top:-17px;transform:translateX(-50%);font-size:14px;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.6);transition:left .3s;display:none}
-.gauge-scale{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-weight:700;margin:0 4px}
-.imc-table{margin-top:14px;display:flex;flex-direction:column;gap:6px}
-.imc-row{display:flex;justify-content:space-between;gap:10px;border-radius:12px;padding:9px 12px;font-size:13px;font-weight:700;background:var(--card2)}
-.imc-row.active{outline:2px solid var(--blue);color:#fff !important}
-.imc-hint{text-align:center;font-size:12px;margin-top:12px;font-weight:600}
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            position: fixed;
+            overscroll-behavior: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
 
-/* ============ MEDIDOR DE ÁGUA ============ */
-.agua-card .agua-progress-wrap{width:100%;background:var(--card2);border-radius:999px;height:14px;margin:8px 0;overflow:hidden}
-.agua-progress{height:100%;border-radius:999px;background:var(--blue);width:0%;transition:width .4s ease}
-.agua-meta{font-size:13px;color:var(--muted);font-weight:700;display:flex;justify-content:space-between;width:100%}
-.agua-actions{display:flex;gap:8px;margin-top:4px;flex-wrap:wrap}
-.agua-actions .btn{flex:1;min-width:80px}
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
 
-/* ============ CRONÓMETRO DE EXERCÍCIOS ============ */
-.ex-top-banner{background:#FFD700;border-radius:var(--radius);overflow:hidden;margin-bottom:16px}
-.ex-banner-title{background:#2C3E50;color:#fff;padding:16px;text-align:center;font-size:20px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
-.ex-banner-sub{background:linear-gradient(90deg,#FF0000 0%,#FF8C00 100%);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px;font-size:16px;font-weight:800}
-.ex-no-equip{width:28px;height:28px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#FF0000;font-size:16px}
-.ex-image{width:100%;height:200px;background:var(--card2);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;display:flex;align-items:center;justify-content:center}
-.ex-image img{width:100%;height:100%;object-fit:cover}
-.ex-placeholder{color:var(--muted);text-align:center;font-size:50px}
-.ex-workout-list{margin-bottom:16px}
-.ex-card{background:var(--card);border-radius:16px;padding:16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
-.ex-card-content{flex:1}
-.ex-card-title{font-size:16px;font-weight:800;margin-bottom:4px;text-transform:uppercase}
-.ex-card-details{font-size:13px;color:var(--muted);line-height:1.4}
-.ex-card-music{font-size:11px;color:#4ade80;font-weight:700;margin-top:4px}
-.ex-card-actions{display:flex;gap:8px}
-.ex-btn{width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:transform .12s}
-.ex-btn:active{transform:scale(.95)}
-.ex-btn.play{background:#2ed573;color:#fff}
-.ex-btn.edit{background:#fbbf24;color:#fff}
-.ex-btn.del{background:rgba(248,113,113,.15);color:#f87171}
-.ex-create-btn{background:var(--blue);color:#fff;padding:16px;text-align:center;border-radius:16px;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 4px 15px rgba(77,124,243,.4)}
-.ex-empty{text-align:center;color:var(--muted);padding:40px 20px}
+        /* ===== HEADER ===== */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: calc(56px + var(--safe-top));
+            padding-top: var(--safe-top);
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            padding-left: 8px;
+            padding-right: 8px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
 
-/* Timer Styles */
-.ex-timer-screen{text-align:center}
-.ex-timer-info{background:var(--card);border-radius:16px;padding:20px;margin-bottom:20px}
-.ex-timer-name{font-size:18px;font-weight:800;margin-bottom:8px}
-.ex-timer-reps{font-size:18px;font-weight:800;color:var(--blue)}
-.ex-timer-circle{width:220px;height:220px;border-radius:50%;background:var(--card);margin:0 auto 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;box-shadow:0 10px 30px rgba(0,0,0,.3)}
-.ex-timer-circle::before{content:'';position:absolute;inset:0;border-radius:50%;background:conic-gradient(var(--blue) var(--progress),var(--card2) 0);z-index:0}
-.ex-timer-inner{position:relative;z-index:1;background:var(--card);width:200px;height:200px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.ex-timer-time{font-size:42px;font-weight:800;color:var(--blue);line-height:1}
-.ex-timer-label{font-size:12px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
-.ex-timer-phase{font-size:20px;font-weight:800;margin-bottom:16px;color:#fff;text-transform:uppercase}
-.ex-badges{display:flex;gap:8px;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
-.ex-badge{padding:6px 12px;border-radius:999px;font-size:12px;font-weight:800}
-.ex-badge.ex{background:var(--blue);color:#fff}
-.ex-badge.rest{background:#fb923c;color:#fff}
-.ex-config-card{background:var(--card);border-radius:var(--radius);padding:18px;margin-bottom:16px}
-.ex-config-title{font-size:18px;font-weight:800;margin-bottom:16px;color:var(--blue)}
-.ex-section-title{font-size:14px;font-weight:800;color:var(--muted);margin:16px 0 10px;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--card2);padding-bottom:4px}
-.ex-radio-group,.ex-check-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.ex-radio-opt,.ex-check-opt{flex:1;min-width:80px}
-.ex-radio-opt input,.ex-check-opt input{display:none}
-.ex-radio-opt label,.ex-check-opt label{display:block;padding:10px;text-align:center;background:var(--card2);border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s}
-.ex-radio-opt input:checked+label,.ex-check-opt input:checked+label{background:var(--blue);color:#fff}
-.ex-time-inputs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+        .header-menu-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
 
-/* ============ NOVO: CONTROLES DE VOLUME ============ */
-.vol-card{margin-top:16px;background:var(--card);border-radius:var(--radius);padding:16px 18px}
-.vol-title{font-size:13px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
-.vol-row{display:flex;align-items:center;gap:12px;padding:12px 0}
-.vol-row + .vol-row{border-top:1px solid rgba(255,255,255,.07)}
-.vol-icon{font-size:22px;width:26px;text-align:center}
-.vol-label{font-size:14px;font-weight:800;min-width:70px;text-align:left}
-.vol-slider{flex:1;-webkit-appearance:none;appearance:none;height:6px;border-radius:999px;background:var(--card2);outline:none;cursor:pointer}
-.vol-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:var(--blue);cursor:pointer;box-shadow:0 2px 8px rgba(77,124,243,.5);border:2px solid #fff}
-.vol-slider::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--blue);cursor:pointer;border:2px solid #fff}
-.vol-slider::-moz-range-track{height:6px;border-radius:999px;background:var(--card2)}
-.vol-value{font-size:13px;font-weight:800;color:var(--blue);min-width:48px;text-align:right}
+        .header-menu-btn:active {
+            background: rgba(255,255,255,0.2);
+        }
 
-/* ============ META DE EMAGRECIMENTO ============ */
-.goal-card{margin-top:14px;margin-bottom:20px}
-.goal-header{margin-bottom:12px}
-.goal-title{font-size:18px;font-weight:800;letter-spacing:.3px}
-.goal-body{display:flex;align-items:center;gap:20px;margin-bottom:16px}
-.goal-circle{position:relative;width:100px;height:100px;flex-shrink:0}
-.goal-svg{width:100%;height:100%;transform:rotate(-90deg)}
-.goal-svg circle{fill:none;stroke-width:8;stroke-linecap:round}
-.goal-svg .bg{stroke:var(--card2)}
-.goal-svg .progress{stroke:var(--blue);transition:stroke-dashoffset 0.5s ease}
-.goal-circle-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.goal-percent{font-size:28px;font-weight:800;line-height:1;color:#fff}
-.goal-percent small{font-size:14px;font-weight:700;color:var(--muted)}
-.goal-weights{display:flex;flex-direction:column;gap:2px;flex:1}
-.goal-weight{font-size:18px;font-weight:800;display:flex;justify-content:space-between;padding:2px 0}
-.goal-weight span{color:#fff}
-.goal-weight .label{color:var(--muted);font-weight:600;font-size:13px}
-.goal-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:14px}
-.goal-stat{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05)}
-.goal-stat-label{color:var(--muted);font-size:13px;font-weight:600}
-.goal-stat-value{font-size:14px;font-weight:700;color:#fff}
-.goal-stat-value.change{color:#4ade80}
-.goal-stat-value.change.neg{color:#f87171}
-@media(max-width:420px){
-.goal-body{flex-wrap:wrap;justify-content:center}
-.goal-weights{flex:1 1 100%;flex-direction:row;justify-content:space-around}
-.goal-stats{grid-template-columns:1fr;gap:2px}
-.goal-weight{font-size:16px}
-.vol-label{min-width:56px;font-size:13px}
-.vol-value{min-width:42px;font-size:12px}
-}
-</style>
+        .search-bar {
+            flex: 1;
+            height: 40px;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            margin: 0 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .search-bar:active {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .search-bar input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+            outline: none;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        .search-bar input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .search-bar i {
+            color: rgba(255,255,255,0.7);
+            margin-right: 8px;
+        }
+
+        .header-location-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            border-radius: 50%;
+        }
+
+        .header-location-btn:active {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* ===== MAP ===== */
+        #map {
+            position: fixed;
+            top: calc(56px + var(--safe-top));
+            left: 0;
+            right: 0;
+            bottom: calc(64px + var(--safe-bottom));
+            z-index: 1;
+        }
+
+        /* ===== MAP CONTROLS ===== */
+        .map-controls {
+            position: fixed;
+            right: 12px;
+            top: calc(70px + var(--safe-top));
+            z-index: 500;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .map-control-btn {
+            width: 44px;
+            height: 44px;
+            background: white;
+            border: none;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .map-control-btn:active {
+            transform: scale(0.92);
+            background: #f0f0f0;
+        }
+
+        .map-control-btn.active {
+            color: var(--primary);
+            background: #E0F2F1;
+        }
+
+        /* ===== GPS TRACKING BUTTON ===== */
+        .gps-btn {
+            position: fixed;
+            right: 12px;
+            bottom: calc(80px + var(--safe-bottom));
+            z-index: 500;
+            width: 56px;
+            height: 56px;
+            background: var(--primary);
+            border: none;
+            border-radius: 50%;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .gps-btn:active {
+            transform: scale(0.9);
+        }
+
+        .gps-btn.recording {
+            background: #f44336;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(244,67,54,0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(244,67,54,0); }
+            100% { box-shadow: 0 0 0 0 rgba(244,67,54,0); }
+        }
+
+        /* ===== BOTTOM NAV ===== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: calc(64px + var(--safe-bottom));
+            padding-bottom: var(--safe-bottom);
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            z-index: 1000;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+            border-top: 1px solid var(--border);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            height: 100%;
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: var(--text-secondary);
+            font-size: 10px;
+            font-weight: 500;
+            transition: color 0.2s;
+            position: relative;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 3px;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 0 0 3px 3px;
+        }
+
+        .nav-item:active {
+            background: rgba(0,0,0,0.03);
+        }
+
+        /* ===== SIDE MENU ===== */
+        .side-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .side-menu-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100%;
+            background: white;
+            z-index: 2001;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+            padding-bottom: var(--safe-bottom);
+        }
+
+        .side-menu.open {
+            left: 0;
+        }
+
+        .side-menu-header {
+            background: var(--primary);
+            padding: calc(24px + var(--safe-top)) 20px 20px;
+            color: white;
+        }
+
+        .side-menu-header h2 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .side-menu-header p {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        .side-menu-section {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .side-menu-section-title {
+            padding: 8px 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .side-menu-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 15px;
+            color: var(--text);
+        }
+
+        .side-menu-item:active {
+            background: #f0f0f0;
+        }
+
+        .side-menu-item i {
+            width: 24px;
+            margin-right: 16px;
+            font-size: 18px;
+            color: var(--text-secondary);
+        }
+
+        .side-menu-item .badge {
+            margin-left: auto;
+            background: var(--primary);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* ===== BOTTOM SHEETS / PANELS ===== */
+        .bottom-sheet-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 1500;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .bottom-sheet-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .bottom-sheet {
+            position: fixed;
+            bottom: calc(64px + var(--safe-bottom));
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 16px 16px 0 0;
+            z-index: 1501;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .bottom-sheet.open {
+            transform: translateY(0);
+        }
+
+        .bottom-sheet-handle {
+            width: 36px;
+            height: 4px;
+            background: #ccc;
+            border-radius: 2px;
+            margin: 10px auto;
+        }
+
+        .bottom-sheet-header {
+            padding: 8px 20px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .bottom-sheet-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .bottom-sheet-header .close-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #f0f0f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+        }
+
+        .bottom-sheet-content {
+            padding: 16px 20px;
+        }
+
+        /* ===== FILE LIST ===== */
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-right: 14px;
+            flex-shrink: 0;
+        }
+
+        .file-icon.kml { background: #E3F2FD; color: #1976D2; }
+        .file-icon.kmz { background: #F3E5F5; color: #7B1FA2; }
+        .file-icon.gpx { background: #E8F5E9; color: #388E3C; }
+        .file-icon.folder { background: #FFF8E1; color: #F9A825; }
+
+        .file-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-info h4 {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-info p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .file-action-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        .file-action-btn:active {
+            background: #f0f0f0;
+        }
+
+        /* ===== MEASUREMENT PANEL ===== */
+        .measure-panel {
+            position: fixed;
+            bottom: calc(72px + var(--safe-bottom));
+            left: 12px;
+            right: 12px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            z-index: 600;
+            padding: 16px;
+            display: none;
+        }
+
+        .measure-panel.visible {
+            display: block;
+        }
+
+        .measure-result {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .measure-result .label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .measure-result .value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .measure-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .measure-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .measure-btn.primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .measure-btn.secondary {
+            background: #f0f0f0;
+            color: var(--text);
+        }
+
+        .measure-btn:active {
+            transform: scale(0.96);
+        }
+
+        /* ===== TOOLBAR FLOATING ===== */
+        .toolbar {
+            position: fixed;
+            bottom: calc(72px + var(--safe-bottom));
+            left: 12px;
+            z-index: 500;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .tool-btn {
+            width: 44px;
+            height: 44px;
+            background: white;
+            border: none;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tool-btn:active {
+            transform: scale(0.92);
+        }
+
+        .tool-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* ===== LAYER CONTROL ===== */
+        .layer-panel {
+            position: fixed;
+            top: calc(56px + var(--safe-top));
+            right: 0;
+            width: 280px;
+            max-width: 85vw;
+            background: white;
+            z-index: 900;
+            box-shadow: var(--shadow-lg);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            max-height: calc(100vh - 56px - var(--safe-top));
+            overflow-y: auto;
+        }
+
+        .layer-panel.open {
+            transform: translateX(0);
+        }
+
+        .layer-panel-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .layer-panel-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .layer-group {
+            padding: 12px 16px;
+        }
+
+        .layer-group-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .layer-option {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            cursor: pointer;
+        }
+
+        .layer-option input[type="checkbox"],
+        .layer-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            accent-color: var(--primary);
+        }
+
+        .layer-option label {
+            font-size: 14px;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .layer-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            margin-left: 8px;
+        }
+
+        /* ===== RECORDING OVERLAY ===== */
+        .recording-overlay {
+            position: fixed;
+            top: calc(56px + var(--safe-top));
+            left: 0;
+            right: 0;
+            background: rgba(244,67,54,0.95);
+            color: white;
+            padding: 10px 16px;
+            z-index: 800;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+
+        .recording-overlay.visible {
+            display: flex;
+        }
+
+        .recording-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .recording-dot {
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .recording-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+        }
+
+        .recording-stats span {
+            opacity: 0.9;
+        }
+
+        /* ===== FAB ===== */
+        .fab {
+            position: fixed;
+            bottom: calc(80px + var(--safe-bottom));
+            right: 12px;
+            width: 56px;
+            height: 56px;
+            background: var(--primary);
+            border: none;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+            z-index: 500;
+            transition: all 0.2s;
+        }
+
+        .fab:active {
+            transform: scale(0.9);
+        }
+
+        /* ===== GPS STATUS BAR ===== */
+        .gps-status {
+            position: fixed;
+            top: calc(60px + var(--safe-top));
+            left: 12px;
+            background: white;
+            border-radius: 20px;
+            padding: 6px 14px;
+            box-shadow: var(--shadow);
+            z-index: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .gps-status .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4CAF50;
+        }
+
+        .gps-status .dot.no-signal {
+            background: #f44336;
+        }
+
+        .gps-status .dot.searching {
+            background: #FFC107;
+            animation: blink 1s infinite;
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: calc(80px + var(--safe-bottom));
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 3000;
+            transition: transform 0.3s;
+            white-space: nowrap;
+            max-width: 90vw;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .toast.visible {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2500;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 360px;
+            overflow: hidden;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px 20px 0;
+        }
+
+        .modal-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 16px 20px;
+        }
+
+        .modal-body p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .modal-actions {
+            padding: 12px 20px 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .modal-btn.cancel {
+            background: #f0f0f0;
+            color: var(--text);
+        }
+
+        .modal-btn.confirm {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* ===== WMS INPUT ===== */
+        .wms-input-group {
+            margin-bottom: 12px;
+        }
+
+        .wms-input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+        }
+
+        .wms-input-group input,
+        .wms-input-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        .wms-input-group input:focus,
+        .wms-input-group select:focus {
+            border-color: var(--primary);
+        }
+
+        /* ===== SEARCH RESULTS ===== */
+        .search-results {
+            position: fixed;
+            top: calc(56px + var(--safe-top));
+            left: 0;
+            right: 0;
+            background: white;
+            z-index: 1100;
+            max-height: 0;
+            overflow-y: auto;
+            transition: max-height 0.3s;
+            box-shadow: var(--shadow);
+        }
+
+        .search-results.open {
+            max-height: 60vh;
+        }
+
+        .search-result-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+        }
+
+        .search-result-item:active {
+            background: #f5f5f5;
+        }
+
+        .search-result-item i {
+            width: 36px;
+            height: 36px;
+            background: #f0f0f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: var(--text-secondary);
+        }
+
+        .search-result-item .info h4 {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .search-result-item .info p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* ===== GPS INFO PANEL ===== */
+        .gps-info-panel {
+            position: fixed;
+            top: calc(90px + var(--safe-top));
+            left: 12px;
+            right: 12px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            z-index: 550;
+            padding: 12px 16px;
+            display: none;
+            font-size: 12px;
+        }
+
+        .gps-info-panel.visible {
+            display: block;
+        }
+
+        .gps-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .gps-info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .gps-info-item .label {
+            font-size: 10px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .gps-info-item .value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* ===== COMPASS ===== */
+        .compass {
+            position: fixed;
+            top: calc(90px + var(--safe-top));
+            right: 12px;
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: var(--shadow);
+            z-index: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .compass i {
+            font-size: 24px;
+            color: #f44336;
+        }
+
+        /* ===== PERMISSION MODAL ===== */
+        .permission-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .permission-list li {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        .permission-list li:last-child {
+            border-bottom: none;
+        }
+
+        .permission-list li i {
+            width: 32px;
+            height: 32px;
+            background: #E0F2F1;
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 14px;
+        }
+
+        .permission-list li .status {
+            margin-left: auto;
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .permission-list li .status.granted {
+            background: #E8F5E9;
+            color: #388E3C;
+        }
+
+        .permission-list li .status.denied {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        .permission-list li .status.prompt {
+            background: #FFF8E1;
+            color: #F57F17;
+        }
+
+        /* ===== OFFLINE INDICATOR ===== */
+        .offline-indicator {
+            position: fixed;
+            top: calc(56px + var(--safe-top));
+            left: 50%;
+            transform: translateX(-50%);
+            background: #FF9800;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 900;
+            display: none;
+            box-shadow: var(--shadow);
+        }
+
+        .offline-indicator.visible {
+            display: block;
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 2px;
+        }
+
+        /* ===== FOLDER TREE ===== */
+        .folder-tree {
+            padding: 8px 0;
+        }
+
+        .folder-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .folder-item:active {
+            background: #f5f5f5;
+        }
+
+        .folder-item .indent {
+            width: 24px;
+        }
+
+        .folder-item i.fa-folder,
+        .folder-item i.fa-folder-open {
+            color: #F9A825;
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .folder-item i.fa-file-alt {
+            color: #1976D2;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .folder-item .name {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .folder-item .count {
+            font-size: 12px;
+            color: var(--text-secondary);
+            background: #f0f0f0;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        /* ===== TABS ===== */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 12px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border: none;
+            background: none;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab:active {
+            background: #f5f5f5;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (min-width: 768px) {
+            body {
+                max-width: 430px;
+                margin: 0 auto;
+                box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            }
+        }
+
+        @media (max-width: 360px) {
+            .recording-stats {
+                gap: 8px;
+                font-size: 11px;
+            }
+            .gps-info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== BATTERY INDICATOR ===== */
+        .battery-indicator {
+            position: fixed;
+            top: calc(60px + var(--safe-top));
+            right: 12px;
+            background: white;
+            border-radius: 20px;
+            padding: 6px 12px;
+            box-shadow: var(--shadow);
+            z-index: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .battery-indicator i {
+            color: #4CAF50;
+        }
+
+        .battery-indicator.low i {
+            color: #f44336;
+        }
+    </style>
 </head>
 <body>
-<div id="app">
 
-  <!-- ============ PÁGINA INICIAL ============ -->
-  <section id="screen-home" class="screen active">
-    <h1 class="page-title">PÁGINA INICIAL</h1>
-    
-    <div class="card" style="display:none;">
-      <div class="hero-top">
-        <div class="heart">❤️</div>
-        <button class="btn primary big" onclick="openQuick()">Medir agora <span class="chev">›</span></button>
-      </div>
-      <div class="last-bar">
-        <span>Último Registro: <b id="lastTime" class="muted">--:--</b></span>
-        <button class="link" onclick="goHist()">Histórico <span class="chev">›</span></button>
-      </div>
-    </div>
-    
-    <br/>
-    <div class="grid">
-      <div class="card metric">
-        <div class="m-icon" style="background:rgba(96,165,250,.18)">⚖️</div>
-        <div class="m-title">Peso</div>
-        <div class="m-value"><span id="v-peso">--</span><small>kg</small></div>
-        <div class="badge-row" id="b-peso"></div>
-        <button class="btn primary block" onclick="openForm('peso')">Registro</button>
-      </div>
-      <div class="card metric">
-        <div class="m-icon" style="background:rgba(248,113,113,.15)">🩺</div>
-        <div class="m-title">Pressão arterial</div>
-        <div class="m-value"><span id="v-pressao">--</span><small>mmHg</small></div>
-        <div class="badge-row" id="b-pressao"></div>
-        <button class="btn primary block" onclick="openForm('pressao')">Registro</button>
-      </div>
-      <div class="card metric">
-        <div class="m-icon" style="background:rgba(251,146,60,.15)">🩸</div>
-        <div class="m-title">Açúcar no sangue</div>
-        <div class="m-value"><span id="v-acucar">--</span><small>mg/dL</small></div>
-        <div class="badge-row" id="b-acucar"></div>
-        <button class="btn primary block" onclick="openForm('acucar')">Registro</button>
-      </div>
-      <div class="card metric">
-        <div class="m-icon" style="background:rgba(244,114,182,.15)">💓</div>
-        <div class="m-title">Frequência cardíaca</div>
-        <div class="m-value"><span id="v-fc">--</span><small>bpm</small></div>
-        <div class="badge-row" id="b-fc"></div>
-        <button class="btn primary block" onclick="openForm('fc')">Registro</button>
-      </div>
-
-      <!-- ALTURA -->
-      <div class="card metric wide">
-        <div class="m-icon" style="background:rgba(74,222,128,.15)">📏</div>
-        <div class="w-mid">
-          <div class="m-title">Altura</div>
-          <div class="m-value"><span id="v-altura">--</span><small>cm</small></div>
+    <!-- HEADER -->
+    <div class="header">
+        <button class="header-menu-btn" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="search-bar" onclick="toggleSearch()">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Procurar" id="searchInput" oninput="handleSearch(this.value)">
         </div>
-        <button class="btn primary" onclick="openForm('altura')">Registro</button>
-      </div>
+        <button class="header-location-btn" onclick="centerOnLocation()">
+            <i class="fas fa-location-arrow"></i>
+        </button>
+    </div>
 
-      <!-- ÁGUA (diário) -->
-      <div class="card metric wide agua-card">
-        <div class="m-icon" style="background:rgba(96,165,250,.18)">💧</div>
-        <div class="w-mid" style="flex:2">
-          <div class="m-title">Água</div>
-          <div class="m-value"><span id="v-agua">--</span><small>ml</small></div>
-          <div class="agua-meta"><span>Meta: <span id="agua-meta-text">2000</span> ml</span><span id="agua-badge"></span></div>
-          <div class="agua-progress-wrap"><div class="agua-progress" id="agua-progress" style="width:0%"></div></div>
-          <div class="agua-actions">
-            <button class="btn primary" onclick="addAgua(250)">+ Copo (250ml)</button>
-            <button class="btn ghost sm" onclick="openAguaModal()">⚙️</button>
-          </div>
+    <!-- SEARCH RESULTS -->
+    <div class="search-results" id="searchResults">
+        <div class="search-result-item" onclick="goToPlace(-3.7327, -38.5267)">
+            <i class="fas fa-map-marker-alt"></i>
+            <div class="info">
+                <h4>Tancredo Neves</h4>
+                <p>Bairro, Fortaleza - CE</p>
+            </div>
         </div>
-      </div>
-    </div>
-
-    <!-- IMC -->
-    <div class="card imc-card">
-      <div class="imc-head">📐 IMC & Peso Ideal</div>
-      <div class="imc-grid">
-        <div class="imc-box"><span class="imc-label">IMC</span><div class="imc-val" id="v-imc">--</div></div>
-        <div class="imc-box"><span class="imc-label">Peso ideal</span><div class="imc-val green" id="v-pesoideal">--</div></div>
-      </div>
-      <div class="badge-row badge-center" id="b-imc"></div>
-      <div class="pi-range" id="pi-range"></div>
-      <div class="gauge"><div id="gaugeMark" class="gauge-mark">▼</div></div>
-      <div class="gauge-scale"><span>14</span><span>IMC</span><span>42</span></div>
-      <div class="imc-table" id="imcTable"></div>
-      <div class="muted imc-hint" id="imcHint">Registre seu <b>peso</b> e sua <b>altura</b> para calcular o IMC e o peso ideal.</div>
-    </div>
-
-    <!-- META DE EMAGRECIMENTO (reposicionada para baixo do IMC) -->
-    <div class="card goal-card" id="goalCard">
-      <div class="goal-header">
-        <span class="goal-title">Progresso do objetivo</span>
-      </div>
-      <div class="goal-body">
-        <div class="goal-circle">
-          <svg viewBox="0 0 120 120" class="goal-svg">
-            <circle cx="60" cy="60" r="54" class="bg"/>
-            <circle cx="60" cy="60" r="54" class="progress" id="goalCircleProgress"/>
-          </svg>
-          <div class="goal-circle-inner">
-            <span class="goal-percent" id="goalPercent">0<small>%</small></span>
-          </div>
+        <div class="search-result-item" onclick="goToPlace(-3.7350, -38.5200)">
+            <i class="fas fa-utensils"></i>
+            <div class="info">
+                <h4>Terezinha Bolos e Confeitaria</h4>
+                <p>Rua Castro Alencar, Fortaleza</p>
+            </div>
         </div>
-        <div class="goal-weights">
-          <div class="goal-weight"><span class="label">Atual</span> <span id="goalCurrentWeight">--</span><span class="label">Kg</span></div>
-          <div class="goal-weight"><span class="label">Meta</span> <span id="goalTargetWeight">--</span><span class="label">Kg</span></div>
+        <div class="search-result-item" onclick="goToPlace(-3.7380, -38.5250)">
+            <i class="fas fa-shopping-cart"></i>
+            <div class="info">
+                <h4>Assaí Atacadista</h4>
+                <p>Av. José Leon, Fortaleza</p>
+            </div>
         </div>
-      </div>
-      <div class="goal-stats">
-        <div class="goal-stat"><span class="goal-stat-label">Peso inicial</span><span class="goal-stat-value" id="goalInitial">--</span></div>
-        <div class="goal-stat"><span class="goal-stat-label">Peso objetivo</span><span class="goal-stat-value" id="goalTarget">--</span></div>
-        <div class="goal-stat"><span class="goal-stat-label">Data de início</span><span class="goal-stat-value" id="goalStartDate">--</span></div>
-        <div class="goal-stat"><span class="goal-stat-label">Peso mais recente</span><span class="goal-stat-value" id="goalLatest">--</span></div>
-        <div class="goal-stat"><span class="goal-stat-label">durante a mudança</span><span class="goal-stat-value change" id="goalChange">--</span></div>
-      </div>
-      <button class="btn primary block" onclick="openGoalModal()">Modificar Alvo</button>
     </div>
 
-    <div class="disclaimer">⚠️ App para registro pessoal — não substitui orientação médica.</div>
-  </section>
+    <!-- MAP -->
+    <div id="map"></div>
 
-  <!-- ============ HISTÓRICO ============ -->
-  <section id="screen-hist" class="screen">
-    <h1 class="page-title">HISTÓRICO</h1>
-    <div class="tabs" id="tabs"></div>
-    <div class="card chart-card"><canvas id="chart"></canvas></div>
-    <div class="stats" id="stats"></div>
-    <div id="list"></div>
-    <div class="actions-row">
-      <button class="btn ghost sm" onclick="exportCSV()">⬇ Exportar CSV</button>
-      <button class="btn danger sm" onclick="clearAll()">🗑 Limpar tudo</button>
-    </div>
-  </section>
-
-  <!-- ============ CRONÓMETRO DE EXERCÍCIOS ============ -->
-  <section id="screen-exercicios" class="screen">
-    <h1 class="page-title">CRONÓMETRO</h1>
-    
-    <!-- Banner Superior -->
-    <div class="ex-top-banner">
-      <div class="ex-banner-title">Cronómetro para Exercícios</div>
-      <div class="ex-banner-sub">
-        <div class="ex-no-equip">🚫</div>
-        ITV Saude
-      </div>
+    <!-- OFFLINE INDICATOR -->
+    <div class="offline-indicator" id="offlineIndicator">
+        <i class="fas fa-wifi-slash"></i> Modo Offline
     </div>
 
-    <!-- Imagem do Exercício -->
-    <div class="ex-image">
-      <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=300&fit=crop" alt="Exercício" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
-      <div class="ex-placeholder" style="display:none">🏋️</div>
+    <!-- GPS STATUS -->
+    <div class="gps-status" id="gpsStatus">
+        <div class="dot searching" id="gpsDot"></div>
+        <span id="gpsStatusText">A procurar GPS...</span>
     </div>
 
-    <!-- Lista de Treinos -->
-    <div id="exWorkoutList" class="ex-workout-list">
-      <div class="ex-empty">Nenhum treino salvo. Crie seu primeiro treino!</div>
+    <!-- BATTERY INDICATOR -->
+    <div class="battery-indicator" id="batteryIndicator" style="display:none;">
+        <i class="fas fa-battery-full" id="batteryIcon"></i>
+        <span id="batteryText">--</span>
     </div>
-    
-    <div class="ex-create-btn" onclick="showExConfig()">
-      + Criar Novo Treino
+
+    <!-- COMPASS -->
+    <div class="compass" id="compass" onclick="resetCompass()" style="display:none;">
+        <i class="fas fa-location-arrow" id="compassArrow"></i>
     </div>
-  </section>
 
-  <!-- ============ CONFIGURAÇÃO DE EXERCÍCIOS ============ -->
-  <section id="screen-ex-config" class="screen">
-    <h1 class="page-title">CONFIGURAR TREINO</h1>
-    
-    <div class="ex-config-card">
-      <div class="ex-config-title">⚙️ Configuração do Treino</div>
-      
-      <div class="field">
-        <label>Nome do Treino</label>
-        <input type="text" id="exWorkoutName" placeholder="Ex: Treino Full Body">
-      </div>
-
-      <div class="ex-section-title">Tempos do Treino</div>
-      
-      <div class="field">
-        <label>Aquecimento (segundos)</label>
-        <input type="number" id="exTempoAquecimento" placeholder="Ex: 60" value="60">
-      </div>
-
-      <div class="field">
-        <label>Exercício (segundos)</label>
-        <input type="number" id="exTempoExercicio" placeholder="Ex: 30" value="30">
-      </div>
-
-      <div class="field">
-        <label>Descanso entre exercícios (segundos)</label>
-        <input type="number" id="exTempoDescanso" placeholder="Ex: 15" value="15">
-      </div>
-
-      <div class="ex-section-title">Estrutura</div>
-
-      <div class="form-row">
-        <div class="field">
-          <label>Repetições</label>
-          <input type="number" id="exRepeticoes" placeholder="Ex: 10" value="10">
+    <!-- GPS INFO PANEL -->
+    <div class="gps-info-panel" id="gpsInfoPanel">
+        <div class="gps-info-grid">
+            <div class="gps-info-item">
+                <span class="label">Latitude</span>
+                <span class="value" id="infoLat">--</span>
+            </div>
+            <div class="gps-info-item">
+                <span class="label">Longitude</span>
+                <span class="value" id="infoLng">--</span>
+            </div>
+            <div class="gps-info-item">
+                <span class="label">Altitude</span>
+                <span class="value" id="infoAlt">--</span>
+            </div>
+            <div class="gps-info-item">
+                <span class="label">Precisão</span>
+                <span class="value" id="infoAcc">--</span>
+            </div>
+            <div class="gps-info-item">
+                <span class="label">Velocidade</span>
+                <span class="value" id="infoSpeed">--</span>
+            </div>
+            <div class="gps-info-item">
+                <span class="label">Rumo</span>
+                <span class="value" id="infoHeading">--</span>
+            </div>
         </div>
-        <div class="field">
-          <label>Rodadas</label>
-          <input type="number" id="exRodadas" placeholder="Ex: 3" value="3">
+    </div>
+
+    <!-- MAP CONTROLS (Right side) -->
+    <div class="map-controls">
+        <button class="map-control-btn" onclick="toggleLayers()" title="Camadas">
+            <i class="fas fa-layer-group"></i>
+        </button>
+        <button class="map-control-btn" onclick="toggleMeasure()" title="Medir">
+            <i class="fas fa-ruler"></i>
+        </button>
+        <button class="map-control-btn" onclick="addPhotoMarker()" title="Foto">
+            <i class="fas fa-camera"></i>
+        </button>
+        <button class="map-control-btn" onclick="toggleWMS()" title="WMS">
+            <i class="fas fa-globe"></i>
+        </button>
+        <button class="map-control-btn" onclick="showPermissions()" title="Permissões">
+            <i class="fas fa-shield-alt"></i>
+        </button>
+    </div>
+
+    <!-- TOOLBAR (Left side) -->
+    <div class="toolbar">
+        <button class="tool-btn" onclick="zoomIn()" title="Zoom In">
+            <i class="fas fa-plus"></i>
+        </button>
+        <button class="tool-btn" onclick="zoomOut()" title="Zoom Out">
+            <i class="fas fa-minus"></i>
+        </button>
+        <button class="tool-btn" onclick="toggleGpsInfo()" title="Info GPS">
+            <i class="fas fa-satellite"></i>
+        </button>
+    </div>
+
+    <!-- GPS TRACKING BUTTON -->
+    <button class="gps-btn" id="gpsBtn" onclick="toggleGPS()">
+        <i class="fas fa-route"></i>
+    </button>
+
+    <!-- RECORDING OVERLAY -->
+    <div class="recording-overlay" id="recordingOverlay">
+        <div class="recording-info">
+            <div class="recording-dot"></div>
+            <span>Gravando percurso...</span>
         </div>
-      </div>
-
-      <div class="field">
-        <label>Descanso entre as Rodadas (segundos)</label>
-        <input type="number" id="exTempoDescansoRodada" placeholder="Ex: 60" value="60">
-      </div>
-
-      <div class="field">
-        <label>Desaceleração (segundos)</label>
-        <input type="number" id="exTempoDesaceleracao" placeholder="Ex: 60" value="60">
-      </div>
-
-      <!-- Seletor de Música de Fundo -->
-      <div class="field">
-        <label>Música de Fundo (Opcional)</label>
-        <input type="file" id="exMusicFile" accept=".mp3, .mp4, .m4a, audio/*, video/mp4" style="padding:12px 14px;background:var(--card2);border:none;border-radius:14px;color:#fff;font-size:14px;font-weight:700;width:100%;outline:none;cursor:pointer;">
-        <div id="exMusicFileName" class="muted" style="font-size:12px;margin-top:6px;font-weight:600;"></div>
-        <div class="muted" style="font-size:11px;margin-top:4px;font-weight:600;">💾 A música fica salva com o treino — não precisa selecionar novamente.</div>
-      </div>
-
-      <div style="margin-top:20px;display:flex;gap:10px">
-        <button class="btn primary block" id="exSaveBtn" onclick="saveExWorkout()">💾 SALVAR TREINO</button>
-        <button class="btn ghost" onclick="resetExForm(); show('exercicios')">← Voltar</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ TIMER DE EXERCÍCIOS ============ -->
-  <section id="screen-ex-timer" class="screen ex-timer-screen">
-    <h1 class="page-title">TREINO</h1>
-    
-    <div class="ex-timer-info">
-      <div class="ex-timer-name" id="exDisplayWorkoutName">Nome do Treino</div>
-      <div class="ex-timer-reps">
-        Rodada <span id="exCurrentRound">1</span>/<span id="exTotalRounds">3</span> &nbsp;|&nbsp; 
-        Rep <span id="exCurrentRep">1</span>/<span id="exTotalReps">10</span>
-      </div>
-    </div>
-
-    <div class="ex-timer-phase" id="exTimerPhase">PREPARAR</div>
-    
-    <div class="ex-timer-circle" id="exTimerCircle" style="--progress:0deg">
-      <div class="ex-timer-inner">
-        <div class="ex-timer-time" id="exTimerTime">00:00</div>
-        <div class="ex-timer-label" id="exTimerLabel">Segundos</div>
-      </div>
-    </div>
-
-    <div class="ex-badges">
-      <span class="ex-badge ex">Ex: <span id="exDisplayTempoExercicio">30</span>s</span>
-      <span class="ex-badge rest">Desc: <span id="exDisplayTempoDescanso">15</span>s</span>
-    </div>
-
-    <div style="display:flex;flex-direction:column;gap:10px">
-      <button class="btn primary big" id="exBtnStartPause" onclick="toggleExTimer()">▶ INICIAR</button>
-      <button class="btn ghost" onclick="resetExTimer()">🔄 Reiniciar</button>
-      <button class="btn danger" onclick="resetExForm(); show('exercicios')">← Voltar</button>
-    </div>
-
-    <!-- ============ NOVO: CONTROLES DE VOLUME ============ -->
-    <div class="vol-card">
-      <div class="vol-title">🎚️ Controles de Áudio</div>
-      <div class="vol-row">
-        <span class="vol-icon">🎵</span>
-        <span class="vol-label">Música</span>
-        <input type="range" id="exMusicVolumeSlider" class="vol-slider" min="0" max="100" step="1" value="50" oninput="onMusicVolumeChange(this.value)">
-        <span class="vol-value" id="exMusicVolumeVal">50%</span>
-      </div>
-      <div class="vol-row">
-        <span class="vol-icon">🔔</span>
-        <span class="vol-label">Bip</span>
-        <input type="range" id="exBeepVolumeSlider" class="vol-slider" min="0" max="100" step="1" value="50" oninput="onBeepVolumeChange(this.value)">
-        <span class="vol-value" id="exBeepVolumeVal">50%</span>
-      </div>
-    </div>
-
-  </section>
-
-</div>
-
-<!-- ============ NAVEGAÇÃO INFERIOR ============ -->
-<nav id="bottomnav">
-  <button id="nav-home" class="nav-btn active" onclick="goHome()"><span class="ico">🏠</span>Início</button>
-  <button class="fab" onclick="openQuick()">+</button>
-  <button id="nav-hist" class="nav-btn" onclick="goHist()"><span class="ico">📊</span>Histórico</button>
-  <button id="nav-ex" class="nav-btn" onclick="goExercicios()"><span class="ico">⏱️</span>Exercícios</button>
-</nav>
-
-<div id="overlay" onclick="if(event.target===this)closeModal()"><div id="modalBox" class="modal"></div></div>
-<div id="toast"></div>
-
-<script>
-/* ================= DADOS ================= */
-const KEY='minhaSaudeDB_v1';
-let db=loadDB();
-function loadDB(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d){d.peso=d.peso||[];d.pressao=d.pressao||[];d.acucar=d.acucar||[];d.fc=d.fc||[];d.altura=d.altura||[];d.agua=d.agua||[];d.metaAgua=d.metaAgua||2000;d.exWorkouts=d.exWorkouts||[];d.metaPesoInicial=d.metaPesoInicial||null;d.metaPesoObjetivo=d.metaPesoObjetivo||null;d.metaDataInicio=d.metaDataInicio||null;
-  // NOVO: volumes padrão
-  if(typeof d.exMusicVolume!=='number')d.exMusicVolume=50;
-  if(typeof d.exBeepVolume!=='number')d.exBeepVolume=50;
-  return d;}}catch(e){}
-  return{peso:[],pressao:[],acucar:[],fc:[],altura:[],agua:[],metaAgua:2000,exWorkouts:[],metaPesoInicial:null,metaPesoObjetivo:null,metaDataInicio:null,exMusicVolume:50,exBeepVolume:50};}
-function saveDB(){localStorage.setItem(KEY,JSON.stringify(db));}
-const uid=()=>Date.now().toString(36)+Math.floor(Math.random()*1e6).toString(36);
-const q=id=>document.getElementById(id);
-const last=t=>db[t].length?[...db[t]].sort((a,b)=>b.d-a.d)[0]:null;
-const fmt1=v=>(Math.round(v*10)/10).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1});
-const fmtTime=t=>{const d=new Date(t);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');};
-const fmtDate=t=>{const d=new Date(t);return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear()+' '+fmtTime(t);};
-const fmtDateShort=t=>{const d=new Date(t);return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();};
-const hoje=()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime();};
-
-/* ============ INDEXEDDB PARA ÁUDIO (sem limite de tamanho) ============ */
-const AUDIO_DB_NAME = 'minhaSaudeAudioDB';
-const AUDIO_STORE = 'audios';
-let audioDBPromise = null;
-function openAudioDB(){
-  if(audioDBPromise) return audioDBPromise;
-  audioDBPromise = new Promise((resolve,reject)=>{
-    const req = indexedDB.open(AUDIO_DB_NAME, 1);
-    req.onupgradeneeded = e => {
-      const d = e.target.result;
-      if(!d.objectStoreNames.contains(AUDIO_STORE)){
-        d.createObjectStore(AUDIO_STORE, {keyPath:'workoutId'});
-      }
-    };
-    req.onsuccess = e => resolve(e.target.result);
-    req.onerror = e => { audioDBPromise=null; reject(e.target.error); };
-  });
-  return audioDBPromise;
-}
-async function saveAudioBlob(workoutId, file){
-  try{
-    const dbx = await openAudioDB();
-    return new Promise((resolve,reject)=>{
-      const tx = dbx.transaction(AUDIO_STORE,'readwrite');
-      const store = tx.objectStore(AUDIO_STORE);
-      store.put({workoutId: workoutId, blob: file, name: file.name, type: file.type, size: file.size});
-      tx.oncomplete = ()=>resolve(true);
-      tx.onerror = e=>reject(e.target.error);
-    });
-  }catch(e){console.log('saveAudioBlob error', e); return false;}
-}
-async function getAudioBlob(workoutId){
-  try{
-    const dbx = await openAudioDB();
-    return new Promise((resolve,reject)=>{
-      const tx = dbx.transaction(AUDIO_STORE,'readonly');
-      const store = tx.objectStore(AUDIO_STORE);
-      const req = store.get(workoutId);
-      req.onsuccess = ()=>resolve(req.result || null);
-      req.onerror = e=>reject(e.target.error);
-    });
-  }catch(e){console.log('getAudioBlob error', e); return null;}
-}
-async function deleteAudioBlob(workoutId){
-  try{
-    const dbx = await openAudioDB();
-    return new Promise((resolve,reject)=>{
-      const tx = dbx.transaction(AUDIO_STORE,'readwrite');
-      const store = tx.objectStore(AUDIO_STORE);
-      store.delete(workoutId);
-      tx.oncomplete = ()=>resolve(true);
-      tx.onerror = e=>reject(e.target.error);
-    });
-  }catch(e){console.log('deleteAudioBlob error', e); return false;}
-}
-
-/* ============ CLASSIFICAÇÕES ============ */
-const COR={green:['#4ade80','rgba(74,222,128,.16)'],yellow:['#fde047','rgba(253,224,71,.16)'],orange:['#fb923c','rgba(251,146,60,.16)'],red:['#f87171','rgba(248,113,113,.16)'],blue:['#60a5fa','rgba(96,165,250,.16)'],gray:['#9aa3c0','rgba(154,163,192,.16)']};
-const badgeHTML=(t,c)=>`<span class="badge" style="color:${(COR[c]||COR.gray)[0]};background:${(COR[c]||COR.gray)[1]}">${t}</span>`;
-function classPressao(s,d){if(s>=180||d>=120)return['Crise hipertensiva','red'];if(s>=140||d>=90)return['Hipertensão 2','red'];if(s>=130||d>=80)return['Hipertensão 1','orange'];if(s>=120)return['Elevada','yellow'];if(s<90||d<60)return['Pressão baixa','blue'];return['Normal','green'];}
-function classAcucar(v,ctx){if(v<70)return['Hipoglicemia','red'];if(ctx==='Jejum'){if(v<100)return['Normal','green'];if(v<126)return['Pré-diabetes','yellow'];return['Alto','red'];}if(v<140)return['Normal','green'];if(v<200)return['Elevado','yellow'];return['Alto','red'];}
-function classFC(v){if(v<50)return['Bradicardia','blue'];if(v<=100)return['Normal','green'];if(v<=120)return['Elevada','yellow'];return['Taquicardia','red'];}
-function classIMC(v){if(v<16)return['Baixo peso extremo','red'];if(v<17)return['Baixo peso grave','red'];if(v<18.5)return['Baixo peso','orange'];if(v<25)return['Normal','green'];if(v<30)return['Sobrepeso','yellow'];if(v<35)return['Obesidade grau I','orange'];if(v<40)return['Obesidade grau II','red'];return['Obesidade grau III','red'];}
-const IMC_ROWS=[['Baixo peso extremo','< 16','red'],['Baixo peso grave','16 – 17','red'],['Baixo peso','17 – 18,5','orange'],['Normal','18,5 – 25','green'],['Sobrepeso','25 – 30','yellow'],['Obesidade grau I','30 – 35','orange'],['Obesidade grau II','35 – 40','red'],['Obesidade grau III','> 40','red']];
-function imcRowIndex(v){if(v<16)return 0;if(v<17)return 1;if(v<18.5)return 2;if(v<25)return 3;if(v<30)return 4;if(v<35)return 5;if(v<40)return 6;return 7;}
-function renderImcTable(imc){const act=(imc==null||isNaN(imc))?-1:imcRowIndex(imc);
-  q('imcTable').innerHTML=IMC_ROWS.map((r,i)=>`<div class="imc-row${i===act?' active':''}" style="color:${COR[r[2]][0]}">${r[0]}<span>${r[1]}</span></div>`).join('');}
-
-/* ================= ÁGUA ================= */
-function getConsumoAguaHoje(){
-  const inicio=hoje();
-  return db.agua.filter(r=>r.d>=inicio).reduce((acc,r)=>acc+r.quantidade,0);
-}
-function renderAgua(){
-  const meta=db.metaAgua||2000;
-  const consumo=getConsumoAguaHoje();
-  q('v-agua').textContent=fmt1(consumo);
-  q('agua-meta-text').textContent=meta;
-  const pct=Math.min(100,(consumo/meta)*100);
-  q('agua-progress').style.width=pct+'%';
-  const badge=consumo>=meta?badgeHTML('🥤 Meta batida!','green'):consumo>0?badgeHTML(consumo+'ml','blue'):'';
-  q('agua-badge').innerHTML=badge;
-}
-function addAgua(quantidade){
-  if(!quantidade||quantidade<=0)return;
-  db.agua.push({id:uid(),quantidade,d:Date.now()});
-  saveDB();
-  renderAll();
-  toast('💧 '+quantidade+'ml adicionado');
-}
-function openAguaModal(){
-  const meta=db.metaAgua||2000;
-  q('modalBox').innerHTML=`
-    <div class="m-head"><span class="m-ico">💧</span><h2>Água</h2><button class="x" onclick="closeModal()">✕</button></div>
-    <div class="field"><label>Quantidade (ml)</label><input id="f-agua-qtd" type="number" inputmode="decimal" step="50" min="50" value="250" placeholder="Ex.: 250"></div>
-    <div class="field"><label>Meta diária (ml)</label><input id="f-agua-meta" type="number" inputmode="numeric" step="100" min="500" value="${meta}" placeholder="Ex.: 2000"></div>
-    <div class="m-foot">
-      <button class="btn ghost" onclick="closeModal()">Cancelar</button>
-      <button class="btn primary" onclick="saveAguaModal()">Salvar</button>
-    </div>
-  `;
-  q('overlay').classList.add('show');
-  setTimeout(()=>{const el=q('f-agua-qtd');if(el)el.focus();},300);
-}
-function saveAguaModal(){
-  const qtd=parseFloat(q('f-agua-qtd').value.replace(',','.'));
-  const meta=parseFloat(q('f-agua-meta').value.replace(',','.'));
-  if(isNaN(qtd)||qtd<=0)return toast('⚠️ Quantidade inválida');
-  if(!isNaN(meta)&&meta>0)db.metaAgua=meta;
-  addAgua(qtd);
-  closeModal();
-  renderAll();
-}
-
-/* ================= META DE EMAGRECIMENTO ================= */
-function renderGoal(){
-  const initial = db.metaPesoInicial;
-  const target = db.metaPesoObjetivo;
-  const startDate = db.metaDataInicio;
-  const latest = last('peso');
-  const latestWeight = latest ? latest.v : null;
-
-  q('goalInitial').textContent = initial ? fmt1(initial)+'Kg' : '--';
-  q('goalTarget').textContent = target ? fmt1(target)+'Kg' : '--';
-  q('goalStartDate').textContent = startDate ? fmtDateShort(startDate) : '--';
-  q('goalLatest').textContent = latestWeight ? fmt1(latestWeight)+'Kg' : '--';
-  q('goalCurrentWeight').textContent = latestWeight ? fmt1(latestWeight) : '--';
-  q('goalTargetWeight').textContent = target ? fmt1(target) : '--';
-
-  let change = null;
-  let changeText = '--';
-  let changeClass = '';
-  if(initial !== null && latestWeight !== null){
-    change = latestWeight - initial;
-    changeText = (change >= 0 ? '+' : '') + fmt1(change) + 'Kg';
-    changeClass = change < 0 ? 'change' : 'change neg';
-  }
-  const changeEl = q('goalChange');
-  changeEl.textContent = changeText;
-  changeEl.className = 'goal-stat-value ' + changeClass;
-
-  let percent = 0;
-  if(initial !== null && target !== null && latestWeight !== null){
-    const total = initial - target;
-    if(total > 0){
-      const done = initial - latestWeight;
-      percent = Math.min(100, Math.max(0, (done / total) * 100));
-    } else if(total === 0){
-      percent = 100;
-    } else {
-      percent = 0;
-    }
-  }
-  q('goalPercent').innerHTML = Math.round(percent) + '<small>%</small>';
-  const circumference = 2 * Math.PI * 54;
-  const offset = circumference - (percent / 100) * circumference;
-  const circle = q('goalCircleProgress');
-  circle.style.strokeDasharray = circumference;
-  circle.style.strokeDashoffset = offset;
-}
-
-function openGoalModal(){
-  const initial = db.metaPesoInicial !== null ? db.metaPesoInicial : '';
-  const target = db.metaPesoObjetivo !== null ? db.metaPesoObjetivo : '';
-  const startDate = db.metaDataInicio ? fmtDateShort(db.metaDataInicio) : '';
-  q('modalBox').innerHTML=`
-    <div class="m-head"><span class="m-ico">🎯</span><h2>Meta de Emagrecimento</h2><button class="x" onclick="closeModal()">✕</button></div>
-    <div class="field"><label>Peso inicial (kg)</label><input id="f-goal-initial" type="number" inputmode="decimal" step="0.1" min="1" max="400" value="${initial}" placeholder="Ex.: 114.9"></div>
-    <div class="field"><label>Peso objetivo (kg)</label><input id="f-goal-target" type="number" inputmode="decimal" step="0.1" min="1" max="400" value="${target}" placeholder="Ex.: 80.0"></div>
-    <div class="field"><label>Data de início</label><input id="f-goal-start" type="date" value="${db.metaDataInicio ? new Date(db.metaDataInicio).toISOString().split('T')[0] : ''}"></div>
-    <div class="m-foot">
-      <button class="btn ghost" onclick="closeModal()">Cancelar</button>
-      <button class="btn primary" onclick="saveGoalModal()">Salvar</button>
-    </div>
-  `;
-  q('overlay').classList.add('show');
-}
-
-function saveGoalModal(){
-  const initial = parseFloat(q('f-goal-initial').value.replace(',','.'));
-  const target = parseFloat(q('f-goal-target').value.replace(',','.'));
-  const start = q('f-goal-start').value;
-  if(isNaN(initial) || initial <= 0) return toast('⚠️ Peso inicial inválido');
-  if(isNaN(target) || target <= 0) return toast('⚠️ Peso objetivo inválido');
-  if(target >= initial) return toast('⚠️ O peso objetivo deve ser menor que o inicial');
-  if(!start) return toast('⚠️ Selecione uma data de início');
-
-  db.metaPesoInicial = initial;
-  db.metaPesoObjetivo = target;
-  db.metaDataInicio = new Date(start + 'T00:00:00').getTime();
-  saveDB();
-  closeModal();
-  renderAll();
-  toast('🎯 Meta atualizada!');
-}
-
-/* ================= HOME ================= */
-function renderHome(){
-  const p=last('peso'),pr=last('pressao'),a=last('acucar'),f=last('fc'),h=last('altura');
-  q('v-peso').textContent=p?fmt1(p.v):'--';
-  q('v-pressao').textContent=pr?pr.sys+'/'+pr.dia:'--';
-  q('v-acucar').textContent=a?fmt1(a.v):'--';
-  q('v-fc').textContent=f?f.v:'--';
-  q('v-altura').textContent=h?fmt1(h.v):'--';
-  let bp='';
-  if(p&&db.peso.length>1){const asc=[...db.peso].sort((x,y)=>x.d-y.d);const diff=p.v-asc[asc.length-2].v;const d1=fmt1(Math.abs(diff));
-    bp=Math.abs(diff)<0.05?badgeHTML('estável','gray'):(diff<0?badgeHTML('▼ '+d1+' kg','green'):badgeHTML('▲ '+d1+' kg','yellow'));}
-  q('b-peso').innerHTML=bp;
-  q('b-pressao').innerHTML=pr?badgeHTML(...classPressao(pr.sys,pr.dia)):'';
-  q('b-acucar').innerHTML=a?badgeHTML(...classAcucar(a.v,a.ctx)):'';
-  q('b-fc').innerHTML=f?badgeHTML(...classFC(f.v)):'';
-
-  if(p&&h){
-    const hm=h.v/100, imc=p.v/(hm*hm);
-    q('v-imc').textContent=fmt1(imc);
-    const [t,c]=classIMC(imc);
-    q('b-imc').innerHTML=badgeHTML(t,c);
-    const pi=22*hm*hm, pmin=18.5*hm*hm, pmax=25*hm*hm;
-    q('v-pesoideal').innerHTML=fmt1(pi)+'<small>kg</small>';
-    q('pi-range').textContent='Faixa saudável: '+fmt1(pmin)+' – '+fmt1(pmax)+' kg';
-    const pct=Math.min(100,Math.max(0,(imc-14)/(42-14)*100));
-    const mk=q('gaugeMark'); mk.style.display='block'; mk.style.left=pct+'%';
-    renderImcTable(imc);
-    q('imcHint').style.display='none';
-  }else{
-    q('v-imc').textContent='--';
-    q('v-pesoideal').textContent='--';
-    q('b-imc').innerHTML='';
-    q('pi-range').textContent='';
-    q('gaugeMark').style.display='none';
-    renderImcTable(null);
-    q('imcHint').style.display='block';
-  }
-
-  const all=[...db.peso,...db.pressao,...db.acucar,...db.fc,...db.altura,...db.agua];
-  q('lastTime').textContent=all.length?fmtTime(Math.max(...all.map(r=>r.d))):'--:--';
-
-  renderAgua();
-  renderGoal();
-}
-
-/* ================ HISTÓRICO ================ */
-const TABS=[
-  {id:'peso',name:'Peso',icon:'⚖️'},
-  {id:'pressao',name:'Pressão',icon:'🩺'},
-  {id:'acucar',name:'Açúcar',icon:'🩸'},
-  {id:'fc',name:'Coração',icon:'❤️'},
-  {id:'altura',name:'Altura',icon:'📏'},
-  {id:'agua',name:'Água',icon:'💧'}
-];
-let curTab='peso';
-function setTab(t){curTab=t;renderHistory();}
-
-function agruparAguaPorDia(registros){
-  const mapa={};
-  registros.forEach(r=>{
-    const dataInicio = new Date(r.d);
-    dataInicio.setHours(0,0,0,0);
-    const chave = dataInicio.getTime();
-    if(!mapa[chave]) mapa[chave]={data:chave, total:0, ids:[]};
-    mapa[chave].total += r.quantidade;
-    mapa[chave].ids.push(r.id);
-  });
-  return Object.values(mapa).sort((a,b)=>b.data-a.data);
-}
-
-function renderHistory(){
-  q('tabs').innerHTML=TABS.map(t=>`<button class="${t.id===curTab?'active':''}" onclick="setTab('${t.id}')">${t.icon} ${t.name}</button>`).join('');
-  let recs=[...db[curTab]].sort((a,b)=>b.d-a.d);
-  let listItems=[];
-
-  if(curTab==='agua'){
-    const dias = agruparAguaPorDia(db.agua);
-    if(dias.length){
-      const totais = dias.map(d=>d.total);
-      const min=Math.min(...totais), max=Math.max(...totais), med=totais.reduce((s,v)=>s+v,0)/totais.length;
-      q('stats').innerHTML=`<div class="stat"><b>${dias.length}</b><span>Dias</span></div><div class="stat"><b>${fmt1(totais[0])} ml</b><span>Último dia</span></div><div class="stat"><b>${fmt1(med)}</b><span>Média dia</span></div><div class="stat"><b>${fmt1(min)}–${fmt1(max)}</b><span>Faixa</span></div>`;
-      listItems = dias.map(d=>{
-        const dataStr = fmtDateShort(d.data);
-        return `<div class="h-item"><div><div class="h-val">${fmt1(d.total)} <small>ml</small></div><div class="h-date">${dataStr}</div></div><div class="h-right">${badgeHTML('💧','blue')}<button class="del" onclick="delDiaAgua(${d.data})">🗑️</button></div></div>`;
-      });
-      const diasAsc = dias.slice().reverse();
-      const pts = diasAsc.map(d=>({x:d.data, y:d.total}));
-      drawChartAgua(pts);
-    }else{
-      q('stats').innerHTML='';
-      listItems=[`<div class="empty">Nenhum registro de água ainda.<br>Toque em <b>+</b> para adicionar.</div>`];
-      drawChartAgua([]);
-    }
-    q('list').innerHTML=listItems.join('');
-    return;
-  }
-
-  const fmtV=v=>(curTab==='peso'||curTab==='acucar'||curTab==='altura')?fmt1(v):Math.round(v);
-  if(recs.length){
-    let vals;
-    if(curTab==='pressao') vals=recs.map(r=>r.sys);
-    else vals=recs.map(r=>r.v);
-    const min=Math.min(...vals),max=Math.max(...vals),med=vals.reduce((s,v)=>s+v,0)/vals.length;
-    let lastTxt;
-    if(curTab==='pressao') lastTxt=recs[0].sys+'/'+recs[0].dia;
-    else if(curTab==='fc') lastTxt=recs[0].v;
-    else lastTxt=fmt1(recs[0].v);
-    q('stats').innerHTML=`<div class="stat"><b>${recs.length}</b><span>Registros</span></div><div class="stat"><b>${lastTxt}</b><span>Último</span></div><div class="stat"><b>${fmtV(med)}</b><span>Média</span></div><div class="stat"><b>${fmtV(min)}–${fmtV(max)}</b><span>Faixa</span></div>`;
-  }else q('stats').innerHTML='';
-  
-  listItems = recs.map(itemHTML);
-  q('list').innerHTML=listItems.length?listItems.join(''):`<div class="empty">Nenhum registro ainda.<br>Toque em <b>+</b> para adicionar.</div>`;
-  drawChart(recs);
-}
-
-function itemHTML(r){
-  let val='',bad='';
-  if(curTab==='peso')val=`${fmt1(r.v)} <small>kg</small>`;
-  if(curTab==='pressao'){val=`${r.sys}/${r.dia} <small>mmHg</small>${r.pul?` · ${r.pul} bpm`:''}`;bad=badgeHTML(...classPressao(r.sys,r.dia));}
-  if(curTab==='acucar'){val=`${fmt1(r.v)} <small>mg/dL</small>`;bad=badgeHTML(...classAcucar(r.v,r.ctx));}
-  if(curTab==='fc'){val=`${r.v} <small>bpm</small>`;bad=badgeHTML(...classFC(r.v));}
-  if(curTab==='altura')val=`${fmt1(r.v)} <small>cm</small>`;
-  return `<div class="h-item"><div><div class="h-val">${val}</div><div class="h-date">${fmtDate(r.d)}${r.ctx?' · '+r.ctx:''}</div></div><div class="h-right">${bad}<button class="del" onclick="delRec('${r.id}')">🗑️</button></div></div>`;
-}
-
-function delRec(id){if(!confirm('Excluir este registro?'))return;db[curTab]=db[curTab].filter(r=>r.id!==id);saveDB();renderAll();toast('Registro excluído');}
-
-function delDiaAgua(dataTimestamp){
-  if(!confirm('Excluir todos os registros de água deste dia?')) return;
-  const ts = Number(dataTimestamp);
-  const inicio = new Date(ts);
-  inicio.setHours(0, 0, 0, 0);
-  const fim = new Date(inicio);
-  fim.setDate(fim.getDate() + 1);
-  const startTs = inicio.getTime();
-  const endTs = fim.getTime();
-  
-  db.agua = db.agua.filter(r => !(r.d >= startTs && r.d < endTs));
-  saveDB();
-  renderAll();
-  toast('Dia excluído');
-}
-
-function clearAll(){
-  if(curTab==='agua'){
-    if(!confirm('Apagar TODOS os registros de água (todos os dias)?'))return;
-    db.agua=[];
-    saveDB();
-    renderAll();
-    toast('Histórico de água limpo');
-    return;
-  }
-  if(!confirm('Apagar TODOS os registros de '+TABS.find(t=>t.id===curTab).name+'?'))return;
-  db[curTab]=[];
-  saveDB();
-  renderAll();
-  toast('Histórico limpo');
-}
-
-/* ================= GRÁFICOS ================= */
-function drawChart(recs){
-  const cv=q('chart'),ctx=cv.getContext('2d'),dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
-  cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
-  const asc=[...recs].sort((a,b)=>a.d-b.d).slice(-12);
-  if(asc.length<2){ctx.fillStyle='#9aa3c0';ctx.font='600 13px sans-serif';ctx.textAlign='center';ctx.fillText('Registre 2+ valores para ver o gráfico',W/2,H/2);return;}
-  let series=[];
-  if(curTab==='peso')series=[{cor:'#60a5fa',pts:asc.map(r=>({x:r.d,y:r.v}))}];
-  if(curTab==='fc')series=[{cor:'#f87171',pts:asc.map(r=>({x:r.d,y:r.v}))}];
-  if(curTab==='acucar')series=[{cor:'#fb923c',pts:asc.map(r=>({x:r.d,y:r.v}))}];
-  if(curTab==='altura')series=[{cor:'#4ade80',pts:asc.map(r=>({x:r.d,y:r.v}))}];
-  if(curTab==='pressao')series=[{cor:'#f87171',pts:asc.map(r=>({x:r.d,y:r.sys}))},{cor:'#60a5fa',pts:asc.map(r=>({x:r.d,y:r.dia}))}];
-  const allY=series.flatMap(s=>s.pts.map(p=>p.y));let minY=Math.min(...allY),maxY=Math.max(...allY);
-  if(minY===maxY){minY-=5;maxY+=5;}const pad=(maxY-minY)*.2;minY-=pad;maxY+=pad;
-  const xs=asc.map(r=>r.d),minX=Math.min(...xs),maxX=Math.max(...xs),L=38,R=12,T=12,B=24;
-  const X=x=>minX===maxX?L+(W-L-R)/2:L+(x-minX)/(maxX-minX)*(W-L-R);
-  const Y=y=>T+(maxY-y)/(maxY-minY)*(H-T-B);
-  ctx.strokeStyle='rgba(255,255,255,.08)';ctx.fillStyle='#9aa3c0';ctx.font='600 10px sans-serif';ctx.lineWidth=1;ctx.textAlign='left';
-  for(let i=0;i<=3;i++){const yv=maxY-(maxY-minY)*i/3,yy=Y(yv);ctx.beginPath();ctx.moveTo(L,yy);ctx.lineTo(W-R,yy);ctx.stroke();ctx.fillText(Math.round(yv),6,yy+3);}
-  const dl=d=>{const dt=new Date(d);return String(dt.getDate()).padStart(2,'0')+'/'+String(dt.getMonth()+1).padStart(2,'0');};
-  ctx.textAlign='center';ctx.fillText(dl(minX),X(minX),H-6);ctx.fillText(dl(maxX),X(maxX),H-6);
-  series.forEach(s=>{ctx.strokeStyle=s.cor;ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.beginPath();
-    s.pts.forEach((p,i)=>i?ctx.lineTo(X(p.x),Y(p.y)):ctx.moveTo(X(p.x),Y(p.y)));ctx.stroke();
-    s.pts.forEach(p=>{ctx.fillStyle=s.cor;ctx.beginPath();ctx.arc(X(p.x),Y(p.y),3.2,0,7);ctx.fill();});});
-}
-
-function drawChartAgua(dias){
-  const cv=q('chart'),ctx=cv.getContext('2d'),dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
-  cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
-  if(dias.length<2){ctx.fillStyle='#9aa3c0';ctx.font='600 13px sans-serif';ctx.textAlign='center';ctx.fillText('Registre 2+ dias para ver o gráfico',W/2,H/2);return;}
-  const pts=dias.slice(-12);
-  const allY=pts.map(p=>p.y);let minY=Math.min(...allY),maxY=Math.max(...allY);
-  if(minY===maxY){minY-=5;maxY+=5;}const pad=(maxY-minY)*.2;minY-=pad;maxY+=pad;
-  const minX=pts[0].x,maxX=pts[pts.length-1].x,L=38,R=12,T=12,B=24;
-  const X=x=>minX===maxX?L+(W-L-R)/2:L+(x-minX)/(maxX-minX)*(W-L-R);
-  const Y=y=>T+(maxY-y)/(maxY-minY)*(H-T-B);
-  ctx.strokeStyle='rgba(255,255,255,.08)';ctx.fillStyle='#9aa3c0';ctx.font='600 10px sans-serif';ctx.lineWidth=1;ctx.textAlign='left';
-  for(let i=0;i<=3;i++){const yv=maxY-(maxY-minY)*i/3,yy=Y(yv);ctx.beginPath();ctx.moveTo(L,yy);ctx.lineTo(W-R,yy);ctx.stroke();ctx.fillText(Math.round(yv),6,yy+3);}
-  const dl=d=>{const dt=new Date(d);return String(dt.getDate()).padStart(2,'0')+'/'+String(dt.getMonth()+1).padStart(2,'0');};
-  ctx.textAlign='center';ctx.fillText(dl(minX),X(minX),H-6);ctx.fillText(dl(maxX),X(maxX),H-6);
-  ctx.strokeStyle='#60a5fa';ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.beginPath();
-  pts.forEach((p,i)=>i?ctx.lineTo(X(p.x),Y(p.y)):ctx.moveTo(X(p.x),Y(p.y)));ctx.stroke();
-  pts.forEach(p=>{ctx.fillStyle='#60a5fa';ctx.beginPath();ctx.arc(X(p.x),Y(p.y),3.2,0,7);ctx.fill();});
-}
-
-/* ============= FORMULÁRIOS ============= */
-const FORMS={
- peso:{t:'Registrar Peso',i:'⚖️',h:`<div class="field"><label>Peso (kg)</label><input id="f-v" type="number" inputmode="decimal" step="0.1" min="1" max="400" placeholder="Ex.: 72.5" autocomplete="off"></div>`},
- pressao:{t:'Registrar Pressão Arterial',i:'🩺',h:`<div class="form-row"><div class="field"><label>Sistólica (mmHg)</label><input id="f-s" type="number" inputmode="numeric" min="40" max="260" placeholder="120"></div><div class="field"><label>Diastólica (mmHg)</label><input id="f-d" type="number" inputmode="numeric" min="20" max="200" placeholder="80"></div></div><div class="field"><label>Pulso (opcional, bpm)</label><input id="f-p" type="number" inputmode="numeric" min="20" max="250" placeholder="72"></div>`},
- acucar:{t:'Registrar Glicemia',i:'🩸',h:`<div class="field"><label>Glicose (mg/dL)</label><input id="f-v" type="number" inputmode="decimal" min="20" max="600" placeholder="Ex.: 95"></div><div class="field"><label>Contexto</label><select id="f-c"><option>Jejum</option><option>Antes da refeição</option><option>Após refeição</option><option>Antes de dormir</option></select></div>`},
- fc:{t:'Registrar Frequência Cardíaca',i:'❤️',h:`<div class="field"><label>Frequência (bpm)</label><input id="f-v" type="number" inputmode="numeric" min="20" max="250" placeholder="Ex.: 72"></div><div class="field"><label>Contexto</label><select id="f-c"><option>Repouso</option><option>Após exercício</option><option>Estresse</option></select></div>`},
- altura:{t:'Registrar Altura',i:'📏',h:`<div class="field"><label>Altura (cm)</label><input id="f-v" type="number" inputmode="decimal" step="0.1" min="30" max="250" placeholder="Ex.: 170" autocomplete="off"></div>`}
-};
-let curForm=null;
-function openForm(t){curForm=t;const f=FORMS[t];
-  q('modalBox').innerHTML=`<div class="m-head"><span class="m-ico">${f.i}</span><h2>${f.t}</h2><button class="x" onclick="closeModal()">✕</button></div>${f.h}<div class="m-foot"><button class="btn ghost" onclick="closeModal()">Cancelar</button><button class="btn primary" onclick="saveForm()">💾 Salvar</button></div>`;
-  q('overlay').classList.add('show');setTimeout(()=>{const el=document.querySelector('#modalBox input');if(el)el.focus();},300);}
-function openQuick(){q('modalBox').innerHTML=`<div class="m-head"><span class="m-ico">💙</span><h2>O que registrar?</h2><button class="x" onclick="closeModal()">✕</button></div><div class="quick-grid"><button class="quick-btn" onclick="openForm('peso')"><span class="qi">⚖️</span>Peso</button><button class="quick-btn" onclick="openForm('pressao')"><span class="qi">🩺</span>Pressão</button><button class="quick-btn" onclick="openForm('acucar')"><span class="qi">🩸</span>Açúcar</button><button class="quick-btn" onclick="openForm('fc')"><span class="qi">❤️</span>Coração</button><button class="quick-btn" onclick="openForm('altura')"><span class="qi">📏</span>Altura</button><button class="quick-btn" onclick="openAguaModal()"><span class="qi">💧</span>Água</button></div>`;q('overlay').classList.add('show');}
-function closeModal(){q('overlay').classList.remove('show');curForm=null;}
-const gv=id=>{const el=q(id);return el?el.value.trim():'';};
-function saveForm(){const t=curForm;if(!t)return;
-  if(t==='peso'){const v=parseFloat(gv('f-v').replace(',','.'));if(!v||v<1||v>400)return toast('⚠️ Peso inválido');db.peso.push({id:uid(),v,d:Date.now()});}
-  else if(t==='pressao'){const s=parseInt(gv('f-s')),d=parseInt(gv('f-d')),p=gv('f-p')?parseInt(gv('f-p')):null;
-    if(!s||s<40||s>260||!d||d<20||d>200)return toast('⚠️ Valores de pressão inválidos');
-    if(p&&(p<20||p>250))return toast('⚠️ Pulso inválido');db.pressao.push({id:uid(),sys:s,dia:d,pul:p,d:Date.now()});}
-  else if(t==='acucar'){const v=parseFloat(gv('f-v').replace(',','.'));if(!v||v<20||v>600)return toast('⚠️ Glicemia inválida');db.acucar.push({id:uid(),v,ctx:gv('f-c'),d:Date.now()});}
-  else if(t==='fc'){const v=parseInt(gv('f-v'));if(!v||v<20||v>250)return toast('⚠️ Frequência inválida');db.fc.push({id:uid(),v,ctx:gv('f-c'),d:Date.now()});}
-  else if(t==='altura'){const v=parseFloat(gv('f-v').replace(',','.'));if(!v||v<30||v>250)return toast('⚠️ Altura inválida');db.altura.push({id:uid(),v,d:Date.now()});}
-  saveDB();closeModal();renderAll();toast('✅ Registro salvo!');}
-
-/* ============== NAVEGAÇÃO / UTIL ============== */
-function goHome(){show('home');}
-function goHist(){show('hist');renderHistory();}
-function goExercicios(){show('exercicios');loadExWorkouts();}
-function showExConfig(){resetExForm(); show('ex-config');}
-function showExTimer(){show('ex-timer');}
-function show(s){
-  // Interromper música se sair da tela do timer
-  if (s !== 'ex-timer' && exCurrentAudio) {
-    exCurrentAudio.pause();
-    if (exCurrentAudio.src) URL.revokeObjectURL(exCurrentAudio.src);
-    exCurrentAudio = null;
-  }
-  
-  q('screen-home').classList.toggle('active',s==='home');
-  q('screen-hist').classList.toggle('active',s==='hist');
-  q('screen-exercicios').classList.toggle('active',s==='exercicios');
-  q('screen-ex-config').classList.toggle('active',s==='ex-config');
-  q('screen-ex-timer').classList.toggle('active',s==='ex-timer');
-  q('nav-home').classList.toggle('active',s==='home');
-  q('nav-hist').classList.toggle('active',s==='hist');
-  q('nav-ex').classList.toggle('active',s==='exercicios'||s==='ex-config'||s==='ex-timer');
-  
-  // NOVO: sincronizar sliders de volume ao abrir a tela do timer
-  if(s === 'ex-timer') syncVolumeControls();
-  
-  window.scrollTo({top:0});
-}
-let toastTimer;function toast(m){const el=q('toast');el.textContent=m;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2200);}
-function exportCSV(){
-  if(curTab==='agua'){
-    const dias = agruparAguaPorDia(db.agua).sort((a,b)=>a.data-b.data);
-    if(!dias.length)return toast('Nada para exportar');
-    let rows=[['Data','Total (ml)']];
-    dias.forEach(d=>rows.push([fmtDateShort(d.data),d.total]));
-    const csv='\uFEFF'+rows.map(r=>r.join(';')).join('\n');
-    const a=document.createElement('a');
-    a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
-    a.download='historico_agua_diario.csv';
-    document.body.appendChild(a);a.click();a.remove();
-    toast('📥 CSV exportado');
-    return;
-  }
-  const recs=[...db[curTab]].sort((a,b)=>a.d-b.d);
-  if(!recs.length)return toast('Nada para exportar');
-  let rows=[];
-  if(curTab==='peso'){rows.push(['Data','Peso (kg)']);recs.forEach(r=>rows.push([fmtDate(r.d),String(r.v).replace('.',',')]));}
-  else if(curTab==='pressao'){rows.push(['Data','Sistólica','Diastólica','Pulso']);recs.forEach(r=>rows.push([fmtDate(r.d),r.sys,r.dia,r.pul??'']));}
-  else if(curTab==='acucar'){rows.push(['Data','Glicose (mg/dL)','Contexto']);recs.forEach(r=>rows.push([fmtDate(r.d),r.v,r.ctx||'']));}
-  else if(curTab==='fc'){rows.push(['Data','BPM','Contexto']);recs.forEach(r=>rows.push([fmtDate(r.d),r.v,r.ctx||'']));}
-  else if(curTab==='altura'){rows.push(['Data','Altura (cm)']);recs.forEach(r=>rows.push([fmtDate(r.d),String(r.v).replace('.',',')]));}
-  const csv='\uFEFF'+rows.map(r=>r.join(';')).join('\n');
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
-  a.download='historico_'+curTab+'.csv';
-  document.body.appendChild(a);a.click();a.remove();
-  toast('📥 CSV exportado');
-}
-function renderAll(){renderHome();renderHistory();}
-window.addEventListener('resize',()=>{
-  if(curTab==='agua'){
-    const dias = agruparAguaPorDia(db.agua);
-    const pts = dias.slice().reverse().map(d=>({x:d.data, y:d.total}));
-    drawChartAgua(pts);
-  }else{
-    drawChart([...db[curTab]].sort((a,b)=>b.d-a.d));
-  }
-});
-
-/* ============ CRONÔMETRO DE EXERCÍCIOS ============ */
-let exCurrentWorkout = null;
-let exTimerInterval = null;
-let exCurrentTime = 0;
-let exTotalTime = 0;
-let exCurrentPhase = 'preparar';
-let exCurrentRep = 1;
-let exCurrentRound = 1;
-let exIsRunning = false;
-let exAudioContext = null;
-let editingWorkoutId = null;
-let exAudioFiles = {}; // mantido por compatibilidade (cache de sessão)
-let exCurrentAudio = null;
-
-/* ============ NOVO: CONTROLE DE VOLUME ============ */
-function syncVolumeControls(){
-  const mSlider = q('exMusicVolumeSlider');
-  const bSlider = q('exBeepVolumeSlider');
-  if(!mSlider || !bSlider) return;
-  const mv = (typeof db.exMusicVolume === 'number') ? db.exMusicVolume : 50;
-  const bv = (typeof db.exBeepVolume === 'number') ? db.exBeepVolume : 50;
-  mSlider.value = mv;
-  bSlider.value = bv;
-  q('exMusicVolumeVal').textContent = mv + '%';
-  q('exBeepVolumeVal').textContent = bv + '%';
-}
-function onMusicVolumeChange(v){
-  const n = parseInt(v);
-  db.exMusicVolume = n;
-  q('exMusicVolumeVal').textContent = n + '%';
-  if(exCurrentAudio) exCurrentAudio.volume = n / 100;
-  saveDB();
-}
-function onBeepVolumeChange(v){
-  const n = parseInt(v);
-  db.exBeepVolume = n;
-  q('exBeepVolumeVal').textContent = n + '%';
-  saveDB();
-}
-
-function initExAudio(){
-  if(!exAudioContext){
-    exAudioContext = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  if(exAudioContext.state === 'suspended'){
-    exAudioContext.resume();
-  }
-}
-
-function playExBeep(type = 'short') {
-  if (!exAudioContext) return;
-  const oscillator = exAudioContext.createOscillator();
-  const gainNode = exAudioContext.createGain();
-  oscillator.type = 'sine';
-  
-  // NOVO: aplicar volume do bip (não afeta a música)
-  const vol = (typeof db.exBeepVolume === 'number') ? (db.exBeepVolume / 100) : 0.5;
-  
-  const now = exAudioContext.currentTime;
-  if (type === 'short') {
-    oscillator.frequency.value = 1000;
-    gainNode.gain.setValueAtTime(0.3 * vol, now);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-    oscillator.start(now);
-    oscillator.stop(now + 0.1);
-  } else if (type === 'high') {
-    oscillator.frequency.value = 1500;
-    gainNode.gain.setValueAtTime(0.6 * vol, now);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
-    oscillator.start(now);
-    oscillator.stop(now + 0.25);
-  } else {
-    oscillator.frequency.value = 600;
-    gainNode.gain.setValueAtTime(0.4 * vol, now);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
-    oscillator.start(now);
-    oscillator.stop(now + 0.4);
-  }
-  
-  oscillator.connect(gainNode);
-  gainNode.connect(exAudioContext.destination);
-}
-
-function loadExWorkouts(){
-  const list = q('exWorkoutList');
-  if(db.exWorkouts.length === 0){
-    list.innerHTML = '<div class="ex-empty">Nenhum treino salvo. Crie seu primeiro treino!</div>';
-    return;
-  }
-  list.innerHTML = db.exWorkouts.map(workout => `
-    <div class="ex-card">
-      <div class="ex-card-content">
-        <div class="ex-card-title">${workout.name}</div>
-        <div class="ex-card-details">
-          ${workout.rodadas}x Rodadas | ${workout.repeticoes}x Repetições<br>
-          Ex: ${workout.tempoExercicio}s | Desc: ${workout.tempoDescanso}s
+        <div class="recording-stats">
+            <span id="recDistance">0 m</span>
+            <span id="recTime">00:00</span>
+            <span id="recSpeed">0 km/h</span>
         </div>
-        ${workout.hasMusic ? `<div class="ex-card-music">🎵 ${workout.musicName || 'Música anexada'}</div>` : ''}
-      </div>
-      <div class="ex-card-actions">
-        <button class="ex-btn play" onclick="startExWorkout(${workout.id})">▶</button>
-        <button class="ex-btn edit" onclick="editExWorkout(${workout.id})">✏️</button>
-        <button class="ex-btn del" onclick="deleteExWorkout(${workout.id})">🗑</button>
-      </div>
     </div>
-  `).join('');
-}
 
-function resetExForm(){
-  editingWorkoutId = null;
-  q('exWorkoutName').value = '';
-  q('exTempoAquecimento').value = '60';
-  q('exTempoExercicio').value = '30';
-  q('exTempoDescanso').value = '15';
-  q('exRepeticoes').value = '10';
-  q('exRodadas').value = '3';
-  q('exTempoDescansoRodada').value = '60';
-  q('exTempoDesaceleracao').value = '60';
-  
-  const fileInput = q('exMusicFile');
-  if(fileInput) fileInput.value = '';
-  const fileNameDisplay = q('exMusicFileName');
-  if(fileNameDisplay) fileNameDisplay.textContent = '';
-  
-  const saveBtn = q('exSaveBtn');
-  if(saveBtn) saveBtn.textContent = '💾 SALVAR TREINO';
-}
+    <!-- MEASUREMENT PANEL -->
+    <div class="measure-panel" id="measurePanel">
+        <div class="measure-result">
+            <span class="label" id="measureLabel">Distância</span>
+            <span class="value" id="measureValue">0 m</span>
+        </div>
+        <div class="measure-buttons">
+            <button class="measure-btn secondary" onclick="setMeasureMode('distance')">
+                <i class="fas fa-ruler"></i> Distância
+            </button>
+            <button class="measure-btn secondary" onclick="setMeasureMode('area')">
+                <i class="fas fa-draw-polygon"></i> Área
+            </button>
+            <button class="measure-btn primary" onclick="clearMeasure()">
+                <i class="fas fa-trash"></i> Limpar
+            </button>
+        </div>
+    </div>
 
-function editExWorkout(id){
-  const workout = db.exWorkouts.find(w => w.id === id);
-  if(!workout) return;
-  editingWorkoutId = id;
-  q('exWorkoutName').value = workout.name;
-  q('exTempoAquecimento').value = workout.tempoAquecimento;
-  q('exTempoExercicio').value = workout.tempoExercicio;
-  q('exTempoDescanso').value = workout.tempoDescanso;
-  q('exRepeticoes').value = workout.repeticoes;
-  q('exRodadas').value = workout.rodadas;
-  q('exTempoDescansoRodada').value = workout.tempoDescansoRodada;
-  q('exTempoDesaceleracao').value = workout.tempoDesaceleracao;
-  
-  const fileNameDisplay = q('exMusicFileName');
-  if(workout.hasMusic && workout.musicName && fileNameDisplay) {
-    fileNameDisplay.textContent = '🎵 ' + workout.musicName + ' (salva — selecione outra para substituir)';
-  } else if (fileNameDisplay) {
-    fileNameDisplay.textContent = 'Nenhuma música selecionada';
-  }
-  
-  const saveBtn = q('exSaveBtn');
-  if(saveBtn) saveBtn.textContent = '💾 ATUALIZAR TREINO';
-  
-  show('ex-config');
-}
+    <!-- LAYER PANEL -->
+    <div class="layer-panel" id="layerPanel">
+        <div class="layer-panel-header">
+            <h3>Camadas do Mapa</h3>
+            <button class="close-btn" onclick="toggleLayers()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
 
-function saveExWorkout(){
-  const name = q('exWorkoutName').value;
-  if(!name){
-    toast('⚠️ Por favor, digite o nome do treino');
-    return;
-  }
-  const workoutId = editingWorkoutId || Date.now();
-  const existingWorkout = editingWorkoutId ? db.exWorkouts.find(w => w.id === editingWorkoutId) : null;
-  
-  const workoutData = {
-    id: workoutId,
-    name: name,
-    tempoAquecimento: parseInt(q('exTempoAquecimento').value) || 60,
-    tempoExercicio: parseInt(q('exTempoExercicio').value) || 30,
-    tempoDescanso: parseInt(q('exTempoDescanso').value) || 15,
-    repeticoes: parseInt(q('exRepeticoes').value) || 10,
-    rodadas: parseInt(q('exRodadas').value) || 3,
-    tempoDescansoRodada: parseInt(q('exTempoDescansoRodada').value) || 60,
-    tempoDesaceleracao: parseInt(q('exTempoDesaceleracao').value) || 60,
-    hasMusic: existingWorkout ? !!existingWorkout.hasMusic : false,
-    musicName: existingWorkout ? (existingWorkout.musicName || null) : null
-  };
-  
-  const fileInput = q('exMusicFile');
-  const hasNewFile = fileInput && fileInput.files && fileInput.files.length > 0;
-  
-  if (hasNewFile) {
-    workoutData.hasMusic = true;
-    workoutData.musicName = fileInput.files[0].name;
-  }
-  
-  // Salvar dados do treino no localStorage
-  if (editingWorkoutId) {
-    const index = db.exWorkouts.findIndex(w => w.id === editingWorkoutId);
-    if (index !== -1) db.exWorkouts[index] = workoutData;
-  } else {
-    db.exWorkouts.push(workoutData);
-  }
-  saveDB();
-  
-  // NOVO: persistir o arquivo de música no IndexedDB (sem limite de tamanho)
-  if (hasNewFile) {
-    saveAudioBlob(workoutId, fileInput.files[0]).then(ok => {
-      if(ok) toast('🎵 Música salva no treino!');
-    });
-  }
-  
-  if (editingWorkoutId) toast('✅ Treino atualizado com sucesso!');
-  else toast('✅ Treino salvo com sucesso!');
-  
-  resetExForm();
-  show('exercicios');
-  loadExWorkouts();
-}
+        <div class="layer-group">
+            <div class="layer-group-title">Mapa Base</div>
+            <div class="layer-option">
+                <input type="radio" name="basemap" id="bm-osm" checked onchange="changeBaseMap('osm')">
+                <label for="bm-osm">OpenStreetMap</label>
+            </div>
+            <div class="layer-option">
+                <input type="radio" name="basemap" id="bm-topo" onchange="changeBaseMap('topo')">
+                <label for="bm-topo">OpenTopoMap</label>
+            </div>
+            <div class="layer-option">
+                <input type="radio" name="basemap" id="bm-cycle" onchange="changeBaseMap('cycle')">
+                <label for="bm-cycle">OpenCycleMap</label>
+            </div>
+            <div class="layer-option">
+                <input type="radio" name="basemap" id="bm-sat" onchange="changeBaseMap('sat')">
+                <label for="bm-sat">Satélite</label>
+            </div>
+            <div class="layer-option">
+                <input type="radio" name="basemap" id="bm-hybrid" onchange="changeBaseMap('hybrid')">
+                <label for="bm-hybrid">Híbrido</label>
+            </div>
+        </div>
 
-function deleteExWorkout(id){
-  if(confirm('Deseja excluir este treino?')){
-    db.exWorkouts = db.exWorkouts.filter(w => w.id !== id);
-    saveDB();
-    deleteAudioBlob(id).catch(e => console.log("Erro ao deletar áudio:", e));
-    loadExWorkouts();
-  }
-}
+        <div class="layer-group">
+            <div class="layer-group-title">Camadas Ativas</div>
+            <div class="layer-option">
+                <input type="checkbox" id="ly-kml1" checked>
+                <label for="ly-kml1">Trilha Rio Cocó.kml</label>
+                <div class="layer-color" style="background: #1976D2;"></div>
+            </div>
+            <div class="layer-option">
+                <input type="checkbox" id="ly-gpx1" checked>
+                <label for="ly-gpx1">Percurso 2024.gpx</label>
+                <div class="layer-color" style="background: #388E3C;"></div>
+            </div>
+            <div class="layer-option">
+                <input type="checkbox" id="ly-wms1">
+                <label for="ly-wms1">WMS - Uso do Solo</label>
+                <div class="layer-color" style="background: #7B1FA2;"></div>
+            </div>
+        </div>
 
-async function startExWorkout(id){
-  exCurrentWorkout = db.exWorkouts.find(w => w.id === id);
-  if(!exCurrentWorkout) return;
-  
-  exCurrentRound = 1;
-  exCurrentRep = 1;
-  exCurrentPhase = 'preparar';
-  exCurrentTime = 3;
-  exTotalTime = 3;
-  exIsRunning = false;
-  
-  // Interromper áudio anterior
-  if(exCurrentAudio) {
-    exCurrentAudio.pause();
-    if (exCurrentAudio.src) URL.revokeObjectURL(exCurrentAudio.src);
-    exCurrentAudio = null;
-  }
-  
-  // NOVO: carregar música persistida do IndexedDB
-  try {
-    const audioRecord = await getAudioBlob(id);
-    if(audioRecord && audioRecord.blob){
-      const fileUrl = URL.createObjectURL(audioRecord.blob);
-      exCurrentAudio = new Audio(fileUrl);
-      exCurrentAudio.loop = true;
-      exCurrentAudio.volume = ((typeof db.exMusicVolume === 'number') ? db.exMusicVolume : 50) / 100;
-    }
-  } catch(e) {
-    console.log("Erro ao carregar música:", e);
-  }
-  
-  q('exDisplayWorkoutName').textContent = exCurrentWorkout.name;
-  q('exTotalRounds').textContent = exCurrentWorkout.rodadas;
-  q('exCurrentRound').textContent = exCurrentRound;
-  q('exTotalReps').textContent = exCurrentWorkout.repeticoes;
-  q('exCurrentRep').textContent = exCurrentRep;
-  q('exDisplayTempoExercicio').textContent = exCurrentWorkout.tempoExercicio;
-  q('exDisplayTempoDescanso').textContent = exCurrentWorkout.tempoDescanso;
-  
-  showExTimer();
-  updateExTimerDisplay();
-}
+        <div class="layer-group">
+            <div class="layer-group-title">Offline Maps</div>
+            <div class="layer-option">
+                <input type="checkbox" id="ly-offline1">
+                <label for="ly-offline1">Fortaleza Centro (2.3 GB)</label>
+            </div>
+            <div class="layer-option">
+                <input type="checkbox" id="ly-offline2">
+                <label for="ly-offline2">Serra de Baturité (1.1 GB)</label>
+            </div>
+        </div>
+    </div>
 
-function toggleExTimer(){
-  if(exIsRunning){
-    pauseExTimer();
-  }else{
-    startExTimer();
-  }
-}
+    <!-- SIDE MENU -->
+    <div class="side-menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+    <div class="side-menu" id="sideMenu">
+        <div class="side-menu-header">
+            <h2><i class="fas fa-map-marked-alt"></i> iMap</h2>
+            <p>Gestão KML/KMZ/GPX</p>
+        </div>
 
-function startExTimer(){
-  initExAudio();
-  exIsRunning = true;
-  q('exBtnStartPause').textContent = '⏸ PAUSAR';
-  
-  // Tocar música se existir (com volume configurado)
-  if(exCurrentAudio) {
-    exCurrentAudio.volume = ((typeof db.exMusicVolume === 'number') ? db.exMusicVolume : 50) / 100;
-    exCurrentAudio.play().catch(e => console.log("Erro ao tocar áudio:", e));
-  }
-  
-  exTimerInterval = setInterval(() => {
-    if (exCurrentTime === 3 || exCurrentTime === 2) {
-      playExBeep('short');
-    } else if (exCurrentTime === 1) {
-      playExBeep('high');
-    } else if (exCurrentTime === 0) {
-      playExBeep('long');
-    }
-    
-    exCurrentTime--;
-    if (exCurrentTime < 0) {
-      nextExPhase();
-    }
-    updateExTimerDisplay();
-  }, 1000);
-}
+        <div class="side-menu-section">
+            <div class="side-menu-section-title">Ficheiros</div>
+            <button class="side-menu-item" onclick="showFiles()">
+                <i class="fas fa-folder-open"></i>
+                Meus Ficheiros
+                <span class="badge">12</span>
+            </button>
+            <button class="side-menu-item" onclick="showImport()">
+                <i class="fas fa-file-import"></i>
+                Importar KML/KMZ/GPX
+            </button>
+            <button class="side-menu-item" onclick="showExport()">
+                <i class="fas fa-file-export"></i>
+                Exportar / Partilhar
+            </button>
+        </div>
 
-function pauseExTimer(){
-  exIsRunning = false;
-  q('exBtnStartPause').textContent = '▶ CONTINUAR';
-  clearInterval(exTimerInterval);
-  
-  if(exCurrentAudio) {
-    exCurrentAudio.pause();
-  }
-}
+        <div class="side-menu-section">
+            <div class="side-menu-section-title">Ferramentas</div>
+            <button class="side-menu-item" onclick="toggleMeasure(); toggleMenu();">
+                <i class="fas fa-ruler-combined"></i>
+                Medir Distância/Área
+            </button>
+            <button class="side-menu-item" onclick="toggleGPS(); toggleMenu();">
+                <i class="fas fa-route"></i>
+                Gravar Percurso GPS
+            </button>
+            <button class="side-menu-item" onclick="addPhotoMarker(); toggleMenu();">
+                <i class="fas fa-camera-retro"></i>
+                Mapear Fotografias
+            </button>
+            <button class="side-menu-item" onclick="toggleWMS(); toggleMenu();">
+                <i class="fas fa-globe-americas"></i>
+                WMS / OpenData
+            </button>
+        </div>
 
-function resetExTimer(){
-  pauseExTimer();
-  exCurrentRound = 1;
-  exCurrentRep = 1;
-  exCurrentPhase = 'preparar';
-  exCurrentTime = 3;
-  exTotalTime = 3;
-  q('exCurrentRound').textContent = exCurrentRound;
-  q('exCurrentRep').textContent = exCurrentRep;
-  q('exBtnStartPause').textContent = '▶ INICIAR';
-  
-  if(exCurrentAudio) {
-    exCurrentAudio.pause();
-    if (exCurrentAudio.src) URL.revokeObjectURL(exCurrentAudio.src);
-    exCurrentAudio = null;
-  }
-  
-  updateExTimerDisplay();
-}
+        <div class="side-menu-section">
+            <div class="side-menu-section-title">Mapas</div>
+            <button class="side-menu-item" onclick="toggleLayers(); toggleMenu();">
+                <i class="fas fa-layer-group"></i>
+                Camadas do Mapa
+            </button>
+            <button class="side-menu-item" onclick="showToast('Mapas offline disponíveis')">
+                <i class="fas fa-download"></i>
+                Mapas Offline
+                <span class="badge">2</span>
+            </button>
+        </div>
 
-function nextExPhase(){
-  if(exCurrentPhase === 'preparar'){
-    if(exCurrentWorkout.tempoAquecimento > 0){
-      exCurrentPhase = 'aquecimento';
-      exCurrentTime = exCurrentWorkout.tempoAquecimento;
-    } else {
-      exCurrentPhase = 'exercicio';
-      exCurrentTime = exCurrentWorkout.tempoExercicio;
-    }
-  } else if(exCurrentPhase === 'aquecimento'){
-    exCurrentPhase = 'exercicio';
-    exCurrentTime = exCurrentWorkout.tempoExercicio;
-  } else if(exCurrentPhase === 'exercicio'){
-    if(exCurrentRep < exCurrentWorkout.repeticoes){
-      exCurrentPhase = 'descanso';
-      exCurrentTime = exCurrentWorkout.tempoDescanso;
-    } else {
-      if(exCurrentRound < exCurrentWorkout.rodadas){
-        exCurrentPhase = 'descanso_rodada';
-        exCurrentTime = exCurrentWorkout.tempoDescansoRodada;
-      } else {
-        if(exCurrentWorkout.tempoDesaceleracao > 0){
-          exCurrentPhase = 'desaceleracao';
-          exCurrentTime = exCurrentWorkout.tempoDesaceleracao;
-        } else {
-          finishExWorkout();
-          return;
+        <div class="side-menu-section">
+            <div class="side-menu-section-title">Configurações</div>
+            <button class="side-menu-item" onclick="showToast('Unidades: Métrico')">
+                <i class="fas fa-cog"></i>
+                Definições
+            </button>
+            <button class="side-menu-item" onclick="showPermissions()">
+                <i class="fas fa-shield-alt"></i>
+                Permissões do Dispositivo
+            </button>
+            <button class="side-menu-item" onclick="showToast('iMap v2.1.0 - Sem anúncios')">
+                <i class="fas fa-info-circle"></i>
+                Sobre o iMap
+            </button>
+            <button class="side-menu-item" onclick="showToast('Obrigado por usar iMap!')">
+                <i class="fas fa-heart" style="color: #f44336;"></i>
+                Apoiar com Donativo
+            </button>
+        </div>
+    </div>
+
+    <!-- BOTTOM SHEET - FILES -->
+    <div class="bottom-sheet-overlay" id="filesOverlay" onclick="closeFiles()"></div>
+    <div class="bottom-sheet" id="filesSheet">
+        <div class="bottom-sheet-handle"></div>
+        <div class="bottom-sheet-header">
+            <h3>Meus Ficheiros</h3>
+            <button class="close-btn" onclick="closeFiles()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="bottom-sheet-content">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab(this, 'all')">Todos</button>
+                <button class="tab" onclick="switchTab(this, 'kml')">KML</button>
+                <button class="tab" onclick="switchTab(this, 'kmz')">KMZ</button>
+                <button class="tab" onclick="switchTab(this, 'gpx')">GPX</button>
+            </div>
+
+            <div class="folder-tree">
+                <div class="folder-item" onclick="showToast('Pasta: Trilhas 2024')">
+                    <div class="indent"></div>
+                    <i class="fas fa-folder-open"></i>
+                    <span class="name">Trilhas 2024</span>
+                    <span class="count">5</span>
+                </div>
+                <div class="folder-item">
+                    <div class="indent" style="width:48px"></div>
+                    <i class="fas fa-file-alt"></i>
+                    <span class="name">Trilha Rio Cocó.kml</span>
+                </div>
+                <div class="folder-item">
+                    <div class="indent" style="width:48px"></div>
+                    <i class="fas fa-file-alt"></i>
+                    <span class="name">Ciclovia Beach Park.gpx</span>
+                </div>
+                <div class="folder-item" onclick="showToast('Pasta: Projetos')">
+                    <div class="indent"></div>
+                    <i class="fas fa-folder"></i>
+                    <span class="name">Projetos Topográficos</span>
+                    <span class="count">3</span>
+                </div>
+                <div class="folder-item">
+                    <div class="indent" style="width:48px"></div>
+                    <i class="fas fa-file-alt"></i>
+                    <span class="name">Levantamento Área A.kmz</span>
+                </div>
+            </div>
+
+            <div class="file-item">
+                <div class="file-icon kml"><i class="fas fa-file-code"></i></div>
+                <div class="file-info">
+                    <h4>Trilha Rio Cocó.kml</h4>
+                    <p>24 pontos · 3.2 km · Editado hoje</p>
+                </div>
+                <div class="file-actions">
+                    <button class="file-action-btn" onclick="showToast('A mostrar no mapa')"><i class="fas fa-eye"></i></button>
+                    <button class="file-action-btn" onclick="showToast('Partilhando...')"><i class="fas fa-share"></i></button>
+                </div>
+            </div>
+
+            <div class="file-item">
+                <div class="file-icon gpx"><i class="fas fa-route"></i></div>
+                <div class="file-info">
+                    <h4>Percurso Ciclismo.gpx</h4>
+                    <p>156 pontos · 18.7 km · 2 dias atrás</p>
+                </div>
+                <div class="file-actions">
+                    <button class="file-action-btn" onclick="showToast('A mostrar no mapa')"><i class="fas fa-eye"></i></button>
+                    <button class="file-action-btn" onclick="showToast('Partilhando...')"><i class="fas fa-share"></i></button>
+                </div>
+            </div>
+
+            <div class="file-item">
+                <div class="file-icon kmz"><i class="fas fa-file-archive"></i></div>
+                <div class="file-info">
+                    <h4>Levantamento Topográfico.kmz</h4>
+                    <p>48 pontos · 1.5 ha · 1 semana</p>
+                </div>
+                <div class="file-actions">
+                    <button class="file-action-btn" onclick="showToast('A mostrar no mapa')"><i class="fas fa-eye"></i></button>
+                    <button class="file-action-btn" onclick="showToast('Partilhando...')"><i class="fas fa-share"></i></button>
+                </div>
+            </div>
+
+            <div class="file-item">
+                <div class="file-icon folder"><i class="fas fa-folder"></i></div>
+                <div class="file-info">
+                    <h4>Agricultura Familiar</h4>
+                    <p>4 ficheiros · Pasta</p>
+                </div>
+                <div class="file-actions">
+                    <button class="file-action-btn"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WMS MODAL -->
+    <div class="modal-overlay" id="wmsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-globe" style="color: var(--primary);"></i> Adicionar WMS</h3>
+            </div>
+            <div class="modal-body">
+                <div class="wms-input-group">
+                    <label>URL do Serviço WMS</label>
+                    <input type="url" placeholder="https://servico.gov.br/wms" value="https://geo.ibge.gov.br/geoserver/wms">
+                </div>
+                <div class="wms-input-group">
+                    <label>Camada (Layer)</label>
+                    <input type="text" placeholder="nome_da_camada" value="ibge:malha_municipal">
+                </div>
+                <div class="wms-input-group">
+                    <label>Formato</label>
+                    <select>
+                        <option>image/png</option>
+                        <option>image/jpeg</option>
+                        <option>image/geotiff</option>
+                    </select>
+                </div>
+                <div class="wms-input-group">
+                    <label>Nome da Camada</label>
+                    <input type="text" placeholder="Meu WMS" value="IBGE - Malha Municipal">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" onclick="closeWMS()">Cancelar</button>
+                <button class="modal-btn confirm" onclick="addWMSLayer()">Adicionar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- IMPORT MODAL -->
+    <div class="modal-overlay" id="importModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-import" style="color: var(--primary);"></i> Importar Ficheiro</h3>
+            </div>
+            <div class="modal-body">
+                <p>Selecione um ficheiro KML, KMZ ou GPX do seu dispositivo para importar para o iMap.</p>
+                <div style="margin-top: 16px; border: 2px dashed var(--border); border-radius: 12px; padding: 30px; text-align: center; cursor: pointer;" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 36px; color: var(--primary); margin-bottom: 8px;"></i>
+                    <p style="font-size: 14px; color: var(--text-secondary);">Toque para selecionar ficheiro</p>
+                    <p style="font-size: 12px; color: #aaa; margin-top: 4px;">KML, KMZ, GPX</p>
+                </div>
+                <input type="file" id="fileInput" accept=".kml,.kmz,.gpx,.geojson,.json" style="display:none" onchange="handleFileImport(this)" multiple>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" onclick="closeImport()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PERMISSIONS MODAL -->
+    <div class="modal-overlay" id="permissionsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-shield-alt" style="color: var(--primary);"></i> Permissões</h3>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 12px;">O iMap precisa das seguintes permissões para funcionar corretamente:</p>
+                <ul class="permission-list" id="permissionList">
+                    <li>
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <strong>Localização</strong>
+                            <p style="font-size: 11px; margin: 0;">GPS e rede</p>
+                        </div>
+                        <span class="status prompt" id="perm-location">Pendente</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-compass"></i>
+                        <div>
+                            <strong>Sensor de Orientação</strong>
+                            <p style="font-size: 11px; margin: 0;">Bússola</p>
+                        </div>
+                        <span class="status prompt" id="perm-orientation">Pendente</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-running"></i>
+                        <div>
+                            <strong>Sensor de Movimento</strong>
+                            <p style="font-size: 11px; margin: 0;">Acelerómetro</p>
+                        </div>
+                        <span class="status prompt" id="perm-motion">Pendente</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-bell"></i>
+                        <div>
+                            <strong>Notificações</strong>
+                            <p style="font-size: 11px; margin: 0;">Alertas de percurso</p>
+                        </div>
+                        <span class="status prompt" id="perm-notification">Pendente</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-camera"></i>
+                        <div>
+                            <strong>Câmara</strong>
+                            <p style="font-size: 11px; margin: 0;">Fotos geolocalizadas</p>
+                        </div>
+                        <span class="status prompt" id="perm-camera">Pendente</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-hdd"></i>
+                        <div>
+                            <strong>Armazenamento</strong>
+                            <p style="font-size: 11px; margin: 0;">Guardar ficheiros</p>
+                        </div>
+                        <span class="status granted" id="perm-storage">Concedida</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" onclick="closePermissions()">Fechar</button>
+                <button class="modal-btn confirm" onclick="requestAllPermissions()">Solicitar Todas</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <!-- BOTTOM NAV -->
+    <div class="bottom-nav">
+        <button class="nav-item active" onclick="switchNav(this, 'map')">
+            <i class="fas fa-map"></i>
+            Mapa
+        </button>
+        <button class="nav-item" onclick="switchNav(this, 'files'); showFiles()">
+            <i class="fas fa-folder"></i>
+            Ficheiros
+        </button>
+        <button class="nav-item" onclick="switchNav(this, 'record'); toggleGPS()">
+            <i class="fas fa-route"></i>
+            Gravar
+        </button>
+        <button class="nav-item" onclick="switchNav(this, 'measure'); toggleMeasure()">
+            <i class="fas fa-ruler"></i>
+            Medir
+        </button>
+        <button class="nav-item" onclick="switchNav(this, 'menu'); toggleMenu()">
+            <i class="fas fa-ellipsis-h"></i>
+            Mais
+        </button>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // ============================================================
+        // iMAP - APLICAÇÃO COMPLETA COM GPS FUNCIONAL E APIs
+        // ============================================================
+
+        // ===== STATE =====
+        const AppState = {
+            isRecording: false,
+            isMeasuring: false,
+            measureMode: 'distance',
+            measurePoints: [],
+            trackPoints: [],
+            totalDistance: 0,
+            recordStartTime: null,
+            currentBaseLayer: null,
+            gpsWatchId: null,
+            compassHeading: 0,
+            isOnline: navigator.onLine,
+            wakeLock: null,
+            db: null,
+            permissions: {
+                location: 'prompt',
+                orientation: 'prompt',
+                motion: 'prompt',
+                notification: 'prompt',
+                camera: 'prompt',
+                storage: 'granted'
+            }
+        };
+
+        // ===== MAP INITIALIZATION =====
+        const map = L.map('map', {
+            center: [-3.7327, -38.5267],
+            zoom: 15,
+            zoomControl: false,
+            attributionControl: true,
+            preferCanvas: true
+        });
+
+        // Base layers
+        const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap',
+            maxZoom: 19
+        });
+
+        const topoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenTopoMap',
+            maxZoom: 17
+        });
+
+        const cycleLayer = L.tileLayer('https://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png', {
+            attribution: '© OpenCycleMap',
+            maxZoom: 18
+        });
+
+        const satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: '© Esri',
+            maxZoom: 19
+        });
+
+        const hybridLayer = L.layerGroup([
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                maxZoom: 19
+            }),
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                opacity: 0.4,
+                maxZoom: 19
+            })
+        ]);
+
+        AppState.currentBaseLayer = osmLayer;
+        osmLayer.addTo(map);
+
+        // ===== CUSTOM MARKERS =====
+        function createPOIMarker(lat, lng, type, label) {
+            const colors = {
+                restaurant: '#FF7043',
+                shopping: '#1976D2',
+                business: '#555555',
+                default: '#26A69A'
+            };
+            const icons = {
+                restaurant: 'fa-utensils',
+                shopping: 'fa-shopping-bag',
+                business: 'fa-briefcase',
+                default: 'fa-map-marker-alt'
+            };
+
+            const icon = L.divIcon({
+                className: 'poi-marker-container',
+                html: `<div style="
+                    background: ${colors[type] || colors.default};
+                    width: 36px; height: 36px;
+                    border-radius: 50%;
+                    border: 3px solid white;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                    display: flex; align-items: center; justify-content: center;
+                    color: white; font-size: 14px;
+                "><i class="fas ${icons[type] || icons.default}"></i></div>`,
+                iconSize: [36, 36],
+                iconAnchor: [18, 18]
+            });
+
+            const marker = L.marker([lat, lng], { icon: icon }).addTo(map);
+            if (label) {
+                marker.bindPopup(`<b>${label}</b>`);
+            }
+            return marker;
         }
-      }
-    }
-  } else if(exCurrentPhase === 'descanso'){
-    exCurrentRep++;
-    exCurrentPhase = 'exercicio';
-    exCurrentTime = exCurrentWorkout.tempoExercicio;
-    q('exCurrentRep').textContent = exCurrentRep;
-  } else if(exCurrentPhase === 'descanso_rodada'){
-    exCurrentRound++;
-    exCurrentRep = 1;
-    exCurrentPhase = 'exercicio';
-    exCurrentTime = exCurrentWorkout.tempoExercicio;
-    q('exCurrentRound').textContent = exCurrentRound;
-    q('exCurrentRep').textContent = exCurrentRep;
-  } else if(exCurrentPhase === 'desaceleracao'){
-    finishExWorkout();
-    return;
-  }
-  
-  exTotalTime = exCurrentTime;
-  updateExTimerDisplay();
-}
 
-function finishExWorkout(){
-  pauseExTimer();
-  q('exTimerPhase').textContent = 'TREINO CONCLUÍDO!';
-  q('exTimerTime').textContent = '✅';
-  q('exTimerLabel').textContent = 'Parabéns!';
-  q('exTimerCircle').style.setProperty('--progress', '360deg');
-  
-  if(exCurrentAudio) {
-    exCurrentAudio.pause();
-    if (exCurrentAudio.src) URL.revokeObjectURL(exCurrentAudio.src);
-    exCurrentAudio = null;
-  }
-  
-  setTimeout(() => {
-    if(confirm('Treino concluído! Deseja iniciar novamente?')){
-      // Recarrega a música do IndexedDB para reiniciar
-      const workoutId = exCurrentWorkout ? exCurrentWorkout.id : null;
-      resetExTimer();
-      if(workoutId) startExWorkout(workoutId);
-    }else{
-      resetExForm();
-      show('exercicios');
-    }
-  }, 2000);
-}
+        // Add POI markers matching the screenshot
+        createPOIMarker(-3.7280, -38.5310, 'restaurant', 'Restaurantes');
+        createPOIMarker(-3.7350, -38.5200, 'restaurant', 'Terezinha Bolos e Confeitaria');
+        createPOIMarker(-3.7310, -38.5340, 'shopping', 'Frigelar');
+        createPOIMarker(-3.7380, -38.5250, 'shopping', 'Assaí Atacadista');
+        createPOIMarker(-3.7360, -38.5270, 'business', 'Termaco Logística Matriz');
 
-function updateExTimerDisplay(){
-  const minutes = Math.floor(exCurrentTime / 60);
-  const seconds = exCurrentTime % 60;
-  const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-  q('exTimerTime').textContent = timeString;
-  
-  let phaseText = '';
-  let progress = 0;
-  
-  if(exCurrentPhase === 'preparar'){
-    phaseText = 'PREPARAR';
-    progress = ((exTotalTime - exCurrentTime) / exTotalTime) * 360;
-  } else if(exCurrentPhase === 'aquecimento'){
-    phaseText = 'AQUECIMENTO';
-    progress = ((exTotalTime - exCurrentTime) / exTotalTime) * 360;
-  } else if(exCurrentPhase === 'exercicio'){
-    phaseText = 'EXERCÍCIO';
-    progress = ((exTotalTime - exCurrentTime) / exTotalTime) * 360;
-  } else if(exCurrentPhase === 'descanso'){
-    phaseText = 'DESCANSO';
-    progress = ((exTotalTime - exCurrentTime) / exTotalTime) * 360;
-  } else if(exCurrentPhase === 'descanso_rodada'){
-    phaseText = 'DESCANSO DA RODADA';
-    progress = ((exTotalTime - exCurrentTime) / exTotalTime) * 360;
-  } else if(exCurrentPhase === 'desaceleracao'){
-    phaseText = 'DESACELERAÇÃO';
-    progress = ((exTotalTime - exCurrentTime) / exTotalTime) * 360;
-  }
-  
-  q('exTimerPhase').textContent = phaseText;
-  q('exTimerCircle').style.setProperty('--progress', progress + 'deg');
-}
+        // Draw Rio Cocó (simplified polygon)
+        const rioCocoCoords = [
+            [-3.7180, -38.5310], [-3.7200, -38.5290], [-3.7220, -38.5270],
+            [-3.7240, -38.5260], [-3.7260, -38.5255], [-3.7280, -38.5250],
+            [-3.7300, -38.5248], [-3.7320, -38.5245], [-3.7340, -38.5243],
+            [-3.7355, -38.5242], [-3.7355, -38.5255], [-3.7340, -38.5260],
+            [-3.7320, -38.5265], [-3.7300, -38.5270], [-3.7280, -38.5275],
+            [-3.7260, -38.5280], [-3.7240, -38.5285], [-3.7220, -38.5295],
+            [-3.7200, -38.5305], [-3.7180, -38.5310]
+        ];
 
-// Listener para mostrar o nome do arquivo selecionado imediatamente
-document.addEventListener('change', function(e) {
-  if (e.target && e.target.id === 'exMusicFile') {
-    const fileNameDisplay = q('exMusicFileName');
-    if (e.target.files.length > 0) {
-      fileNameDisplay.textContent = '🎵 ' + e.target.files[0].name + ' (será salva ao confirmar)';
-    } else {
-      fileNameDisplay.textContent = '';
-    }
-  }
-});
+        L.polygon(rioCocoCoords, {
+            color: '#81D4FA', fillColor: '#81D4FA', fillOpacity: 0.7, weight: 1
+        }).addTo(map);
 
-document.addEventListener('DOMContentLoaded', () => {
-  renderAll();
-  syncVolumeControls();
-});
-</script>
+        L.circle([-3.7310, -38.5190], {
+            radius: 80, color: '#81D4FA', fillColor: '#81D4FA', fillOpacity: 0.8, weight: 1
+        }).addTo(map);
+
+        const avRaulBarbosa = [
+            [-3.7160, -38.5330], [-3.7200, -38.5310], [-3.7250, -38.5290],
+            [-3.7300, -38.5270], [-3.7350, -38.5250], [-3.7400, -38.5230]
+        ];
+        L.polyline(avRaulBarbosa, { color: '#90A4AE', weight: 6, opacity: 0.6 }).addTo(map);
+
+        const highway116 = [
+            [-3.7150, -38.5380], [-3.7200, -38.5360], [-3.7250, -38.5340],
+            [-3.7300, -38.5320], [-3.7350, -38.5300], [-3.7400, -38.5280],
+            [-3.7450, -38.5260]
+        ];
+        L.polyline(highway116, { color: '#5C6BC0', weight: 8, opacity: 0.5 }).addTo(map);
+
+        // ============================================================
+        // INDEXEDDB - PERSISTÊNCIA OFFLINE
+        // ============================================================
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('iMapDB', 1);
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    AppState.db = request.result;
+                    resolve(request.result);
+                };
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains('tracks')) {
+                        db.createObjectStore('tracks', { keyPath: 'id', autoIncrement: true });
+                    }
+                    if (!db.objectStoreNames.contains('files')) {
+                        db.createObjectStore('files', { keyPath: 'name' });
+                    }
+                    if (!db.objectStoreNames.contains('settings')) {
+                        db.createObjectStore('settings', { keyPath: 'key' });
+                    }
+                };
+            });
+        }
+
+        function saveTrack(track) {
+            if (!AppState.db) return;
+            const tx = AppState.db.transaction('tracks', 'readwrite');
+            tx.objectStore('tracks').add(track);
+        }
+
+        function loadTracks() {
+            return new Promise((resolve) => {
+                if (!AppState.db) { resolve([]); return; }
+                const tx = AppState.db.transaction('tracks', 'readonly');
+                const req = tx.objectStore('tracks').getAll();
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => resolve([]);
+            });
+        }
+
+        // ============================================================
+        // GEOLOCATION API - GPS FUNCIONAL COMPLETO
+        // ============================================================
+        let gpsMarker = null;
+        let gpsAccuracyCircle = null;
+        let lastGpsPosition = null;
+
+        function initGPS() {
+            if (!navigator.geolocation) {
+                updateGPSStatus('no-signal', 'GPS não disponível');
+                showToast('Geolocalização não suportada');
+                return;
+            }
+
+            // Verificar permissão primeiro
+            if (navigator.permissions) {
+                navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+                    AppState.permissions.location = result.state;
+                    updatePermissionUI('location', result.state);
+                    result.onchange = () => {
+                        AppState.permissions.location = result.state;
+                        updatePermissionUI('location', result.state);
+                    };
+                }).catch(() => {});
+            }
+
+            // Obter posição atual
+            navigator.geolocation.getCurrentPosition(
+                onGPSPosition,
+                onGPSError,
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 0
+                }
+            );
+
+            // Watch position para tracking contínuo
+            AppState.gpsWatchId = navigator.geolocation.watchPosition(
+                onGPSPosition,
+                onGPSError,
+                {
+                    enableHighAccuracy: true,
+                    timeout: 30000,
+                    maximumAge: 1000,
+                    distanceFilter: 5
+                }
+            );
+        }
+
+        function onGPSPosition(position) {
+            const { latitude, longitude, accuracy, altitude, altitudeAccuracy, speed, heading } = position.coords;
+            const timestamp = position.timestamp;
+
+            lastGpsPosition = position;
+            updateGPSStatus('dot', 'GPS Ativo');
+
+            // Atualizar painel de info
+            document.getElementById('infoLat').textContent = latitude.toFixed(6) + '°';
+            document.getElementById('infoLng').textContent = longitude.toFixed(6) + '°';
+            document.getElementById('infoAlt').textContent = altitude ? altitude.toFixed(1) + ' m' : '--';
+            document.getElementById('infoAcc').textContent = '±' + accuracy.toFixed(1) + ' m';
+            document.getElementById('infoSpeed').textContent = speed ? (speed * 3.6).toFixed(1) + ' km/h' : '0 km/h';
+            document.getElementById('infoHeading').textContent = heading ? heading.toFixed(0) + '°' : '--';
+
+            // Atualizar marcador no mapa
+            if (gpsMarker) {
+                gpsMarker.setLatLng([latitude, longitude]);
+            } else {
+                const gpsIcon = L.divIcon({
+                    className: 'gps-marker',
+                    html: `<div style="
+                        width: 20px; height: 20px;
+                        background: #2196F3;
+                        border: 3px solid white;
+                        border-radius: 50%;
+                        box-shadow: 0 0 0 2px rgba(33,150,243,0.3), 0 2px 8px rgba(0,0,0,0.3);
+                    "></div>`,
+                    iconSize: [20, 20],
+                    iconAnchor: [10, 10]
+                });
+                gpsMarker = L.marker([latitude, longitude], { icon: gpsIcon, zIndexOffset: 1000 }).addTo(map);
+            }
+
+            // Círculo de precisão
+            if (gpsAccuracyCircle) {
+                gpsAccuracyCircle.setLatLng([latitude, longitude]);
+                gpsAccuracyCircle.setRadius(accuracy);
+            } else {
+                gpsAccuracyCircle = L.circle([latitude, longitude], {
+                    radius: accuracy,
+                    color: '#2196F3',
+                    fillColor: '#2196F3',
+                    fillOpacity: 0.1,
+                    weight: 1,
+                    opacity: 0.4
+                }).addTo(map);
+            }
+
+            // Se estiver gravando, adicionar ponto ao track
+            if (AppState.isRecording) {
+                addTrackPoint(latitude, longitude, altitude, speed, heading, timestamp, accuracy);
+            }
+        }
+
+        function onGPSError(error) {
+            let message = 'Erro GPS';
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    message = 'Permissão de localização negada';
+                    AppState.permissions.location = 'denied';
+                    updatePermissionUI('location', 'denied');
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    message = 'Posição indisponível';
+                    break;
+                case error.TIMEOUT:
+                    message = 'Timeout do GPS';
+                    break;
+            }
+            updateGPSStatus('no-signal', message);
+            showToast(message);
+        }
+
+        function updateGPSStatus(dotClass, text) {
+            const dot = document.getElementById('gpsDot');
+            const statusText = document.getElementById('gpsStatusText');
+            dot.className = 'dot ' + dotClass;
+            statusText.textContent = text;
+        }
+
+        function centerOnLocation() {
+            if (lastGpsPosition) {
+                const { latitude, longitude } = lastGpsPosition.coords;
+                map.flyTo([latitude, longitude], 17, { duration: 1 });
+                showToast('Localização encontrada');
+            } else if (navigator.geolocation) {
+                showToast('A obter localização...');
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        map.flyTo([pos.coords.latitude, pos.coords.longitude], 17, { duration: 1 });
+                        showToast('Localização encontrada');
+                    },
+                    () => showToast('GPS não disponível')
+                );
+            } else {
+                map.flyTo([-3.7327, -38.5267], 16, { duration: 1 });
+            }
+        }
+
+        // ============================================================
+        // GPS TRACKING / GRAVAÇÃO DE PERCURSO
+        // ============================================================
+        let trackLine = null;
+        let trackMarkers = [];
+        let recordInterval = null;
+        let trackStats = { distance: 0, duration: 0, maxSpeed: 0, avgSpeed: 0, points: 0 };
+
+        function toggleGPS() {
+            AppState.isRecording = !AppState.isRecording;
+            const btn = document.getElementById('gpsBtn');
+            const overlay = document.getElementById('recordingOverlay');
+
+            if (AppState.isRecording) {
+                btn.classList.add('recording');
+                btn.innerHTML = '<i class="fas fa-stop"></i>';
+                overlay.classList.add('visible');
+                AppState.recordStartTime = Date.now();
+                AppState.trackPoints = [];
+                AppState.totalDistance = 0;
+                trackStats = { distance: 0, duration: 0, maxSpeed: 0, avgSpeed: 0, points: 0 };
+
+                // Solicitar Wake Lock para manter tela ativa
+                requestWakeLock();
+
+                // Solicitar permissão de notificação
+                requestNotificationPermission();
+
+                recordInterval = setInterval(() => {
+                    updateRecordingStats();
+                }, 1000);
+
+                showToast('🎯 Gravação iniciada - GPS ativo');
+                vibrate(200);
+            } else {
+                btn.classList.remove('recording');
+                btn.innerHTML = '<i class="fas fa-route"></i>';
+                overlay.classList.remove('visible');
+                clearInterval(recordInterval);
+
+                // Libertar Wake Lock
+                releaseWakeLock();
+
+                if (trackLine) {
+                    map.removeLayer(trackLine);
+                    trackLine = null;
+                }
+
+                if (AppState.trackPoints.length > 1) {
+                    trackLine = L.polyline(AppState.trackPoints.map(p => [p.lat, p.lng]), {
+                        color: '#26A69A', weight: 4, opacity: 0.8
+                    }).addTo(map);
+
+                    // Salvar no IndexedDB
+                    const trackData = {
+                        name: 'Percurso ' + new Date().toLocaleString('pt-BR'),
+                        date: new Date().toISOString(),
+                        points: AppState.trackPoints,
+                        distance: AppState.totalDistance,
+                        duration: trackStats.duration,
+                        maxSpeed: trackStats.maxSpeed,
+                        avgSpeed: trackStats.avgSpeed,
+                        pointCount: trackStats.points
+                    };
+                    saveTrack(trackData);
+
+                    showToast(`✅ Percurso gravado: ${formatDistance(AppState.totalDistance)}`);
+                    vibrate([100, 50, 100]);
+
+                    // Oferecer exportação
+                    setTimeout(() => {
+                        if (confirm('Exportar percurso como GPX?')) {
+                            exportTrackAsGPX(trackData);
+                        }
+                    }, 500);
+                } else {
+                    showToast('Percurso muito curto para guardar');
+                }
+            }
+        }
+
+        function addTrackPoint(lat, lng, altitude, speed, heading, timestamp, accuracy) {
+            const point = {
+                lat, lng, altitude, speed, heading, timestamp, accuracy,
+                time: Date.now()
+            };
+
+            // Calcular distância do ponto anterior
+            if (AppState.trackPoints.length > 0) {
+                const prev = AppState.trackPoints[AppState.trackPoints.length - 1];
+                const dist = haversineDistance(prev.lat, prev.lng, lat, lng);
+                
+                // Filtrar pontos com GPS impreciso (drift)
+                if (accuracy > 50 || dist < 2) return;
+                
+                AppState.totalDistance += dist;
+            }
+
+            AppState.trackPoints.push(point);
+            trackStats.points++;
+            if (speed) {
+                const speedKmh = speed * 3.6;
+                if (speedKmh > trackStats.maxSpeed) trackStats.maxSpeed = speedKmh;
+            }
+        }
+
+        function updateRecordingStats() {
+            document.getElementById('recDistance').textContent = formatDistance(AppState.totalDistance);
+            const elapsed = Math.floor((Date.now() - AppState.recordStartTime) / 1000);
+            trackStats.duration = elapsed;
+            const mins = Math.floor(elapsed / 60).toString().padStart(2, '0');
+            const secs = (elapsed % 60).toString().padStart(2, '0');
+            document.getElementById('recTime').textContent = `${mins}:${secs}`;
+
+            // Velocidade atual
+            if (lastGpsPosition && lastGpsPosition.coords.speed) {
+                const speedKmh = (lastGpsPosition.coords.speed * 3.6).toFixed(1);
+                document.getElementById('recSpeed').textContent = speedKmh + ' km/h';
+            }
+
+            // Atualizar linha no mapa
+            if (AppState.trackPoints.length > 1) {
+                if (trackLine) map.removeLayer(trackLine);
+                trackLine = L.polyline(
+                    AppState.trackPoints.map(p => [p.lat, p.lng]),
+                    { color: '#26A69A', weight: 4, opacity: 0.8 }
+                ).addTo(map);
+            }
+        }
+
+        // ============================================================
+        // WAKE LOCK API - MANTER TELA ATIVA
+        // ============================================================
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    AppState.wakeLock = await navigator.wakeLock.request('screen');
+                    AppState.wakeLock.addEventListener('release', () => {
+                        console.log('Wake Lock libertado');
+                    });
+                }
+            } catch (err) {
+                console.log('Wake Lock não disponível:', err);
+            }
+        }
+
+        async function releaseWakeLock() {
+            if (AppState.wakeLock) {
+                await AppState.wakeLock.release();
+                AppState.wakeLock = null;
+            }
+        }
+
+        // Re-adquirir wake lock quando a página volta ao foco
+        document.addEventListener('visibilitychange', async () => {
+            if (AppState.isRecording && document.visibilityState === 'visible') {
+                await requestWakeLock();
+            }
+        });
+
+        // ============================================================
+        // DEVICE ORIENTATION API - BÚSSOLA
+        // ============================================================
+        let compassEnabled = false;
+
+        function initCompass() {
+            if (!window.DeviceOrientationEvent) {
+                console.log('DeviceOrientation não suportado');
+                return;
+            }
+
+            // iOS 13+ requer permissão explícita
+            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission().then(response => {
+                    if (response === 'granted') {
+                        enableCompass();
+                    }
+                }).catch(console.error);
+            } else {
+                enableCompass();
+            }
+        }
+
+        function enableCompass() {
+            if (compassEnabled) return;
+            compassEnabled = true;
+            window.addEventListener('deviceorientation', handleOrientation);
+            document.getElementById('compass').style.display = 'flex';
+            AppState.permissions.orientation = 'granted';
+            updatePermissionUI('orientation', 'granted');
+        }
+
+        function handleOrientation(event) {
+            let heading = event.alpha;
+            if (event.webkitCompassHeading) {
+                heading = event.webkitCompassHeading; // iOS
+            } else if (heading !== null) {
+                heading = 360 - heading; // Android
+            }
+
+            if (heading !== null && heading !== undefined) {
+                AppState.compassHeading = heading;
+                const arrow = document.getElementById('compassArrow');
+                arrow.style.transform = `rotate(${heading}deg)`;
+            }
+        }
+
+        function resetCompass() {
+            map.setView(map.getCenter(), map.getZoom(), { animate: true });
+            showToast('Bússola resetada');
+        }
+
+        // ============================================================
+        // DEVICE MOTION API - ACELERÓMETRO
+        // ============================================================
+        function initMotion() {
+            if (!window.DeviceMotionEvent) return;
+
+            if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                DeviceMotionEvent.requestPermission().then(response => {
+                    if (response === 'granted') {
+                        enableMotion();
+                    }
+                }).catch(console.error);
+            } else {
+                enableMotion();
+            }
+        }
+
+        function enableMotion() {
+            window.addEventListener('devicemotion', (event) => {
+                const acc = event.accelerationIncludingGravity;
+                if (acc) {
+                    // Detectar movimento significativo
+                    const magnitude = Math.sqrt(acc.x**2 + acc.y**2 + acc.z**2);
+                    if (magnitude > 15 && AppState.isRecording) {
+                        // Vibração ao detectar movimento brusco
+                    }
+                }
+            });
+            AppState.permissions.motion = 'granted';
+            updatePermissionUI('motion', 'granted');
+        }
+
+        // ============================================================
+        // NOTIFICATION API
+        // ============================================================
+        function requestNotificationPermission() {
+            if (!('Notification' in window)) return;
+            
+            if (Notification.permission === 'default') {
+                Notification.requestPermission().then(permission => {
+                    AppState.permissions.notification = permission;
+                    updatePermissionUI('notification', permission);
+                });
+            }
+        }
+
+        function sendNotification(title, body) {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification(title, {
+                    body: body,
+                    icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"%3E%3Crect fill="%2326A69A" width="192" height="192" rx="32"/%3E%3Ctext x="96" y="128" font-size="100" text-anchor="middle" fill="white"%3E🗺%3C/text%3E%3C/svg%3E',
+                    badge: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"%3E%3Crect fill="%2326A69A" width="192" height="192" rx="32"/%3E%3C/svg%3E',
+                    vibrate: [200, 100, 200]
+                });
+            }
+        }
+
+        // ============================================================
+        // VIBRATION API
+        // ============================================================
+        function vibrate(pattern) {
+            if ('vibrate' in navigator) {
+                navigator.vibrate(pattern);
+            }
+        }
+
+        // ============================================================
+        // NETWORK INFORMATION API - ONLINE/OFFLINE
+        // ============================================================
+        function initNetworkStatus() {
+            updateNetworkUI();
+            
+            window.addEventListener('online', () => {
+                AppState.isOnline = true;
+                updateNetworkUI();
+                showToast('🌐 Conexão restaurada');
+            });
+            
+            window.addEventListener('offline', () => {
+                AppState.isOnline = false;
+                updateNetworkUI();
+                showToast('📡 Modo Offline ativado');
+            });
+
+            if (navigator.connection) {
+                navigator.connection.addEventListener('change', updateNetworkUI);
+            }
+        }
+
+        function updateNetworkUI() {
+            const indicator = document.getElementById('offlineIndicator');
+            if (AppState.isOnline) {
+                indicator.classList.remove('visible');
+            } else {
+                indicator.classList.add('visible');
+            }
+        }
+
+        // ============================================================
+        // BATTERY API
+        // ============================================================
+        function initBattery() {
+            if (!('getBattery' in navigator)) return;
+            
+            navigator.getBattery().then(battery => {
+                updateBatteryUI(battery);
+                battery.addEventListener('levelchange', () => updateBatteryUI(battery));
+                battery.addEventListener('chargingchange', () => updateBatteryUI(battery));
+            });
+        }
+
+        function updateBatteryUI(battery) {
+            const indicator = document.getElementById('batteryIndicator');
+            const icon = document.getElementById('batteryIcon');
+            const text = document.getElementById('batteryText');
+            
+            indicator.style.display = 'flex';
+            const level = Math.round(battery.level * 100);
+            text.textContent = level + '%';
+            
+            if (battery.charging) {
+                icon.className = 'fas fa-battery-charging';
+                icon.style.color = '#4CAF50';
+            } else if (level < 20) {
+                icon.className = 'fas fa-battery-quarter';
+                icon.style.color = '#f44336';
+                indicator.classList.add('low');
+            } else if (level < 50) {
+                icon.className = 'fas fa-battery-half';
+                icon.style.color = '#FF9800';
+            } else {
+                icon.className = 'fas fa-battery-full';
+                icon.style.color = '#4CAF50';
+            }
+        }
+
+        // ============================================================
+        // FILE SYSTEM ACCESS API - IMPORTAR/EXPORTAR
+        // ============================================================
+        async function showFilePicker() {
+            if ('showOpenFilePicker' in window) {
+                try {
+                    const [fileHandle] = await window.showOpenFilePicker({
+                        types: [{
+                            description: 'Ficheiros de Mapa',
+                            accept: {
+                                'application/gpx+xml': ['.gpx'],
+                                'application/vnd.google-earth.kml+xml': ['.kml'],
+                                'application/vnd.google-earth.kmz': ['.kmz'],
+                                'application/geo+json': ['.geojson', '.json']
+                            }
+                        }]
+                    });
+                    const file = await fileHandle.getFile();
+                    processImportedFile(file);
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        console.error(err);
+                    }
+                }
+            } else {
+                document.getElementById('fileInput').click();
+            }
+        }
+
+        async function showSavePicker(filename, content, mimeType) {
+            if ('showSaveFilePicker' in window) {
+                try {
+                    const handle = await window.showSaveFilePicker({
+                        suggestedName: filename,
+                        types: [{
+                            description: 'Ficheiro de Mapa',
+                            accept: { [mimeType]: [filename.split('.').pop()] }
+                        }]
+                    });
+                    const writable = await handle.createWritable();
+                    await writable.write(content);
+                    await writable.close();
+                    showToast('✅ Ficheiro guardado: ' + filename);
+                    return true;
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        fallbackDownload(filename, content, mimeType);
+                    }
+                    return false;
+                }
+            } else {
+                fallbackDownload(filename, content, mimeType);
+                return true;
+            }
+        }
+
+        function fallbackDownload(filename, content, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('✅ Download: ' + filename);
+        }
+
+        // ============================================================
+        // SHARE API
+        // ============================================================
+        async function shareTrack(trackData) {
+            const gpxContent = generateGPX(trackData);
+            const blob = new Blob([gpxContent], { type: 'application/gpx+xml' });
+            const file = new File([blob], trackData.name + '.gpx', { type: 'application/gpx+xml' });
+
+            if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Percurso iMap',
+                        text: trackData.name
+                    });
+                } catch (err) {
+                    console.log('Partilha cancelada');
+                }
+            } else {
+                fallbackDownload(trackData.name + '.gpx', gpxContent, 'application/gpx+xml');
+            }
+        }
+
+        // ============================================================
+        // FULLSCREEN API
+        // ============================================================
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // ============================================================
+        // PERMISSIONS API
+        // ============================================================
+        async function checkPermissions() {
+            if (!navigator.permissions) return;
+            
+            const permissionsToCheck = ['geolocation', 'notifications', 'camera'];
+            
+            for (const perm of permissionsToCheck) {
+                try {
+                    const result = await navigator.permissions.query({ name: perm });
+                    AppState.permissions[perm === 'geolocation' ? 'location' : perm] = result.state;
+                    updatePermissionUI(perm === 'geolocation' ? 'location' : perm, result.state);
+                } catch (err) {
+                    console.log('Permissão não consultável:', perm);
+                }
+            }
+        }
+
+        function updatePermissionUI(perm, state) {
+            const el = document.getElementById('perm-' + perm);
+            if (!el) return;
+            
+            el.className = 'status ' + state;
+            const labels = { granted: 'Concedida', denied: 'Negada', prompt: 'Pendente' };
+            el.textContent = labels[state] || state;
+        }
+
+        async function requestAllPermissions() {
+            // Localização
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    () => {
+                        AppState.permissions.location = 'granted';
+                        updatePermissionUI('location', 'granted');
+                        showToast('✅ Localização concedida');
+                    },
+                    () => {
+                        AppState.permissions.location = 'denied';
+                        updatePermissionUI('location', 'denied');
+                    }
+                );
+            }
+
+            // Orientação
+            initCompass();
+
+            // Movimento
+            initMotion();
+
+            // Notificações
+            requestNotificationPermission();
+
+            // Câmara
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+                    stream.getTracks().forEach(t => t.stop());
+                    AppState.permissions.camera = 'granted';
+                    updatePermissionUI('camera', 'granted');
+                }).catch(() => {
+                    AppState.permissions.camera = 'denied';
+                    updatePermissionUI('camera', 'denied');
+                });
+            }
+
+            showToast('Permissões solicitadas');
+            setTimeout(() => closePermissions(), 1500);
+        }
+
+        function showPermissions() {
+            document.getElementById('permissionsModal').classList.add('open');
+            checkPermissions();
+        }
+
+        function closePermissions() {
+            document.getElementById('permissionsModal').classList.remove('open');
+        }
+
+        // ============================================================
+        // MEASUREMENT
+        // ============================================================
+        let measureLine = null;
+        let measureArea = null;
+        let measureMarkers = [];
+
+        function toggleMeasure() {
+            AppState.isMeasuring = !AppState.isMeasuring;
+            const panel = document.getElementById('measurePanel');
+
+            if (AppState.isMeasuring) {
+                panel.classList.add('visible');
+                map.on('click', onMeasureClick);
+                showToast('📏 Toque no mapa para medir');
+            } else {
+                panel.classList.remove('visible');
+                map.off('click', onMeasureClick);
+            }
+        }
+
+        function setMeasureMode(mode) {
+            AppState.measureMode = mode;
+            clearMeasure();
+            document.getElementById('measureLabel').textContent =
+                mode === 'distance' ? 'Distância' : 'Área';
+        }
+
+        function onMeasureClick(e) {
+            AppState.measurePoints.push([e.latlng.lat, e.latlng.lng]);
+
+            const marker = L.circleMarker(e.latlng, {
+                radius: 6, color: '#26A69A', fillColor: 'white', fillOpacity: 1, weight: 2
+            }).addTo(map);
+            measureMarkers.push(marker);
+
+            if (AppState.measurePoints.length > 1) {
+                if (measureLine) map.removeLayer(measureLine);
+                measureLine = L.polyline(AppState.measurePoints, {
+                    color: '#26A69A', weight: 3, dashArray: '8, 6'
+                }).addTo(map);
+
+                if (AppState.measureMode === 'distance') {
+                    let dist = 0;
+                    for (let i = 1; i < AppState.measurePoints.length; i++) {
+                        dist += haversineDistance(
+                            AppState.measurePoints[i-1][0], AppState.measurePoints[i-1][1],
+                            AppState.measurePoints[i][0], AppState.measurePoints[i][1]
+                        );
+                    }
+                    document.getElementById('measureValue').textContent = formatDistance(dist);
+                } else {
+                    if (measureArea) map.removeLayer(measureArea);
+                    if (AppState.measurePoints.length >= 3) {
+                        measureArea = L.polygon(AppState.measurePoints, {
+                            color: '#26A69A', fillColor: '#26A69A', fillOpacity: 0.2, weight: 2
+                        }).addTo(map);
+                        const area = calculateArea(AppState.measurePoints);
+                        document.getElementById('measureValue').textContent = formatArea(area);
+                    }
+                }
+            }
+        }
+
+        function calculateArea(points) {
+            let area = 0;
+            const n = points.length;
+            for (let i = 0; i < n; i++) {
+                const j = (i + 1) % n;
+                area += points[i][1] * points[j][0];
+                area -= points[j][1] * points[i][0];
+            }
+            area = Math.abs(area) / 2;
+            const lat = points[0][0] * Math.PI / 180;
+            const mPerDegLat = 111320;
+            const mPerDegLng = 111320 * Math.cos(lat);
+            return area * mPerDegLat * mPerDegLng;
+        }
+
+        function formatArea(sqMeters) {
+            if (sqMeters < 10000) return Math.round(sqMeters) + ' m²';
+            return (sqMeters / 10000).toFixed(2) + ' ha';
+        }
+
+        function clearMeasure() {
+            AppState.measurePoints = [];
+            if (measureLine) { map.removeLayer(measureLine); measureLine = null; }
+            if (measureArea) { map.removeLayer(measureArea); measureArea = null; }
+            measureMarkers.forEach(m => map.removeLayer(m));
+            measureMarkers = [];
+            document.getElementById('measureValue').textContent = '0 m';
+        }
+
+        // ============================================================
+        // LAYERS
+        // ============================================================
+        function toggleLayers() {
+            document.getElementById('layerPanel').classList.toggle('open');
+        }
+
+        function changeBaseMap(type) {
+            map.removeLayer(AppState.currentBaseLayer);
+
+            switch(type) {
+                case 'osm': AppState.currentBaseLayer = osmLayer; break;
+                case 'topo': AppState.currentBaseLayer = topoLayer; break;
+                case 'cycle': AppState.currentBaseLayer = cycleLayer; break;
+                case 'sat': AppState.currentBaseLayer = satLayer; break;
+                case 'hybrid': AppState.currentBaseLayer = hybridLayer; break;
+            }
+
+            AppState.currentBaseLayer.addTo(map);
+            showToast('Mapa base alterado');
+        }
+
+        // ============================================================
+        // WMS
+        // ============================================================
+        function toggleWMS() {
+            document.getElementById('wmsModal').classList.add('open');
+        }
+
+        function closeWMS() {
+            document.getElementById('wmsModal').classList.remove('open');
+        }
+
+        function addWMSLayer() {
+            const wmsLayer = L.tileLayer.wms('https://geo.ibge.gov.br/geoserver/wms', {
+                layers: 'ibge:malha_municipal',
+                format: 'image/png',
+                transparent: true,
+                opacity: 0.6
+            }).addTo(map);
+
+            closeWMS();
+            showToast('Camada WMS adicionada');
+        }
+
+        // ============================================================
+        // MENU
+        // ============================================================
+        function toggleMenu() {
+            document.getElementById('sideMenu').classList.toggle('open');
+            document.getElementById('menuOverlay').classList.toggle('open');
+        }
+
+        // ============================================================
+        // FILES
+        // ============================================================
+        function showFiles() {
+            document.getElementById('filesSheet').classList.add('open');
+            document.getElementById('filesOverlay').classList.add('open');
+        }
+
+        function closeFiles() {
+            document.getElementById('filesSheet').classList.remove('open');
+            document.getElementById('filesOverlay').classList.remove('open');
+        }
+
+        function switchTab(el, type) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            showToast('Filtro: ' + type.toUpperCase());
+        }
+
+        // ============================================================
+        // IMPORT
+        // ============================================================
+        function showImport() {
+            toggleMenu();
+            setTimeout(() => {
+                document.getElementById('importModal').classList.add('open');
+            }, 300);
+        }
+
+        function closeImport() {
+            document.getElementById('importModal').classList.remove('open');
+        }
+
+        function handleFileImport(input) {
+            if (input.files.length > 0) {
+                Array.from(input.files).forEach(file => processImportedFile(file));
+            }
+        }
+
+        function processImportedFile(file) {
+            const ext = file.name.split('.').pop().toLowerCase();
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                const content = e.target.result;
+                let points = [];
+                
+                if (ext === 'kml') {
+                    points = parseKML(content);
+                } else if (ext === 'gpx') {
+                    points = parseGPX(content);
+                } else if (ext === 'geojson' || ext === 'json') {
+                    points = parseGeoJSON(content);
+                }
+
+                if (points.length > 0) {
+                    const line = L.polyline(points, {
+                        color: ext === 'kml' ? '#1976D2' : ext === 'gpx' ? '#388E3C' : '#7B1FA2',
+                        weight: 4, opacity: 0.8
+                    }).addTo(map);
+                    
+                    map.fitBounds(line.getBounds(), { padding: [50, 50] });
+                    showToast(`✅ Importado: ${file.name} (${points.length} pontos)`);
+                    vibrate(100);
+                } else {
+                    showToast('️ Ficheiro vazio ou formato inválido');
+                }
+            };
+            
+            reader.readAsText(file);
+            closeImport();
+        }
+
+        function showExport() {
+            toggleMenu();
+            setTimeout(() => {
+                loadTracks().then(tracks => {
+                    if (tracks.length === 0) {
+                        showToast('Nenhum percurso para exportar');
+                        return;
+                    }
+                    const lastTrack = tracks[tracks.length - 1];
+                    shareTrack(lastTrack);
+                });
+            }, 300);
+        }
+
+        // ============================================================
+        // SEARCH
+        // ============================================================
+        function toggleSearch() {
+            const results = document.getElementById('searchResults');
+            results.classList.toggle('open');
+            if (results.classList.contains('open')) {
+                document.getElementById('searchInput').focus();
+            }
+        }
+
+        function handleSearch(value) {
+            const results = document.getElementById('searchResults');
+            if (value.length > 0) {
+                results.classList.add('open');
+            } else {
+                results.classList.remove('open');
+            }
+        }
+
+        function goToPlace(lat, lng) {
+            map.flyTo([lat, lng], 17, { duration: 1 });
+            document.getElementById('searchResults').classList.remove('open');
+            document.getElementById('searchInput').value = '';
+        }
+
+        // ============================================================
+        // PHOTO MARKER
+        // ============================================================
+        function addPhotoMarker() {
+            const center = map.getCenter();
+            const lat = center.lat + (Math.random() - 0.5) * 0.002;
+            const lng = center.lng + (Math.random() - 0.5) * 0.002;
+
+            const photoIcon = L.divIcon({
+                className: 'photo-marker-container',
+                html: `<div style="
+                    width: 40px; height: 40px;
+                    border-radius: 50%;
+                    border: 3px solid white;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    display: flex; align-items: center; justify-content: center;
+                    color: white; font-size: 16px;
+                "><i class="fas fa-camera"></i></div>`,
+                iconSize: [40, 40],
+                iconAnchor: [20, 20]
+            });
+
+            L.marker([lat, lng], { icon: photoIcon })
+                .addTo(map)
+                .bindPopup('<b>Fotografia</b><br>Geolocalizada<br><small>26 Set 2026</small>');
+
+            showToast('📷 Fotografia adicionada ao mapa');
+            vibrate(50);
+        }
+
+        // ============================================================
+        // NAVIGATION
+        // ============================================================
+        function switchNav(el, section) {
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function zoomIn() { map.zoomIn(); }
+        function zoomOut() { map.zoomOut(); }
+
+        function toggleGpsInfo() {
+            const panel = document.getElementById('gpsInfoPanel');
+            panel.classList.toggle('visible');
+        }
+
+        // ============================================================
+        // KML PARSER
+        // ============================================================
+        function parseKML(kmlText) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(kmlText, 'text/xml');
+            const coordinates = doc.querySelector('coordinates');
+            if (coordinates) {
+                const coords = coordinates.textContent.trim().split(/\s+/);
+                return coords.map(c => {
+                    const [lng, lat] = c.split(',');
+                    return [parseFloat(lat), parseFloat(lng)];
+                });
+            }
+            return [];
+        }
+
+        // ============================================================
+        // GPX PARSER
+        // ============================================================
+        function parseGPX(gpxText) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(gpxText, 'text/xml');
+            const trkpts = doc.querySelectorAll('trkpt');
+            const latlngs = [];
+            trkpts.forEach(pt => {
+                latlngs.push([
+                    parseFloat(pt.getAttribute('lat')),
+                    parseFloat(pt.getAttribute('lon'))
+                ]);
+            });
+            return latlngs;
+        }
+
+        // ============================================================
+        // GEOJSON PARSER
+        // ============================================================
+        function parseGeoJSON(jsonText) {
+            try {
+                const geojson = JSON.parse(jsonText);
+                const points = [];
+                
+                function extractCoords(geometry) {
+                    if (!geometry) return;
+                    if (geometry.type === 'Point') {
+                        points.push([geometry.coordinates[1], geometry.coordinates[0]]);
+                    } else if (geometry.type === 'LineString') {
+                        geometry.coordinates.forEach(c => points.push([c[1], c[0]]));
+                    } else if (geometry.type === 'Polygon') {
+                        geometry.coordinates[0].forEach(c => points.push([c[1], c[0]]));
+                    } else if (geometry.type === 'MultiLineString') {
+                        geometry.coordinates.forEach(line => {
+                            line.forEach(c => points.push([c[1], c[0]]));
+                        });
+                    }
+                }
+
+                if (geojson.type === 'FeatureCollection') {
+                    geojson.features.forEach(f => extractCoords(f.geometry));
+                } else if (geojson.type === 'Feature') {
+                    extractCoords(geojson.geometry);
+                } else {
+                    extractCoords(geojson);
+                }
+
+                return points;
+            } catch (e) {
+                return [];
+            }
+        }
+
+        // ============================================================
+        // GPX GENERATOR
+        // ============================================================
+        function generateGPX(trackData) {
+            let gpx = `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="iMap" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata>
+    <name>${trackData.name}</name>
+    <time>${trackData.date}</time>
+  </metadata>
+  <trk>
+    <name>${trackData.name}</name>
+    <trkseg>`;
+
+            trackData.points.forEach(p => {
+                gpx += `
+      <trkpt lat="${p.lat}" lon="${p.lng}">`;
+                if (p.altitude) gpx += `<ele>${p.altitude}</ele>`;
+                gpx += `<time>${new Date(p.time).toISOString()}</time>`;
+                gpx += `</trkpt>`;
+            });
+
+            gpx += `
+    </trkseg>
+  </trk>
+</gpx>`;
+            return gpx;
+        }
+
+        function exportTrackAsGPX(trackData) {
+            const gpx = generateGPX(trackData);
+            const filename = trackData.name.replace(/[^a-z0-9]/gi, '_') + '.gpx';
+            showSavePicker(filename, gpx, 'application/gpx+xml');
+        }
+
+        // ============================================================
+        // UTILITIES
+        // ============================================================
+        function haversineDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371000;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        function formatDistance(meters) {
+            if (meters < 1000) return Math.round(meters) + ' m';
+            return (meters / 1000).toFixed(2) + ' km';
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('visible');
+            setTimeout(() => toast.classList.remove('visible'), 2500);
+        }
+
+        // ============================================================
+        // INITIALIZATION
+        // ============================================================
+        async function initApp() {
+            // Inicializar DB
+            await initDB();
+            
+            // Inicializar GPS
+            initGPS();
+            
+            // Inicializar bússola
+            setTimeout(initCompass, 1000);
+            
+            // Inicializar motion
+            setTimeout(initMotion, 1500);
+            
+            // Inicializar rede
+            initNetworkStatus();
+            
+            // Inicializar bateria
+            initBattery();
+            
+            // Verificar permissões
+            checkPermissions();
+            
+            // Carregar tracks anteriores
+            const tracks = await loadTracks();
+            if (tracks.length > 0) {
+                console.log(`${tracks.length} percursos carregados do armazenamento local`);
+            }
+
+            // Mensagem de boas-vindas
+            setTimeout(() => {
+                showToast('🗺️ iMap - Bem-vindo! Sem anúncios.');
+            }, 1000);
+        }
+
+        // Iniciar aplicação
+        initApp();
+
+        // Prevenir zoom em double-tap (iOS)
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', (e) => {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, { passive: false });
+
+        // Prevenir scroll bounce (iOS)
+        document.body.addEventListener('touchmove', (e) => {
+            if (e.target.closest('#map') || e.target.closest('.bottom-sheet') || e.target.closest('.side-menu')) {
+                return;
+            }
+            e.preventDefault();
+        }, { passive: false });
+    </script>
 </body>
 </html>
