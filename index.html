@@ -502,6 +502,7 @@
         .file-icon.kmz { background: #F3E5F5; color: #7B1FA2; }
         .file-icon.gpx { background: #E8F5E9; color: #388E3C; }
         .file-icon.folder { background: #FFF8E1; color: #F9A825; }
+        .file-icon.geojson { background: #FFF3E0; color: #E65100; }
 
         .file-info {
             flex: 1;
@@ -873,7 +874,7 @@
             background: white;
             border-radius: 16px;
             width: 100%;
-            max-width: 360px;
+            max-width: 380px;
             overflow: hidden;
             max-height: 90vh;
             overflow-y: auto;
@@ -1237,24 +1238,158 @@
             background: #f5f5f5;
         }
 
-        /* ===== RESPONSIVE ===== */
-        @media (min-width: 768px) {
-            body {
-                max-width: 430px;
-                margin: 0 auto;
-                box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            }
+        /* ===== IMPORT ZONE ===== */
+        .import-zone {
+            margin-top: 16px;
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #fafafa;
         }
 
-        @media (max-width: 360px) {
-            .recording-stats {
-                gap: 8px;
-                font-size: 11px;
-            }
-            .gps-info-grid {
-                grid-template-columns: 1fr;
-            }
+        .import-zone:active,
+        .import-zone.dragover {
+            border-color: var(--primary);
+            background: #E0F2F1;
+            transform: scale(0.98);
         }
+
+        .import-zone i {
+            font-size: 40px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .import-zone .import-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .import-zone .import-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .import-zone .import-formats {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .import-zone .format-badge {
+            background: var(--primary);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .import-zone .format-badge.kmz { background: #7B1FA2; }
+        .import-zone .format-badge.gpx { background: #388E3C; }
+        .import-zone .format-badge.geojson { background: #E65100; }
+
+        /* ===== IMPORT PROGRESS ===== */
+        .import-progress {
+            display: none;
+            margin-top: 16px;
+        }
+
+        .import-progress.visible {
+            display: block;
+        }
+
+        .import-progress-bar {
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .import-progress-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .import-progress-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        /* ===== IMPORTED FILES LIST ===== */
+        .imported-files-list {
+            margin-top: 16px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .imported-file-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .imported-file-item.success {
+            border-left-color: #4CAF50;
+        }
+
+        .imported-file-item.error {
+            border-left-color: #f44336;
+        }
+
+        .imported-file-item .file-icon-small {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .imported-file-item .file-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .imported-file-item .file-details .fname {
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .imported-file-item .file-details .finfo {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .imported-file-item .file-status-icon {
+            font-size: 16px;
+            margin-left: 8px;
+        }
+
+        .imported-file-item .file-status-icon.ok { color: #4CAF50; }
+        .imported-file-item .file-status-icon.err { color: #f44336; }
 
         /* ===== BATTERY INDICATOR ===== */
         .battery-indicator {
@@ -1279,6 +1414,25 @@
 
         .battery-indicator.low i {
             color: #f44336;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (min-width: 768px) {
+            body {
+                max-width: 430px;
+                margin: 0 auto;
+                box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            }
+        }
+
+        @media (max-width: 360px) {
+            .recording-stats {
+                gap: 8px;
+                font-size: 11px;
+            }
+            .gps-info-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -1525,9 +1679,9 @@
             <button class="side-menu-item" onclick="showFiles()">
                 <i class="fas fa-folder-open"></i>
                 Meus Ficheiros
-                <span class="badge">12</span>
+                <span class="badge" id="fileCountBadge">12</span>
             </button>
-            <button class="side-menu-item" onclick="showImport()">
+            <button class="side-menu-item" id="btnImportMenu" onclick="openImportFromMenu()">
                 <i class="fas fa-file-import"></i>
                 Importar KML/KMZ/GPX
             </button>
@@ -1723,23 +1877,46 @@
         </div>
     </div>
 
-    <!-- IMPORT MODAL -->
+    <!-- IMPORT MODAL (Enhanced) -->
     <div class="modal-overlay" id="importModal">
         <div class="modal">
             <div class="modal-header">
                 <h3><i class="fas fa-file-import" style="color: var(--primary);"></i> Importar Ficheiro</h3>
             </div>
             <div class="modal-body">
-                <p>Selecione um ficheiro KML, KMZ ou GPX do seu dispositivo para importar para o iMap.</p>
-                <div style="margin-top: 16px; border: 2px dashed var(--border); border-radius: 12px; padding: 30px; text-align: center; cursor: pointer;" onclick="document.getElementById('fileInput').click()">
-                    <i class="fas fa-cloud-upload-alt" style="font-size: 36px; color: var(--primary); margin-bottom: 8px;"></i>
-                    <p style="font-size: 14px; color: var(--text-secondary);">Toque para selecionar ficheiro</p>
-                    <p style="font-size: 12px; color: #aaa; margin-top: 4px;">KML, KMZ, GPX</p>
+                <p style="margin-bottom: 8px;">Selecione um ou mais ficheiros KML, KMZ, GPX ou GeoJSON do seu dispositivo para importar para o iMap.</p>
+                
+                <!-- Import Zone -->
+                <div class="import-zone" id="importZone" onclick="triggerFileInput()">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <div class="import-title">Toque para selecionar ficheiro(s)</div>
+                    <div class="import-subtitle">ou arraste e solte aqui</div>
+                    <div class="import-formats">
+                        <span class="format-badge">KML</span>
+                        <span class="format-badge kmz">KMZ</span>
+                        <span class="format-badge gpx">GPX</span>
+                        <span class="format-badge geojson">GeoJSON</span>
+                    </div>
                 </div>
-                <input type="file" id="fileInput" accept=".kml,.kmz,.gpx,.geojson,.json" style="display:none" onchange="handleFileImport(this)" multiple>
+                
+                <input type="file" id="fileInput" accept=".kml,.kmz,.gpx,.geojson,.json,application/vnd.google-earth.kml+xml,application/vnd.google-earth.kmz,application/gpx+xml,application/geo+json,application/json" style="display:none" onchange="handleFileImport(this)" multiple>
+                
+                <!-- Import Progress -->
+                <div class="import-progress" id="importProgress">
+                    <div class="import-progress-bar">
+                        <div class="import-progress-fill" id="importProgressFill"></div>
+                    </div>
+                    <div class="import-progress-text" id="importProgressText">A processar...</div>
+                </div>
+                
+                <!-- Imported Files List -->
+                <div class="imported-files-list" id="importedFilesList"></div>
             </div>
             <div class="modal-actions">
-                <button class="modal-btn cancel" onclick="closeImport()">Cancelar</button>
+                <button class="modal-btn cancel" onclick="closeImport()">Fechar</button>
+                <button class="modal-btn confirm" id="btnImportAll" onclick="importAllFromPicker()" style="display:none;">
+                    <i class="fas fa-plus"></i> Importar Mais
+                </button>
             </div>
         </div>
     </div>
@@ -1838,9 +2015,10 @@
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
         // ============================================================
-        // iMAP - APLICAÇÃO COMPLETA COM GPS FUNCIONAL E APIs
+        // iMAP - APLICAÇÃO COMPLETA COM IMPORTAÇÃO FUNCIONAL
         // ============================================================
 
         // ===== STATE =====
@@ -1858,6 +2036,9 @@
             isOnline: navigator.onLine,
             wakeLock: null,
             db: null,
+            importedFiles: [],
+            importedLayers: [],
+            fileCount: 12,
             permissions: {
                 location: 'prompt',
                 orientation: 'prompt',
@@ -1877,35 +2058,25 @@
             preferCanvas: true
         });
 
-        // Base layers
         const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap',
-            maxZoom: 19
+            attribution: '© OpenStreetMap', maxZoom: 19
         });
 
         const topoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenTopoMap',
-            maxZoom: 17
+            attribution: '© OpenTopoMap', maxZoom: 17
         });
 
         const cycleLayer = L.tileLayer('https://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png', {
-            attribution: '© OpenCycleMap',
-            maxZoom: 18
+            attribution: '© OpenCycleMap', maxZoom: 18
         });
 
         const satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: '© Esri',
-            maxZoom: 19
+            attribution: '© Esri', maxZoom: 19
         });
 
         const hybridLayer = L.layerGroup([
-            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                maxZoom: 19
-            }),
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                opacity: 0.4,
-                maxZoom: 19
-            })
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19 }),
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { opacity: 0.4, maxZoom: 19 })
         ]);
 
         AppState.currentBaseLayer = osmLayer;
@@ -1913,49 +2084,26 @@
 
         // ===== CUSTOM MARKERS =====
         function createPOIMarker(lat, lng, type, label) {
-            const colors = {
-                restaurant: '#FF7043',
-                shopping: '#1976D2',
-                business: '#555555',
-                default: '#26A69A'
-            };
-            const icons = {
-                restaurant: 'fa-utensils',
-                shopping: 'fa-shopping-bag',
-                business: 'fa-briefcase',
-                default: 'fa-map-marker-alt'
-            };
+            const colors = { restaurant: '#FF7043', shopping: '#1976D2', business: '#555555', default: '#26A69A' };
+            const icons = { restaurant: 'fa-utensils', shopping: 'fa-shopping-bag', business: 'fa-briefcase', default: 'fa-map-marker-alt' };
 
             const icon = L.divIcon({
                 className: 'poi-marker-container',
-                html: `<div style="
-                    background: ${colors[type] || colors.default};
-                    width: 36px; height: 36px;
-                    border-radius: 50%;
-                    border: 3px solid white;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-                    display: flex; align-items: center; justify-content: center;
-                    color: white; font-size: 14px;
-                "><i class="fas ${icons[type] || icons.default}"></i></div>`,
-                iconSize: [36, 36],
-                iconAnchor: [18, 18]
+                html: `<div style="background: ${colors[type] || colors.default}; width: 36px; height: 36px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;"><i class="fas ${icons[type] || icons.default}"></i></div>`,
+                iconSize: [36, 36], iconAnchor: [18, 18]
             });
 
             const marker = L.marker([lat, lng], { icon: icon }).addTo(map);
-            if (label) {
-                marker.bindPopup(`<b>${label}</b>`);
-            }
+            if (label) marker.bindPopup(`<b>${label}</b>`);
             return marker;
         }
 
-        // Add POI markers matching the screenshot
         createPOIMarker(-3.7280, -38.5310, 'restaurant', 'Restaurantes');
         createPOIMarker(-3.7350, -38.5200, 'restaurant', 'Terezinha Bolos e Confeitaria');
         createPOIMarker(-3.7310, -38.5340, 'shopping', 'Frigelar');
         createPOIMarker(-3.7380, -38.5250, 'shopping', 'Assaí Atacadista');
         createPOIMarker(-3.7360, -38.5270, 'business', 'Termaco Logística Matriz');
 
-        // Draw Rio Cocó (simplified polygon)
         const rioCocoCoords = [
             [-3.7180, -38.5310], [-3.7200, -38.5290], [-3.7220, -38.5270],
             [-3.7240, -38.5260], [-3.7260, -38.5255], [-3.7280, -38.5250],
@@ -1965,50 +2113,28 @@
             [-3.7260, -38.5280], [-3.7240, -38.5285], [-3.7220, -38.5295],
             [-3.7200, -38.5305], [-3.7180, -38.5310]
         ];
+        L.polygon(rioCocoCoords, { color: '#81D4FA', fillColor: '#81D4FA', fillOpacity: 0.7, weight: 1 }).addTo(map);
+        L.circle([-3.7310, -38.5190], { radius: 80, color: '#81D4FA', fillColor: '#81D4FA', fillOpacity: 0.8, weight: 1 }).addTo(map);
 
-        L.polygon(rioCocoCoords, {
-            color: '#81D4FA', fillColor: '#81D4FA', fillOpacity: 0.7, weight: 1
-        }).addTo(map);
-
-        L.circle([-3.7310, -38.5190], {
-            radius: 80, color: '#81D4FA', fillColor: '#81D4FA', fillOpacity: 0.8, weight: 1
-        }).addTo(map);
-
-        const avRaulBarbosa = [
-            [-3.7160, -38.5330], [-3.7200, -38.5310], [-3.7250, -38.5290],
-            [-3.7300, -38.5270], [-3.7350, -38.5250], [-3.7400, -38.5230]
-        ];
+        const avRaulBarbosa = [[-3.7160, -38.5330], [-3.7200, -38.5310], [-3.7250, -38.5290], [-3.7300, -38.5270], [-3.7350, -38.5250], [-3.7400, -38.5230]];
         L.polyline(avRaulBarbosa, { color: '#90A4AE', weight: 6, opacity: 0.6 }).addTo(map);
 
-        const highway116 = [
-            [-3.7150, -38.5380], [-3.7200, -38.5360], [-3.7250, -38.5340],
-            [-3.7300, -38.5320], [-3.7350, -38.5300], [-3.7400, -38.5280],
-            [-3.7450, -38.5260]
-        ];
+        const highway116 = [[-3.7150, -38.5380], [-3.7200, -38.5360], [-3.7250, -38.5340], [-3.7300, -38.5320], [-3.7350, -38.5300], [-3.7400, -38.5280], [-3.7450, -38.5260]];
         L.polyline(highway116, { color: '#5C6BC0', weight: 8, opacity: 0.5 }).addTo(map);
 
         // ============================================================
-        // INDEXEDDB - PERSISTÊNCIA OFFLINE
+        // INDEXEDDB
         // ============================================================
         function initDB() {
             return new Promise((resolve, reject) => {
                 const request = indexedDB.open('iMapDB', 1);
                 request.onerror = () => reject(request.error);
-                request.onsuccess = () => {
-                    AppState.db = request.result;
-                    resolve(request.result);
-                };
+                request.onsuccess = () => { AppState.db = request.result; resolve(request.result); };
                 request.onupgradeneeded = (event) => {
                     const db = event.target.result;
-                    if (!db.objectStoreNames.contains('tracks')) {
-                        db.createObjectStore('tracks', { keyPath: 'id', autoIncrement: true });
-                    }
-                    if (!db.objectStoreNames.contains('files')) {
-                        db.createObjectStore('files', { keyPath: 'name' });
-                    }
-                    if (!db.objectStoreNames.contains('settings')) {
-                        db.createObjectStore('settings', { keyPath: 'key' });
-                    }
+                    if (!db.objectStoreNames.contains('tracks')) db.createObjectStore('tracks', { keyPath: 'id', autoIncrement: true });
+                    if (!db.objectStoreNames.contains('files')) db.createObjectStore('files', { keyPath: 'name' });
+                    if (!db.objectStoreNames.contains('settings')) db.createObjectStore('settings', { keyPath: 'key' });
                 };
             });
         }
@@ -2017,6 +2143,12 @@
             if (!AppState.db) return;
             const tx = AppState.db.transaction('tracks', 'readwrite');
             tx.objectStore('tracks').add(track);
+        }
+
+        function saveImportedFile(fileData) {
+            if (!AppState.db) return;
+            const tx = AppState.db.transaction('files', 'readwrite');
+            tx.objectStore('files').put(fileData);
         }
 
         function loadTracks() {
@@ -2030,7 +2162,279 @@
         }
 
         // ============================================================
-        // GEOLOCATION API - GPS FUNCIONAL COMPLETO
+        // IMPORTAÇÃO FUNCIONAL - BOTÃO DO MENU
+        // ============================================================
+        
+        // Abre o modal de importação a partir do menu
+        function openImportFromMenu() {
+            toggleMenu(); // Fecha o menu
+            setTimeout(() => {
+                openImportModal();
+            }, 350);
+        }
+
+        function openImportModal() {
+            // Reset do estado do modal
+            document.getElementById('importedFilesList').innerHTML = '';
+            document.getElementById('importProgress').classList.remove('visible');
+            document.getElementById('btnImportAll').style.display = 'none';
+            document.getElementById('fileInput').value = '';
+            
+            const modal = document.getElementById('importModal');
+            modal.classList.add('open');
+            
+            // Setup drag & drop
+            setupDragDrop();
+        }
+
+        function closeImport() {
+            document.getElementById('importModal').classList.remove('open');
+        }
+
+        function triggerFileInput() {
+            document.getElementById('fileInput').click();
+        }
+
+        // Setup Drag & Drop
+        function setupDragDrop() {
+            const zone = document.getElementById('importZone');
+            
+            ['dragenter', 'dragover'].forEach(evt => {
+                zone.addEventListener(evt, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    zone.classList.add('dragover');
+                });
+            });
+            
+            ['dragleave', 'drop'].forEach(evt => {
+                zone.addEventListener(evt, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    zone.classList.remove('dragover');
+                });
+            });
+            
+            zone.addEventListener('drop', (e) => {
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    processFiles(Array.from(files));
+                }
+            });
+        }
+
+        // Handler do input file
+        function handleFileImport(input) {
+            if (input.files && input.files.length > 0) {
+                processFiles(Array.from(input.files));
+            }
+        }
+
+        // Processa múltiplos ficheiros
+        async function processFiles(files) {
+            const progress = document.getElementById('importProgress');
+            const progressFill = document.getElementById('importProgressFill');
+            const progressText = document.getElementById('importProgressText');
+            const filesList = document.getElementById('importedFilesList');
+            const btnImportAll = document.getElementById('btnImportAll');
+            
+            progress.classList.add('visible');
+            filesList.innerHTML = '';
+            
+            let successCount = 0;
+            let errorCount = 0;
+            const totalFiles = files.length;
+            
+            for (let i = 0; i < totalFiles; i++) {
+                const file = files[i];
+                const progressPercent = Math.round(((i + 1) / totalFiles) * 100);
+                progressFill.style.width = progressPercent + '%';
+                progressText.textContent = `A processar ${i + 1} de ${totalFiles}: ${file.name}`;
+                
+                const result = await processSingleFile(file);
+                
+                // Adiciona à lista visual
+                const item = document.createElement('div');
+                item.className = 'imported-file-item ' + (result.success ? 'success' : 'error');
+                
+                const ext = file.name.split('.').pop().toLowerCase();
+                const iconClass = ext === 'kml' ? 'fa-file-code' : ext === 'kmz' ? 'fa-file-archive' : ext === 'gpx' ? 'fa-route' : 'fa-file-alt';
+                const iconBg = ext === 'kml' ? '#E3F2FD' : ext === 'kmz' ? '#F3E5F5' : ext === 'gpx' ? '#E8F5E9' : '#FFF3E0';
+                const iconColor = ext === 'kml' ? '#1976D2' : ext === 'kmz' ? '#7B1FA2' : ext === 'gpx' ? '#388E3C' : '#E65100';
+                
+                item.innerHTML = `
+                    <div class="file-icon-small" style="background: ${iconBg}; color: ${iconColor};">
+                        <i class="fas ${iconClass}"></i>
+                    </div>
+                    <div class="file-details">
+                        <div class="fname">${file.name}</div>
+                        <div class="finfo">${result.message}</div>
+                    </div>
+                    <i class="fas ${result.success ? 'fa-check-circle' : 'fa-exclamation-circle'} file-status-icon ${result.success ? 'ok' : 'err'}"></i>
+                `;
+                filesList.appendChild(item);
+                
+                if (result.success) successCount++;
+                else errorCount++;
+                
+                // Pequeno delay para animação
+                await new Promise(r => setTimeout(r, 200));
+            }
+            
+            progressText.textContent = `Concluído: ${successCount} importado(s), ${errorCount} erro(s)`;
+            
+            if (successCount > 0) {
+                AppState.fileCount += successCount;
+                document.getElementById('fileCountBadge').textContent = AppState.fileCount;
+                vibrate([100, 50, 100]);
+            }
+            
+            btnImportAll.style.display = 'block';
+            
+            // Auto fecha após 3s se todos sucesso
+            if (errorCount === 0 && successCount > 0) {
+                setTimeout(() => {
+                    closeImport();
+                    showToast(`✅ ${successCount} ficheiro(s) importado(s) com sucesso!`);
+                }, 2500);
+            }
+        }
+
+        // Processa um único ficheiro
+        async function processSingleFile(file) {
+            const ext = file.name.split('.').pop().toLowerCase();
+            const validExts = ['kml', 'kmz', 'gpx', 'geojson', 'json'];
+            
+            if (!validExts.includes(ext)) {
+                return { success: false, message: 'Formato não suportado', points: 0 };
+            }
+            
+            try {
+                let content = null;
+                let points = [];
+                
+                if (ext === 'kmz') {
+                    // KMZ é um ZIP - usar JSZip
+                    const arrayBuffer = await file.arrayBuffer();
+                    const zip = await JSZip.loadAsync(arrayBuffer);
+                    
+                    // Procurar ficheiro KML dentro do ZIP
+                    let kmlFile = null;
+                    zip.forEach((relativePath, zipEntry) => {
+                        if (relativePath.toLowerCase().endsWith('.kml') && !kmlFile) {
+                            kmlFile = zipEntry;
+                        }
+                    });
+                    
+                    if (kmlFile) {
+                        content = await kmlFile.async('text');
+                        points = parseKML(content);
+                    } else {
+                        return { success: false, message: 'Nenhum KML encontrado no KMZ', points: 0 };
+                    }
+                } else {
+                    content = await file.text();
+                    
+                    if (ext === 'kml') {
+                        points = parseKML(content);
+                    } else if (ext === 'gpx') {
+                        points = parseGPX(content);
+                    } else if (ext === 'geojson' || ext === 'json') {
+                        points = parseGeoJSON(content);
+                    }
+                }
+                
+                if (points.length === 0) {
+                    return { success: false, message: 'Nenhum ponto encontrado', points: 0 };
+                }
+                
+                // Determinar cor baseada no tipo
+                const colors = {
+                    kml: '#1976D2',
+                    kmz: '#7B1FA2',
+                    gpx: '#388E3C',
+                    geojson: '#E65100',
+                    json: '#E65100'
+                };
+                
+                const color = colors[ext] || '#26A69A';
+                
+                // Adicionar ao mapa
+                const layer = L.polyline(points, {
+                    color: color,
+                    weight: 4,
+                    opacity: 0.85,
+                    lineJoin: 'round'
+                }).addTo(map);
+                
+                // Adicionar marcadores nos pontos extremos
+                if (points.length > 0) {
+                    const firstPoint = points[0];
+                    const lastPoint = points[points.length - 1];
+                    
+                    const startIcon = L.divIcon({
+                        className: 'track-marker',
+                        html: `<div style="width: 16px; height: 16px; background: #4CAF50; border: 3px solid white; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.3);"></div>`,
+                        iconSize: [16, 16], iconAnchor: [8, 8]
+                    });
+                    
+                    const endIcon = L.divIcon({
+                        className: 'track-marker',
+                        html: `<div style="width: 16px; height: 16px; background: #f44336; border: 3px solid white; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.3);"></div>`,
+                        iconSize: [16, 16], iconAnchor: [8, 8]
+                    });
+                    
+                    L.marker(firstPoint, { icon: startIcon }).addTo(map).bindPopup(`<b>Início</b><br>${file.name}`);
+                    L.marker(lastPoint, { icon: endIcon }).addTo(map).bindPopup(`<b>Fim</b><br>${file.name}`);
+                }
+                
+                // Calcular distância total
+                let totalDist = 0;
+                for (let i = 1; i < points.length; i++) {
+                    totalDist += haversineDistance(points[i-1][0], points[i-1][1], points[i][0], points[i][1]);
+                }
+                
+                // Ajustar vista do mapa
+                map.fitBounds(layer.getBounds(), { padding: [60, 60], maxZoom: 17 });
+                
+                // Guardar referência da camada
+                AppState.importedLayers.push({
+                    name: file.name,
+                    layer: layer,
+                    points: points,
+                    color: color,
+                    distance: totalDist
+                });
+                
+                // Guardar no IndexedDB
+                saveImportedFile({
+                    name: file.name,
+                    ext: ext,
+                    points: points,
+                    distance: totalDist,
+                    date: new Date().toISOString(),
+                    size: file.size
+                });
+                
+                return { 
+                    success: true, 
+                    message: `${points.length} pontos · ${formatDistance(totalDist)}`, 
+                    points: points.length 
+                };
+                
+            } catch (error) {
+                console.error('Erro ao processar ' + file.name, error);
+                return { success: false, message: 'Erro: ' + error.message, points: 0 };
+            }
+        }
+
+        // Importar mais ficheiros (botão no modal)
+        function importAllFromPicker() {
+            document.getElementById('fileInput').click();
+        }
+
+        // ============================================================
+        // GEOLOCATION API - GPS FUNCIONAL
         // ============================================================
         let gpsMarker = null;
         let gpsAccuracyCircle = null;
@@ -2043,7 +2447,6 @@
                 return;
             }
 
-            // Verificar permissão primeiro
             if (navigator.permissions) {
                 navigator.permissions.query({ name: 'geolocation' }).then((result) => {
                     AppState.permissions.location = result.state;
@@ -2055,38 +2458,20 @@
                 }).catch(() => {});
             }
 
-            // Obter posição atual
-            navigator.geolocation.getCurrentPosition(
-                onGPSPosition,
-                onGPSError,
-                {
-                    enableHighAccuracy: true,
-                    timeout: 15000,
-                    maximumAge: 0
-                }
-            );
+            navigator.geolocation.getCurrentPosition(onGPSPosition, onGPSError, {
+                enableHighAccuracy: true, timeout: 15000, maximumAge: 0
+            });
 
-            // Watch position para tracking contínuo
-            AppState.gpsWatchId = navigator.geolocation.watchPosition(
-                onGPSPosition,
-                onGPSError,
-                {
-                    enableHighAccuracy: true,
-                    timeout: 30000,
-                    maximumAge: 1000,
-                    distanceFilter: 5
-                }
-            );
+            AppState.gpsWatchId = navigator.geolocation.watchPosition(onGPSPosition, onGPSError, {
+                enableHighAccuracy: true, timeout: 30000, maximumAge: 1000, distanceFilter: 5
+            });
         }
 
         function onGPSPosition(position) {
-            const { latitude, longitude, accuracy, altitude, altitudeAccuracy, speed, heading } = position.coords;
-            const timestamp = position.timestamp;
-
+            const { latitude, longitude, accuracy, altitude, speed, heading } = position.coords;
             lastGpsPosition = position;
             updateGPSStatus('dot', 'GPS Ativo');
 
-            // Atualizar painel de info
             document.getElementById('infoLat').textContent = latitude.toFixed(6) + '°';
             document.getElementById('infoLng').textContent = longitude.toFixed(6) + '°';
             document.getElementById('infoAlt').textContent = altitude ? altitude.toFixed(1) + ' m' : '--';
@@ -2094,43 +2479,28 @@
             document.getElementById('infoSpeed').textContent = speed ? (speed * 3.6).toFixed(1) + ' km/h' : '0 km/h';
             document.getElementById('infoHeading').textContent = heading ? heading.toFixed(0) + '°' : '--';
 
-            // Atualizar marcador no mapa
             if (gpsMarker) {
                 gpsMarker.setLatLng([latitude, longitude]);
             } else {
                 const gpsIcon = L.divIcon({
                     className: 'gps-marker',
-                    html: `<div style="
-                        width: 20px; height: 20px;
-                        background: #2196F3;
-                        border: 3px solid white;
-                        border-radius: 50%;
-                        box-shadow: 0 0 0 2px rgba(33,150,243,0.3), 0 2px 8px rgba(0,0,0,0.3);
-                    "></div>`,
-                    iconSize: [20, 20],
-                    iconAnchor: [10, 10]
+                    html: `<div style="width: 20px; height: 20px; background: #2196F3; border: 3px solid white; border-radius: 50%; box-shadow: 0 0 0 2px rgba(33,150,243,0.3), 0 2px 8px rgba(0,0,0,0.3);"></div>`,
+                    iconSize: [20, 20], iconAnchor: [10, 10]
                 });
                 gpsMarker = L.marker([latitude, longitude], { icon: gpsIcon, zIndexOffset: 1000 }).addTo(map);
             }
 
-            // Círculo de precisão
             if (gpsAccuracyCircle) {
                 gpsAccuracyCircle.setLatLng([latitude, longitude]);
                 gpsAccuracyCircle.setRadius(accuracy);
             } else {
                 gpsAccuracyCircle = L.circle([latitude, longitude], {
-                    radius: accuracy,
-                    color: '#2196F3',
-                    fillColor: '#2196F3',
-                    fillOpacity: 0.1,
-                    weight: 1,
-                    opacity: 0.4
+                    radius: accuracy, color: '#2196F3', fillColor: '#2196F3', fillOpacity: 0.1, weight: 1, opacity: 0.4
                 }).addTo(map);
             }
 
-            // Se estiver gravando, adicionar ponto ao track
             if (AppState.isRecording) {
-                addTrackPoint(latitude, longitude, altitude, speed, heading, timestamp, accuracy);
+                addTrackPoint(latitude, longitude, altitude, speed, heading, position.timestamp, accuracy);
             }
         }
 
@@ -2142,12 +2512,8 @@
                     AppState.permissions.location = 'denied';
                     updatePermissionUI('location', 'denied');
                     break;
-                case error.POSITION_UNAVAILABLE:
-                    message = 'Posição indisponível';
-                    break;
-                case error.TIMEOUT:
-                    message = 'Timeout do GPS';
-                    break;
+                case error.POSITION_UNAVAILABLE: message = 'Posição indisponível'; break;
+                case error.TIMEOUT: message = 'Timeout do GPS'; break;
             }
             updateGPSStatus('no-signal', message);
             showToast(message);
@@ -2168,10 +2534,7 @@
             } else if (navigator.geolocation) {
                 showToast('A obter localização...');
                 navigator.geolocation.getCurrentPosition(
-                    (pos) => {
-                        map.flyTo([pos.coords.latitude, pos.coords.longitude], 17, { duration: 1 });
-                        showToast('Localização encontrada');
-                    },
+                    (pos) => { map.flyTo([pos.coords.latitude, pos.coords.longitude], 17, { duration: 1 }); showToast('Localização encontrada'); },
                     () => showToast('GPS não disponível')
                 );
             } else {
@@ -2180,12 +2543,11 @@
         }
 
         // ============================================================
-        // GPS TRACKING / GRAVAÇÃO DE PERCURSO
+        // GPS TRACKING
         // ============================================================
         let trackLine = null;
-        let trackMarkers = [];
         let recordInterval = null;
-        let trackStats = { distance: 0, duration: 0, maxSpeed: 0, avgSpeed: 0, points: 0 };
+        let trackStats = { distance: 0, duration: 0, maxSpeed: 0, points: 0 };
 
         function toggleGPS() {
             AppState.isRecording = !AppState.isRecording;
@@ -2199,18 +2561,12 @@
                 AppState.recordStartTime = Date.now();
                 AppState.trackPoints = [];
                 AppState.totalDistance = 0;
-                trackStats = { distance: 0, duration: 0, maxSpeed: 0, avgSpeed: 0, points: 0 };
+                trackStats = { distance: 0, duration: 0, maxSpeed: 0, points: 0 };
 
-                // Solicitar Wake Lock para manter tela ativa
                 requestWakeLock();
-
-                // Solicitar permissão de notificação
                 requestNotificationPermission();
 
-                recordInterval = setInterval(() => {
-                    updateRecordingStats();
-                }, 1000);
-
+                recordInterval = setInterval(() => updateRecordingStats(), 1000);
                 showToast('🎯 Gravação iniciada - GPS ativo');
                 vibrate(200);
             } else {
@@ -2218,21 +2574,15 @@
                 btn.innerHTML = '<i class="fas fa-route"></i>';
                 overlay.classList.remove('visible');
                 clearInterval(recordInterval);
-
-                // Libertar Wake Lock
                 releaseWakeLock();
 
-                if (trackLine) {
-                    map.removeLayer(trackLine);
-                    trackLine = null;
-                }
+                if (trackLine) { map.removeLayer(trackLine); trackLine = null; }
 
                 if (AppState.trackPoints.length > 1) {
                     trackLine = L.polyline(AppState.trackPoints.map(p => [p.lat, p.lng]), {
                         color: '#26A69A', weight: 4, opacity: 0.8
                     }).addTo(map);
 
-                    // Salvar no IndexedDB
                     const trackData = {
                         name: 'Percurso ' + new Date().toLocaleString('pt-BR'),
                         date: new Date().toISOString(),
@@ -2240,19 +2590,14 @@
                         distance: AppState.totalDistance,
                         duration: trackStats.duration,
                         maxSpeed: trackStats.maxSpeed,
-                        avgSpeed: trackStats.avgSpeed,
                         pointCount: trackStats.points
                     };
                     saveTrack(trackData);
-
                     showToast(`✅ Percurso gravado: ${formatDistance(AppState.totalDistance)}`);
                     vibrate([100, 50, 100]);
 
-                    // Oferecer exportação
                     setTimeout(() => {
-                        if (confirm('Exportar percurso como GPX?')) {
-                            exportTrackAsGPX(trackData);
-                        }
+                        if (confirm('Exportar percurso como GPX?')) exportTrackAsGPX(trackData);
                     }, 500);
                 } else {
                     showToast('Percurso muito curto para guardar');
@@ -2261,19 +2606,12 @@
         }
 
         function addTrackPoint(lat, lng, altitude, speed, heading, timestamp, accuracy) {
-            const point = {
-                lat, lng, altitude, speed, heading, timestamp, accuracy,
-                time: Date.now()
-            };
+            const point = { lat, lng, altitude, speed, heading, timestamp, accuracy, time: Date.now() };
 
-            // Calcular distância do ponto anterior
             if (AppState.trackPoints.length > 0) {
                 const prev = AppState.trackPoints[AppState.trackPoints.length - 1];
                 const dist = haversineDistance(prev.lat, prev.lng, lat, lng);
-                
-                // Filtrar pontos com GPS impreciso (drift)
                 if (accuracy > 50 || dist < 2) return;
-                
                 AppState.totalDistance += dist;
             }
 
@@ -2293,73 +2631,50 @@
             const secs = (elapsed % 60).toString().padStart(2, '0');
             document.getElementById('recTime').textContent = `${mins}:${secs}`;
 
-            // Velocidade atual
             if (lastGpsPosition && lastGpsPosition.coords.speed) {
-                const speedKmh = (lastGpsPosition.coords.speed * 3.6).toFixed(1);
-                document.getElementById('recSpeed').textContent = speedKmh + ' km/h';
+                document.getElementById('recSpeed').textContent = (lastGpsPosition.coords.speed * 3.6).toFixed(1) + ' km/h';
             }
 
-            // Atualizar linha no mapa
             if (AppState.trackPoints.length > 1) {
                 if (trackLine) map.removeLayer(trackLine);
-                trackLine = L.polyline(
-                    AppState.trackPoints.map(p => [p.lat, p.lng]),
-                    { color: '#26A69A', weight: 4, opacity: 0.8 }
-                ).addTo(map);
+                trackLine = L.polyline(AppState.trackPoints.map(p => [p.lat, p.lng]), {
+                    color: '#26A69A', weight: 4, opacity: 0.8
+                }).addTo(map);
             }
         }
 
         // ============================================================
-        // WAKE LOCK API - MANTER TELA ATIVA
+        // WAKE LOCK API
         // ============================================================
         async function requestWakeLock() {
             try {
                 if ('wakeLock' in navigator) {
                     AppState.wakeLock = await navigator.wakeLock.request('screen');
-                    AppState.wakeLock.addEventListener('release', () => {
-                        console.log('Wake Lock libertado');
-                    });
+                    AppState.wakeLock.addEventListener('release', () => console.log('Wake Lock libertado'));
                 }
-            } catch (err) {
-                console.log('Wake Lock não disponível:', err);
-            }
+            } catch (err) { console.log('Wake Lock não disponível:', err); }
         }
 
         async function releaseWakeLock() {
-            if (AppState.wakeLock) {
-                await AppState.wakeLock.release();
-                AppState.wakeLock = null;
-            }
+            if (AppState.wakeLock) { await AppState.wakeLock.release(); AppState.wakeLock = null; }
         }
 
-        // Re-adquirir wake lock quando a página volta ao foco
         document.addEventListener('visibilitychange', async () => {
-            if (AppState.isRecording && document.visibilityState === 'visible') {
-                await requestWakeLock();
-            }
+            if (AppState.isRecording && document.visibilityState === 'visible') await requestWakeLock();
         });
 
         // ============================================================
-        // DEVICE ORIENTATION API - BÚSSOLA
+        // DEVICE ORIENTATION API
         // ============================================================
         let compassEnabled = false;
 
         function initCompass() {
-            if (!window.DeviceOrientationEvent) {
-                console.log('DeviceOrientation não suportado');
-                return;
-            }
-
-            // iOS 13+ requer permissão explícita
+            if (!window.DeviceOrientationEvent) return;
             if (typeof DeviceOrientationEvent.requestPermission === 'function') {
                 DeviceOrientationEvent.requestPermission().then(response => {
-                    if (response === 'granted') {
-                        enableCompass();
-                    }
+                    if (response === 'granted') enableCompass();
                 }).catch(console.error);
-            } else {
-                enableCompass();
-            }
+            } else { enableCompass(); }
         }
 
         function enableCompass() {
@@ -2373,50 +2688,35 @@
 
         function handleOrientation(event) {
             let heading = event.alpha;
-            if (event.webkitCompassHeading) {
-                heading = event.webkitCompassHeading; // iOS
-            } else if (heading !== null) {
-                heading = 360 - heading; // Android
-            }
+            if (event.webkitCompassHeading) heading = event.webkitCompassHeading;
+            else if (heading !== null) heading = 360 - heading;
 
             if (heading !== null && heading !== undefined) {
                 AppState.compassHeading = heading;
-                const arrow = document.getElementById('compassArrow');
-                arrow.style.transform = `rotate(${heading}deg)`;
+                document.getElementById('compassArrow').style.transform = `rotate(${heading}deg)`;
             }
         }
 
-        function resetCompass() {
-            map.setView(map.getCenter(), map.getZoom(), { animate: true });
-            showToast('Bússola resetada');
-        }
+        function resetCompass() { map.setView(map.getCenter(), map.getZoom(), { animate: true }); showToast('Bússola resetada'); }
 
         // ============================================================
-        // DEVICE MOTION API - ACELERÓMETRO
+        // DEVICE MOTION API
         // ============================================================
         function initMotion() {
             if (!window.DeviceMotionEvent) return;
-
             if (typeof DeviceMotionEvent.requestPermission === 'function') {
                 DeviceMotionEvent.requestPermission().then(response => {
-                    if (response === 'granted') {
-                        enableMotion();
-                    }
+                    if (response === 'granted') enableMotion();
                 }).catch(console.error);
-            } else {
-                enableMotion();
-            }
+            } else { enableMotion(); }
         }
 
         function enableMotion() {
             window.addEventListener('devicemotion', (event) => {
                 const acc = event.accelerationIncludingGravity;
                 if (acc) {
-                    // Detectar movimento significativo
                     const magnitude = Math.sqrt(acc.x**2 + acc.y**2 + acc.z**2);
-                    if (magnitude > 15 && AppState.isRecording) {
-                        // Vibração ao detectar movimento brusco
-                    }
+                    if (magnitude > 15 && AppState.isRecording) { /* detectar movimento */ }
                 }
             });
             AppState.permissions.motion = 'granted';
@@ -2428,7 +2728,6 @@
         // ============================================================
         function requestNotificationPermission() {
             if (!('Notification' in window)) return;
-            
             if (Notification.permission === 'default') {
                 Notification.requestPermission().then(permission => {
                     AppState.permissions.notification = permission;
@@ -2439,54 +2738,29 @@
 
         function sendNotification(title, body) {
             if ('Notification' in window && Notification.permission === 'granted') {
-                new Notification(title, {
-                    body: body,
-                    icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"%3E%3Crect fill="%2326A69A" width="192" height="192" rx="32"/%3E%3Ctext x="96" y="128" font-size="100" text-anchor="middle" fill="white"%3E🗺%3C/text%3E%3C/svg%3E',
-                    badge: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"%3E%3Crect fill="%2326A69A" width="192" height="192" rx="32"/%3E%3C/svg%3E',
-                    vibrate: [200, 100, 200]
-                });
+                new Notification(title, { body: body, vibrate: [200, 100, 200] });
             }
         }
 
         // ============================================================
         // VIBRATION API
         // ============================================================
-        function vibrate(pattern) {
-            if ('vibrate' in navigator) {
-                navigator.vibrate(pattern);
-            }
-        }
+        function vibrate(pattern) { if ('vibrate' in navigator) navigator.vibrate(pattern); }
 
         // ============================================================
-        // NETWORK INFORMATION API - ONLINE/OFFLINE
+        // NETWORK INFORMATION API
         // ============================================================
         function initNetworkStatus() {
             updateNetworkUI();
-            
-            window.addEventListener('online', () => {
-                AppState.isOnline = true;
-                updateNetworkUI();
-                showToast('🌐 Conexão restaurada');
-            });
-            
-            window.addEventListener('offline', () => {
-                AppState.isOnline = false;
-                updateNetworkUI();
-                showToast('📡 Modo Offline ativado');
-            });
-
-            if (navigator.connection) {
-                navigator.connection.addEventListener('change', updateNetworkUI);
-            }
+            window.addEventListener('online', () => { AppState.isOnline = true; updateNetworkUI(); showToast('🌐 Conexão restaurada'); });
+            window.addEventListener('offline', () => { AppState.isOnline = false; updateNetworkUI(); showToast(' Modo Offline ativado'); });
+            if (navigator.connection) navigator.connection.addEventListener('change', updateNetworkUI);
         }
 
         function updateNetworkUI() {
             const indicator = document.getElementById('offlineIndicator');
-            if (AppState.isOnline) {
-                indicator.classList.remove('visible');
-            } else {
-                indicator.classList.add('visible');
-            }
+            if (AppState.isOnline) indicator.classList.remove('visible');
+            else indicator.classList.add('visible');
         }
 
         // ============================================================
@@ -2494,7 +2768,6 @@
         // ============================================================
         function initBattery() {
             if (!('getBattery' in navigator)) return;
-            
             navigator.getBattery().then(battery => {
                 updateBatteryUI(battery);
                 battery.addEventListener('levelchange', () => updateBatteryUI(battery));
@@ -2506,93 +2779,50 @@
             const indicator = document.getElementById('batteryIndicator');
             const icon = document.getElementById('batteryIcon');
             const text = document.getElementById('batteryText');
-            
             indicator.style.display = 'flex';
             const level = Math.round(battery.level * 100);
             text.textContent = level + '%';
-            
-            if (battery.charging) {
-                icon.className = 'fas fa-battery-charging';
-                icon.style.color = '#4CAF50';
-            } else if (level < 20) {
-                icon.className = 'fas fa-battery-quarter';
-                icon.style.color = '#f44336';
-                indicator.classList.add('low');
-            } else if (level < 50) {
-                icon.className = 'fas fa-battery-half';
-                icon.style.color = '#FF9800';
-            } else {
-                icon.className = 'fas fa-battery-full';
-                icon.style.color = '#4CAF50';
-            }
+            if (battery.charging) { icon.className = 'fas fa-battery-charging'; icon.style.color = '#4CAF50'; }
+            else if (level < 20) { icon.className = 'fas fa-battery-quarter'; icon.style.color = '#f44336'; indicator.classList.add('low'); }
+            else if (level < 50) { icon.className = 'fas fa-battery-half'; icon.style.color = '#FF9800'; }
+            else { icon.className = 'fas fa-battery-full'; icon.style.color = '#4CAF50'; }
         }
 
         // ============================================================
-        // FILE SYSTEM ACCESS API - IMPORTAR/EXPORTAR
+        // FILE SYSTEM ACCESS API
         // ============================================================
         async function showFilePicker() {
             if ('showOpenFilePicker' in window) {
                 try {
                     const [fileHandle] = await window.showOpenFilePicker({
-                        types: [{
-                            description: 'Ficheiros de Mapa',
-                            accept: {
-                                'application/gpx+xml': ['.gpx'],
-                                'application/vnd.google-earth.kml+xml': ['.kml'],
-                                'application/vnd.google-earth.kmz': ['.kmz'],
-                                'application/geo+json': ['.geojson', '.json']
-                            }
-                        }]
+                        types: [{ description: 'Ficheiros de Mapa', accept: { 'application/gpx+xml': ['.gpx'], 'application/vnd.google-earth.kml+xml': ['.kml'], 'application/vnd.google-earth.kmz': ['.kmz'], 'application/geo+json': ['.geojson', '.json'] } }]
                     });
                     const file = await fileHandle.getFile();
-                    processImportedFile(file);
-                } catch (err) {
-                    if (err.name !== 'AbortError') {
-                        console.error(err);
-                    }
-                }
-            } else {
-                document.getElementById('fileInput').click();
-            }
+                    processFiles([file]);
+                } catch (err) { if (err.name !== 'AbortError') console.error(err); }
+            } else { document.getElementById('fileInput').click(); }
         }
 
         async function showSavePicker(filename, content, mimeType) {
             if ('showSaveFilePicker' in window) {
                 try {
-                    const handle = await window.showSaveFilePicker({
-                        suggestedName: filename,
-                        types: [{
-                            description: 'Ficheiro de Mapa',
-                            accept: { [mimeType]: [filename.split('.').pop()] }
-                        }]
-                    });
+                    const handle = await window.showSaveFilePicker({ suggestedName: filename, types: [{ description: 'Ficheiro de Mapa', accept: { [mimeType]: [filename.split('.').pop()] } }] });
                     const writable = await handle.createWritable();
                     await writable.write(content);
                     await writable.close();
                     showToast('✅ Ficheiro guardado: ' + filename);
                     return true;
-                } catch (err) {
-                    if (err.name !== 'AbortError') {
-                        fallbackDownload(filename, content, mimeType);
-                    }
-                    return false;
-                }
-            } else {
-                fallbackDownload(filename, content, mimeType);
-                return true;
-            }
+                } catch (err) { if (err.name !== 'AbortError') fallbackDownload(filename, content, mimeType); return false; }
+            } else { fallbackDownload(filename, content, mimeType); return true; }
         }
 
         function fallbackDownload(filename, content, mimeType) {
             const blob = new Blob([content], { type: mimeType });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            a.href = url; a.download = filename;
+            document.body.appendChild(a); a.click();
+            document.body.removeChild(a); URL.revokeObjectURL(url);
             showToast('✅ Download: ' + filename);
         }
 
@@ -2605,29 +2835,9 @@
             const file = new File([blob], trackData.name + '.gpx', { type: 'application/gpx+xml' });
 
             if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                try {
-                    await navigator.share({
-                        files: [file],
-                        title: 'Percurso iMap',
-                        text: trackData.name
-                    });
-                } catch (err) {
-                    console.log('Partilha cancelada');
-                }
-            } else {
-                fallbackDownload(trackData.name + '.gpx', gpxContent, 'application/gpx+xml');
-            }
-        }
-
-        // ============================================================
-        // FULLSCREEN API
-        // ============================================================
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(() => {});
-            } else {
-                document.exitFullscreen();
-            }
+                try { await navigator.share({ files: [file], title: 'Percurso iMap', text: trackData.name }); }
+                catch (err) { console.log('Partilha cancelada'); }
+            } else { fallbackDownload(trackData.name + '.gpx', gpxContent, 'application/gpx+xml'); }
         }
 
         // ============================================================
@@ -2635,78 +2845,47 @@
         // ============================================================
         async function checkPermissions() {
             if (!navigator.permissions) return;
-            
             const permissionsToCheck = ['geolocation', 'notifications', 'camera'];
-            
             for (const perm of permissionsToCheck) {
                 try {
                     const result = await navigator.permissions.query({ name: perm });
                     AppState.permissions[perm === 'geolocation' ? 'location' : perm] = result.state;
                     updatePermissionUI(perm === 'geolocation' ? 'location' : perm, result.state);
-                } catch (err) {
-                    console.log('Permissão não consultável:', perm);
-                }
+                } catch (err) { console.log('Permissão não consultável:', perm); }
             }
         }
 
         function updatePermissionUI(perm, state) {
             const el = document.getElementById('perm-' + perm);
             if (!el) return;
-            
             el.className = 'status ' + state;
             const labels = { granted: 'Concedida', denied: 'Negada', prompt: 'Pendente' };
             el.textContent = labels[state] || state;
         }
 
         async function requestAllPermissions() {
-            // Localização
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
-                    () => {
-                        AppState.permissions.location = 'granted';
-                        updatePermissionUI('location', 'granted');
-                        showToast('✅ Localização concedida');
-                    },
-                    () => {
-                        AppState.permissions.location = 'denied';
-                        updatePermissionUI('location', 'denied');
-                    }
+                    () => { AppState.permissions.location = 'granted'; updatePermissionUI('location', 'granted'); showToast('✅ Localização concedida'); },
+                    () => { AppState.permissions.location = 'denied'; updatePermissionUI('location', 'denied'); }
                 );
             }
-
-            // Orientação
             initCompass();
-
-            // Movimento
             initMotion();
-
-            // Notificações
             requestNotificationPermission();
-
-            // Câmara
             if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
                     stream.getTracks().forEach(t => t.stop());
                     AppState.permissions.camera = 'granted';
                     updatePermissionUI('camera', 'granted');
-                }).catch(() => {
-                    AppState.permissions.camera = 'denied';
-                    updatePermissionUI('camera', 'denied');
-                });
+                }).catch(() => { AppState.permissions.camera = 'denied'; updatePermissionUI('camera', 'denied'); });
             }
-
             showToast('Permissões solicitadas');
             setTimeout(() => closePermissions(), 1500);
         }
 
-        function showPermissions() {
-            document.getElementById('permissionsModal').classList.add('open');
-            checkPermissions();
-        }
-
-        function closePermissions() {
-            document.getElementById('permissionsModal').classList.remove('open');
-        }
+        function showPermissions() { document.getElementById('permissionsModal').classList.add('open'); checkPermissions(); }
+        function closePermissions() { document.getElementById('permissionsModal').classList.remove('open'); }
 
         // ============================================================
         // MEASUREMENT
@@ -2732,39 +2911,29 @@
         function setMeasureMode(mode) {
             AppState.measureMode = mode;
             clearMeasure();
-            document.getElementById('measureLabel').textContent =
-                mode === 'distance' ? 'Distância' : 'Área';
+            document.getElementById('measureLabel').textContent = mode === 'distance' ? 'Distância' : 'Área';
         }
 
         function onMeasureClick(e) {
             AppState.measurePoints.push([e.latlng.lat, e.latlng.lng]);
 
-            const marker = L.circleMarker(e.latlng, {
-                radius: 6, color: '#26A69A', fillColor: 'white', fillOpacity: 1, weight: 2
-            }).addTo(map);
+            const marker = L.circleMarker(e.latlng, { radius: 6, color: '#26A69A', fillColor: 'white', fillOpacity: 1, weight: 2 }).addTo(map);
             measureMarkers.push(marker);
 
             if (AppState.measurePoints.length > 1) {
                 if (measureLine) map.removeLayer(measureLine);
-                measureLine = L.polyline(AppState.measurePoints, {
-                    color: '#26A69A', weight: 3, dashArray: '8, 6'
-                }).addTo(map);
+                measureLine = L.polyline(AppState.measurePoints, { color: '#26A69A', weight: 3, dashArray: '8, 6' }).addTo(map);
 
                 if (AppState.measureMode === 'distance') {
                     let dist = 0;
                     for (let i = 1; i < AppState.measurePoints.length; i++) {
-                        dist += haversineDistance(
-                            AppState.measurePoints[i-1][0], AppState.measurePoints[i-1][1],
-                            AppState.measurePoints[i][0], AppState.measurePoints[i][1]
-                        );
+                        dist += haversineDistance(AppState.measurePoints[i-1][0], AppState.measurePoints[i-1][1], AppState.measurePoints[i][0], AppState.measurePoints[i][1]);
                     }
                     document.getElementById('measureValue').textContent = formatDistance(dist);
                 } else {
                     if (measureArea) map.removeLayer(measureArea);
                     if (AppState.measurePoints.length >= 3) {
-                        measureArea = L.polygon(AppState.measurePoints, {
-                            color: '#26A69A', fillColor: '#26A69A', fillOpacity: 0.2, weight: 2
-                        }).addTo(map);
+                        measureArea = L.polygon(AppState.measurePoints, { color: '#26A69A', fillColor: '#26A69A', fillOpacity: 0.2, weight: 2 }).addTo(map);
                         const area = calculateArea(AppState.measurePoints);
                         document.getElementById('measureValue').textContent = formatArea(area);
                     }
@@ -2804,13 +2973,10 @@
         // ============================================================
         // LAYERS
         // ============================================================
-        function toggleLayers() {
-            document.getElementById('layerPanel').classList.toggle('open');
-        }
+        function toggleLayers() { document.getElementById('layerPanel').classList.toggle('open'); }
 
         function changeBaseMap(type) {
             map.removeLayer(AppState.currentBaseLayer);
-
             switch(type) {
                 case 'osm': AppState.currentBaseLayer = osmLayer; break;
                 case 'topo': AppState.currentBaseLayer = topoLayer; break;
@@ -2818,7 +2984,6 @@
                 case 'sat': AppState.currentBaseLayer = satLayer; break;
                 case 'hybrid': AppState.currentBaseLayer = hybridLayer; break;
             }
-
             AppState.currentBaseLayer.addTo(map);
             showToast('Mapa base alterado');
         }
@@ -2826,22 +2991,13 @@
         // ============================================================
         // WMS
         // ============================================================
-        function toggleWMS() {
-            document.getElementById('wmsModal').classList.add('open');
-        }
-
-        function closeWMS() {
-            document.getElementById('wmsModal').classList.remove('open');
-        }
+        function toggleWMS() { document.getElementById('wmsModal').classList.add('open'); }
+        function closeWMS() { document.getElementById('wmsModal').classList.remove('open'); }
 
         function addWMSLayer() {
             const wmsLayer = L.tileLayer.wms('https://geo.ibge.gov.br/geoserver/wms', {
-                layers: 'ibge:malha_municipal',
-                format: 'image/png',
-                transparent: true,
-                opacity: 0.6
+                layers: 'ibge:malha_municipal', format: 'image/png', transparent: true, opacity: 0.6
             }).addTo(map);
-
             closeWMS();
             showToast('Camada WMS adicionada');
         }
@@ -2874,67 +3030,13 @@
         }
 
         // ============================================================
-        // IMPORT
+        // EXPORT
         // ============================================================
-        function showImport() {
-            toggleMenu();
-            setTimeout(() => {
-                document.getElementById('importModal').classList.add('open');
-            }, 300);
-        }
-
-        function closeImport() {
-            document.getElementById('importModal').classList.remove('open');
-        }
-
-        function handleFileImport(input) {
-            if (input.files.length > 0) {
-                Array.from(input.files).forEach(file => processImportedFile(file));
-            }
-        }
-
-        function processImportedFile(file) {
-            const ext = file.name.split('.').pop().toLowerCase();
-            const reader = new FileReader();
-            
-            reader.onload = (e) => {
-                const content = e.target.result;
-                let points = [];
-                
-                if (ext === 'kml') {
-                    points = parseKML(content);
-                } else if (ext === 'gpx') {
-                    points = parseGPX(content);
-                } else if (ext === 'geojson' || ext === 'json') {
-                    points = parseGeoJSON(content);
-                }
-
-                if (points.length > 0) {
-                    const line = L.polyline(points, {
-                        color: ext === 'kml' ? '#1976D2' : ext === 'gpx' ? '#388E3C' : '#7B1FA2',
-                        weight: 4, opacity: 0.8
-                    }).addTo(map);
-                    
-                    map.fitBounds(line.getBounds(), { padding: [50, 50] });
-                    showToast(`✅ Importado: ${file.name} (${points.length} pontos)`);
-                    vibrate(100);
-                } else {
-                    showToast('️ Ficheiro vazio ou formato inválido');
-                }
-            };
-            
-            reader.readAsText(file);
-            closeImport();
-        }
-
         function showExport() {
             toggleMenu();
             setTimeout(() => {
                 loadTracks().then(tracks => {
-                    if (tracks.length === 0) {
-                        showToast('Nenhum percurso para exportar');
-                        return;
-                    }
+                    if (tracks.length === 0) { showToast('Nenhum percurso para exportar'); return; }
                     const lastTrack = tracks[tracks.length - 1];
                     shareTrack(lastTrack);
                 });
@@ -2947,18 +3049,13 @@
         function toggleSearch() {
             const results = document.getElementById('searchResults');
             results.classList.toggle('open');
-            if (results.classList.contains('open')) {
-                document.getElementById('searchInput').focus();
-            }
+            if (results.classList.contains('open')) document.getElementById('searchInput').focus();
         }
 
         function handleSearch(value) {
             const results = document.getElementById('searchResults');
-            if (value.length > 0) {
-                results.classList.add('open');
-            } else {
-                results.classList.remove('open');
-            }
+            if (value.length > 0) results.classList.add('open');
+            else results.classList.remove('open');
         }
 
         function goToPlace(lat, lng) {
@@ -2977,23 +3074,11 @@
 
             const photoIcon = L.divIcon({
                 className: 'photo-marker-container',
-                html: `<div style="
-                    width: 40px; height: 40px;
-                    border-radius: 50%;
-                    border: 3px solid white;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    display: flex; align-items: center; justify-content: center;
-                    color: white; font-size: 16px;
-                "><i class="fas fa-camera"></i></div>`,
-                iconSize: [40, 40],
-                iconAnchor: [20, 20]
+                html: `<div style="width: 40px; height: 40px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3); background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 16px;"><i class="fas fa-camera"></i></div>`,
+                iconSize: [40, 40], iconAnchor: [20, 20]
             });
 
-            L.marker([lat, lng], { icon: photoIcon })
-                .addTo(map)
-                .bindPopup('<b>Fotografia</b><br>Geolocalizada<br><small>26 Set 2026</small>');
-
+            L.marker([lat, lng], { icon: photoIcon }).addTo(map).bindPopup('<b>Fotografia</b><br>Geolocalizada<br><small>26 Set 2026</small>');
             showToast('📷 Fotografia adicionada ao mapa');
             vibrate(50);
         }
@@ -3008,14 +3093,10 @@
 
         function zoomIn() { map.zoomIn(); }
         function zoomOut() { map.zoomOut(); }
-
-        function toggleGpsInfo() {
-            const panel = document.getElementById('gpsInfoPanel');
-            panel.classList.toggle('visible');
-        }
+        function toggleGpsInfo() { document.getElementById('gpsInfoPanel').classList.toggle('visible'); }
 
         // ============================================================
-        // KML PARSER
+        // PARSERS
         // ============================================================
         function parseKML(kmlText) {
             const parser = new DOMParser();
@@ -3023,94 +3104,55 @@
             const coordinates = doc.querySelector('coordinates');
             if (coordinates) {
                 const coords = coordinates.textContent.trim().split(/\s+/);
-                return coords.map(c => {
-                    const [lng, lat] = c.split(',');
-                    return [parseFloat(lat), parseFloat(lng)];
-                });
+                return coords.map(c => { const [lng, lat] = c.split(','); return [parseFloat(lat), parseFloat(lng)]; });
             }
             return [];
         }
 
-        // ============================================================
-        // GPX PARSER
-        // ============================================================
         function parseGPX(gpxText) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(gpxText, 'text/xml');
             const trkpts = doc.querySelectorAll('trkpt');
             const latlngs = [];
-            trkpts.forEach(pt => {
-                latlngs.push([
-                    parseFloat(pt.getAttribute('lat')),
-                    parseFloat(pt.getAttribute('lon'))
-                ]);
-            });
+            trkpts.forEach(pt => latlngs.push([parseFloat(pt.getAttribute('lat')), parseFloat(pt.getAttribute('lon'))]));
+            
+            // Também procurar waypoints
+            const wpts = doc.querySelectorAll('wpt');
+            wpts.forEach(pt => latlngs.push([parseFloat(pt.getAttribute('lat')), parseFloat(pt.getAttribute('lon'))]));
+            
             return latlngs;
         }
 
-        // ============================================================
-        // GEOJSON PARSER
-        // ============================================================
         function parseGeoJSON(jsonText) {
             try {
                 const geojson = JSON.parse(jsonText);
                 const points = [];
-                
                 function extractCoords(geometry) {
                     if (!geometry) return;
-                    if (geometry.type === 'Point') {
-                        points.push([geometry.coordinates[1], geometry.coordinates[0]]);
-                    } else if (geometry.type === 'LineString') {
-                        geometry.coordinates.forEach(c => points.push([c[1], c[0]]));
-                    } else if (geometry.type === 'Polygon') {
-                        geometry.coordinates[0].forEach(c => points.push([c[1], c[0]]));
-                    } else if (geometry.type === 'MultiLineString') {
-                        geometry.coordinates.forEach(line => {
-                            line.forEach(c => points.push([c[1], c[0]]));
-                        });
-                    }
+                    if (geometry.type === 'Point') points.push([geometry.coordinates[1], geometry.coordinates[0]]);
+                    else if (geometry.type === 'LineString') geometry.coordinates.forEach(c => points.push([c[1], c[0]]));
+                    else if (geometry.type === 'Polygon') geometry.coordinates[0].forEach(c => points.push([c[1], c[0]]));
+                    else if (geometry.type === 'MultiLineString') geometry.coordinates.forEach(line => line.forEach(c => points.push([c[1], c[0]])));
+                    else if (geometry.type === 'MultiPoint') geometry.coordinates.forEach(c => points.push([c[1], c[0]]));
                 }
-
-                if (geojson.type === 'FeatureCollection') {
-                    geojson.features.forEach(f => extractCoords(f.geometry));
-                } else if (geojson.type === 'Feature') {
-                    extractCoords(geojson.geometry);
-                } else {
-                    extractCoords(geojson);
-                }
-
+                if (geojson.type === 'FeatureCollection') geojson.features.forEach(f => extractCoords(f.geometry));
+                else if (geojson.type === 'Feature') extractCoords(geojson.geometry);
+                else extractCoords(geojson);
                 return points;
-            } catch (e) {
-                return [];
-            }
+            } catch (e) { return []; }
         }
 
-        // ============================================================
-        // GPX GENERATOR
-        // ============================================================
         function generateGPX(trackData) {
             let gpx = `<?xml version="1.0" encoding="UTF-8"?>
 <gpx version="1.1" creator="iMap" xmlns="http://www.topografix.com/GPX/1/1">
-  <metadata>
-    <name>${trackData.name}</name>
-    <time>${trackData.date}</time>
-  </metadata>
-  <trk>
-    <name>${trackData.name}</name>
-    <trkseg>`;
-
+  <metadata><name>${trackData.name}</name><time>${trackData.date}</time></metadata>
+  <trk><name>${trackData.name}</name><trkseg>`;
             trackData.points.forEach(p => {
-                gpx += `
-      <trkpt lat="${p.lat}" lon="${p.lng}">`;
+                gpx += `<trkpt lat="${p.lat}" lon="${p.lng}">`;
                 if (p.altitude) gpx += `<ele>${p.altitude}</ele>`;
-                gpx += `<time>${new Date(p.time).toISOString()}</time>`;
-                gpx += `</trkpt>`;
+                gpx += `<time>${new Date(p.time).toISOString()}</time></trkpt>`;
             });
-
-            gpx += `
-    </trkseg>
-  </trk>
-</gpx>`;
+            gpx += `</trkseg></trk></gpx>`;
             return gpx;
         }
 
@@ -3127,11 +3169,8 @@
             const R = 6371000;
             const dLat = (lat2 - lat1) * Math.PI / 180;
             const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                      Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
-                      Math.sin(dLon/2) * Math.sin(dLon/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            return R * c;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         }
 
         function formatDistance(meters) {
@@ -3150,57 +3189,32 @@
         // INITIALIZATION
         // ============================================================
         async function initApp() {
-            // Inicializar DB
             await initDB();
-            
-            // Inicializar GPS
             initGPS();
-            
-            // Inicializar bússola
             setTimeout(initCompass, 1000);
-            
-            // Inicializar motion
             setTimeout(initMotion, 1500);
-            
-            // Inicializar rede
             initNetworkStatus();
-            
-            // Inicializar bateria
             initBattery();
-            
-            // Verificar permissões
             checkPermissions();
             
-            // Carregar tracks anteriores
             const tracks = await loadTracks();
-            if (tracks.length > 0) {
-                console.log(`${tracks.length} percursos carregados do armazenamento local`);
-            }
+            if (tracks.length > 0) console.log(`${tracks.length} percursos carregados`);
 
-            // Mensagem de boas-vindas
-            setTimeout(() => {
-                showToast('🗺️ iMap - Bem-vindo! Sem anúncios.');
-            }, 1000);
+            setTimeout(() => showToast('️ iMap - Bem-vindo! Sem anúncios.'), 1000);
         }
 
-        // Iniciar aplicação
         initApp();
 
         // Prevenir zoom em double-tap (iOS)
         let lastTouchEnd = 0;
         document.addEventListener('touchend', (e) => {
             const now = Date.now();
-            if (now - lastTouchEnd <= 300) {
-                e.preventDefault();
-            }
+            if (now - lastTouchEnd <= 300) e.preventDefault();
             lastTouchEnd = now;
         }, { passive: false });
 
-        // Prevenir scroll bounce (iOS)
         document.body.addEventListener('touchmove', (e) => {
-            if (e.target.closest('#map') || e.target.closest('.bottom-sheet') || e.target.closest('.side-menu')) {
-                return;
-            }
+            if (e.target.closest('#map') || e.target.closest('.bottom-sheet') || e.target.closest('.side-menu')) return;
             e.preventDefault();
         }, { passive: false });
     </script>
