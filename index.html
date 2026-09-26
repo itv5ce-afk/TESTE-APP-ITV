@@ -13,9 +13,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="permissions-policy" content="geolocation=(self), camera=(self), microphone=()">
     
-    <!-- PWA Manifest Inline -->
-    <link rel="manifest" href='data:application/manifest+json,{"name":"iMap - Gestão de Mapas","short_name":"iMap","description":"Gestão KML/KMZ/GPX com GPS, medição e mapas offline","start_url":".","display":"standalone","background_color":"#f5f5f5","theme_color":"#26A69A","orientation":"any","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22%3E%3Crect fill=%22%2326A69A%22 width=%22192%22 height=%22192%22 rx=%2232%22/%3E%3Ctext x=%2296%22 y=%22128%22 font-size=%22100%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22Arial%22%3E🗺%3C/text%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml"},{"src":"data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect fill=%22%2326A69A%22 width=%22512%22 height=%22512%22 rx=%2280%22/%3E%3Ctext x=%22256%22 y=%22340%22 font-size=%22260%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22Arial%22%3E🗺%3C/text%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml"}]}'>
-    
+    <link rel="manifest" href='data:application/manifest+json,{"name":"iMap - Gestão de Mapas","short_name":"iMap","description":"Gestão KML/KMZ/GPX com GPS, medição e mapas offline","start_url":".","display":"standalone","background_color":"#f5f5f5","theme_color":"#26A69A","orientation":"any","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22%3E%3Crect fill=%22%2326A69A%22 width=%22192%22 height=%22192%22 rx=%2232%22/%3E%3Ctext x=%2296%22 y=%22128%22 font-size=%22100%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22Arial%22%3E🗺%3C/text%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml"}]}'>
     <link rel="apple-touch-icon" href='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180"%3E%3Crect fill="%2326A69A" width="180" height="180" rx="40"/%3E%3Ctext x="90" y="120" font-size="90" text-anchor="middle" fill="white" font-family="Arial"%3E🗺%3C/text%3E%3C/svg%3E'>
     
     <title>iMap - Gestão KML/KMZ/GPX</title>
@@ -200,7 +198,14 @@
             background: #E0F2F1;
         }
 
-        /* ===== GPS TRACKING BUTTON ===== */
+        .map-control-btn.btn-wms,
+        .map-control-btn.btn-permissions,
+        .map-control-btn.btn-layers,
+        .map-control-btn.btn-photo,
+        .gps-btn {
+            display: none !important;
+        }
+
         .gps-btn {
             position: fixed;
             right: 12px;
@@ -212,7 +217,7 @@
             border: none;
             border-radius: 50%;
             box-shadow: var(--shadow-lg);
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
             font-size: 24px;
@@ -397,7 +402,55 @@
             font-weight: 600;
         }
 
-        /* ===== BOTTOM SHEETS / PANELS ===== */
+        /* ===== TOGGLE SWITCH ===== */
+        .tool-toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        .tool-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .tool-toggle input:checked + .toggle-slider {
+            background-color: var(--primary);
+        }
+
+        .tool-toggle input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        /* ===== BOTTOM SHEETS ===== */
         .bottom-sheet-overlay {
             position: fixed;
             top: 0;
@@ -768,31 +821,6 @@
 
         .recording-stats span {
             opacity: 0.9;
-        }
-
-        /* ===== FAB ===== */
-        .fab {
-            position: fixed;
-            bottom: calc(80px + var(--safe-bottom));
-            right: 12px;
-            width: 56px;
-            height: 56px;
-            background: var(--primary);
-            border: none;
-            border-radius: 16px;
-            box-shadow: var(--shadow-lg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: white;
-            cursor: pointer;
-            z-index: 500;
-            transition: all 0.2s;
-        }
-
-        .fab:active {
-            transform: scale(0.9);
         }
 
         /* ===== GPS STATUS BAR ===== */
@@ -1416,6 +1444,293 @@
             color: #f44336;
         }
 
+        /* ===== RECORDING INDICATOR ===== */
+        .recording-indicator-main {
+            position: fixed;
+            bottom: calc(80px + var(--safe-bottom));
+            right: 12px;
+            z-index: 500;
+            width: 56px;
+            height: 56px;
+            background: #f44336;
+            border: none;
+            border-radius: 50%;
+            box-shadow: var(--shadow-lg);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+            animation: pulse 1.5s infinite;
+        }
+
+        .recording-indicator-main.visible {
+            display: flex;
+        }
+
+        /* ===== FLOATING TOOL BUTTONS (tela principal) ===== */
+        .floating-tools {
+            position: fixed;
+            bottom: calc(80px + var(--safe-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 500;
+            display: flex;
+            gap: 12px;
+            pointer-events: none;
+        }
+
+        .floating-tool-btn {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: none;
+            box-shadow: var(--shadow-lg);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: white;
+            cursor: pointer;
+            pointer-events: auto;
+            transition: all 0.2s;
+        }
+
+        .floating-tool-btn.visible {
+            display: flex;
+        }
+
+        .floating-tool-btn:active {
+            transform: scale(0.9);
+        }
+
+        .floating-tool-btn.ft-measure { background: #1976D2; }
+        .floating-tool-btn.ft-gps { background: #388E3C; }
+        .floating-tool-btn.ft-photo { background: #7B1FA2; }
+        .floating-tool-btn.ft-wms { background: #E65100; }
+        .floating-tool-btn.ft-marker { background: #C62828; }
+
+        /* ===== ADD MARKER BUTTON (centro da tela) ===== */
+        .add-marker-btn {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 64px;
+            height: 64px;
+            background: var(--primary);
+            border: 4px solid white;
+            border-radius: 50%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            cursor: pointer;
+            z-index: 600;
+            transition: all 0.2s;
+        }
+
+        .add-marker-btn.visible {
+            display: flex;
+            animation: markerPulse 2s infinite;
+        }
+
+        .add-marker-btn:active {
+            transform: translate(-50%, -50%) scale(0.9);
+        }
+
+        @keyframes markerPulse {
+            0% { box-shadow: 0 4px 20px rgba(38,166,154,0.4), 0 0 0 0 rgba(38,166,154,0.4); }
+            70% { box-shadow: 0 4px 20px rgba(38,166,154,0.4), 0 0 0 15px rgba(38,166,154,0); }
+            100% { box-shadow: 0 4px 20px rgba(38,166,154,0.4), 0 0 0 0 rgba(38,166,154,0); }
+        }
+
+        /* ===== MARKER EDIT BOTTOM SHEET ===== */
+        .marker-edit-form {
+            padding: 16px 20px;
+        }
+
+        .marker-edit-form .form-group {
+            margin-bottom: 16px;
+        }
+
+        .marker-edit-form label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .marker-edit-form input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .marker-edit-form input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        .marker-action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .marker-action-btn {
+            padding: 12px 8px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .marker-action-btn:active {
+            background: #f0f0f0;
+            transform: scale(0.95);
+        }
+
+        .marker-action-btn i {
+            font-size: 22px;
+        }
+
+        .marker-action-btn span {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .marker-action-btn.btn-icon i { color: #1976D2; }
+        .marker-action-btn.btn-color i { color: #E91E63; }
+        .marker-action-btn.btn-navigate i { color: #388E3C; }
+
+        .marker-save-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .marker-save-btn:active {
+            transform: scale(0.98);
+            background: var(--primary-dark);
+        }
+
+        .marker-delete-btn {
+            width: 100%;
+            padding: 12px;
+            background: #FFEBEE;
+            color: #C62828;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all 0.2s;
+        }
+
+        .marker-delete-btn:active {
+            background: #FFCDD2;
+        }
+
+        /* ===== ICON SELECTOR MODAL ===== */
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+
+        .icon-option {
+            width: 100%;
+            aspect-ratio: 1;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .icon-option:active {
+            transform: scale(0.9);
+        }
+
+        .icon-option.selected {
+            border-color: var(--primary);
+            background: #E0F2F1;
+            color: var(--primary);
+        }
+
+        /* ===== COLOR SELECTOR MODAL ===== */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            padding: 8px 0;
+        }
+
+        .color-option {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .color-option:active {
+            transform: scale(0.9);
+        }
+
+        .color-option.selected {
+            border-color: var(--text);
+            transform: scale(1.1);
+        }
+
+        .color-option.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (min-width: 768px) {
             body {
@@ -1532,7 +1847,7 @@
         </div>
     </div>
 
-    <!-- MAP CONTROLS (Right side) -->
+    <!-- MAP CONTROLS -->
     <div class="map-controls">
         <button class="map-control-btn" onclick="toggleLayers()" title="Camadas">
             <i class="fas fa-layer-group"></i>
@@ -1540,18 +1855,18 @@
         <button class="map-control-btn" onclick="toggleMeasure()" title="Medir">
             <i class="fas fa-ruler"></i>
         </button>
-        <button class="map-control-btn" onclick="addPhotoMarker()" title="Foto">
+        <button class="map-control-btn btn-photo" onclick="addPhotoMarker()" title="Foto">
             <i class="fas fa-camera"></i>
         </button>
-        <button class="map-control-btn" onclick="toggleWMS()" title="WMS">
+        <button class="map-control-btn btn-wms" onclick="toggleWMS()" title="WMS">
             <i class="fas fa-globe"></i>
         </button>
-        <button class="map-control-btn" onclick="showPermissions()" title="Permissões">
+        <button class="map-control-btn btn-permissions" onclick="showPermissions()" title="Permissões">
             <i class="fas fa-shield-alt"></i>
         </button>
     </div>
 
-    <!-- TOOLBAR (Left side) -->
+    <!-- TOOLBAR -->
     <div class="toolbar">
         <button class="tool-btn" onclick="zoomIn()" title="Zoom In">
             <i class="fas fa-plus"></i>
@@ -1567,6 +1882,35 @@
     <!-- GPS TRACKING BUTTON -->
     <button class="gps-btn" id="gpsBtn" onclick="toggleGPS()">
         <i class="fas fa-route"></i>
+    </button>
+
+    <!-- Indicador de gravação ativo -->
+    <button class="recording-indicator-main" id="recordingIndicatorMain" onclick="toggleGPS()">
+        <i class="fas fa-stop"></i>
+    </button>
+
+    <!-- FLOATING TOOL BUTTONS (tela principal) -->
+    <div class="floating-tools">
+        <button class="floating-tool-btn ft-measure" id="ftMeasure" onclick="toggleMeasure()" title="Medir">
+            <i class="fas fa-ruler"></i>
+        </button>
+        <button class="floating-tool-btn ft-gps" id="ftGps" onclick="toggleGPS()" title="Gravar GPS">
+            <i class="fas fa-route"></i>
+        </button>
+        <button class="floating-tool-btn ft-photo" id="ftPhoto" onclick="addPhotoMarker()" title="Fotografia">
+            <i class="fas fa-camera"></i>
+        </button>
+        <button class="floating-tool-btn ft-wms" id="ftWms" onclick="toggleWMS()" title="WMS">
+            <i class="fas fa-globe"></i>
+        </button>
+        <button class="floating-tool-btn ft-marker" id="ftMarker" onclick="toggleMarkerMode()" title="Marcador">
+            <i class="fas fa-map-pin"></i>
+        </button>
+    </div>
+
+    <!-- ADD MARKER BUTTON (centro da tela) -->
+    <button class="add-marker-btn" id="addMarkerBtn" onclick="addMarkerAtCenter()">
+        <i class="fas fa-plus"></i>
     </button>
 
     <!-- RECORDING OVERLAY -->
@@ -1693,22 +2037,56 @@
 
         <div class="side-menu-section">
             <div class="side-menu-section-title">Ferramentas</div>
-            <button class="side-menu-item" onclick="toggleMeasure(); toggleMenu();">
+            
+            <!-- Medir com Toggle -->
+            <div class="side-menu-item" style="padding-right: 12px;">
                 <i class="fas fa-ruler-combined"></i>
-                Medir Distância/Área
-            </button>
-            <button class="side-menu-item" onclick="toggleGPS(); toggleMenu();">
+                <span style="flex: 1;">Medir Distância/Área</span>
+                <label class="tool-toggle">
+                    <input type="checkbox" id="toggleMeasure" onchange="handleToolToggle('measure', this.checked)">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            
+            <!-- Gravar GPS com Toggle -->
+            <div class="side-menu-item" style="padding-right: 12px;">
                 <i class="fas fa-route"></i>
-                Gravar Percurso GPS
-            </button>
-            <button class="side-menu-item" onclick="addPhotoMarker(); toggleMenu();">
+                <span style="flex: 1;">Gravar Percurso GPS</span>
+                <label class="tool-toggle">
+                    <input type="checkbox" id="toggleGps" onchange="handleToolToggle('gps', this.checked)">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            
+            <!-- Fotografias com Toggle -->
+            <div class="side-menu-item" style="padding-right: 12px;">
                 <i class="fas fa-camera-retro"></i>
-                Mapear Fotografias
-            </button>
-            <button class="side-menu-item" onclick="toggleWMS(); toggleMenu();">
+                <span style="flex: 1;">Mapear Fotografias</span>
+                <label class="tool-toggle">
+                    <input type="checkbox" id="togglePhoto" onchange="handleToolToggle('photo', this.checked)">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            
+            <!-- WMS com Toggle -->
+            <div class="side-menu-item" style="padding-right: 12px;">
                 <i class="fas fa-globe-americas"></i>
-                WMS / OpenData
-            </button>
+                <span style="flex: 1;">WMS / OpenData</span>
+                <label class="tool-toggle">
+                    <input type="checkbox" id="toggleWms" onchange="handleToolToggle('wms', this.checked)">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            
+            <!-- Marcador com Toggle (NOVO) -->
+            <div class="side-menu-item" style="padding-right: 12px;">
+                <i class="fas fa-map-pin"></i>
+                <span style="flex: 1;">Marcador</span>
+                <label class="tool-toggle">
+                    <input type="checkbox" id="toggleMarker" onchange="handleToolToggle('marker', this.checked)">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
         </div>
 
         <div class="side-menu-section">
@@ -1842,6 +2220,78 @@
         </div>
     </div>
 
+    <!-- MARKER EDIT BOTTOM SHEET -->
+    <div class="bottom-sheet-overlay" id="markerEditOverlay" onclick="closeMarkerEdit()"></div>
+    <div class="bottom-sheet" id="markerEditSheet">
+        <div class="bottom-sheet-handle"></div>
+        <div class="bottom-sheet-header">
+            <h3><i class="fas fa-map-pin" style="color: var(--primary);"></i> Editar Marcador</h3>
+            <button class="close-btn" onclick="closeMarkerEdit()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="marker-edit-form">
+            <div class="form-group">
+                <label>Nome do Marcador</label>
+                <input type="text" id="markerNameInput" placeholder="Ex: Ponto de interesse">
+            </div>
+            
+            <div class="marker-action-buttons">
+                <button class="marker-action-btn btn-icon" onclick="openIconSelector()">
+                    <i class="fas fa-icons" id="currentIconDisplay"></i>
+                    <span>ÍCONE</span>
+                </button>
+                <button class="marker-action-btn btn-color" onclick="openColorSelector()">
+                    <i class="fas fa-palette" id="currentColorDisplay" style="color: #C62828;"></i>
+                    <span>COR</span>
+                </button>
+                <button class="marker-action-btn btn-navigate" onclick="navigateToGoogleMaps()">
+                    <i class="fas fa-directions"></i>
+                    <span>DESLOCAMENTO</span>
+                </button>
+            </div>
+            
+            <button class="marker-save-btn" onclick="saveMarker()">
+                <i class="fas fa-check"></i> Guardar Marcador
+            </button>
+            <button class="marker-delete-btn" onclick="deleteCurrentMarker()">
+                <i class="fas fa-trash"></i> Eliminar Marcador
+            </button>
+        </div>
+    </div>
+
+    <!-- ICON SELECTOR MODAL -->
+    <div class="modal-overlay" id="iconSelectorModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-icons" style="color: var(--primary);"></i> Escolher Ícone</h3>
+            </div>
+            <div class="modal-body">
+                <div class="icon-grid" id="iconGrid"></div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" onclick="closeIconSelector()">Cancelar</button>
+                <button class="modal-btn confirm" onclick="confirmIconSelection()">Selecionar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- COLOR SELECTOR MODAL -->
+    <div class="modal-overlay" id="colorSelectorModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-palette" style="color: var(--primary);"></i> Escolher Cor</h3>
+            </div>
+            <div class="modal-body">
+                <div class="color-grid" id="colorGrid"></div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" onclick="closeColorSelector()">Cancelar</button>
+                <button class="modal-btn confirm" onclick="confirmColorSelection()">Selecionar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- WMS MODAL -->
     <div class="modal-overlay" id="wmsModal">
         <div class="modal">
@@ -1877,7 +2327,7 @@
         </div>
     </div>
 
-    <!-- IMPORT MODAL (Enhanced) -->
+    <!-- IMPORT MODAL -->
     <div class="modal-overlay" id="importModal">
         <div class="modal">
             <div class="modal-header">
@@ -1886,7 +2336,6 @@
             <div class="modal-body">
                 <p style="margin-bottom: 8px;">Selecione um ou mais ficheiros KML, KMZ, GPX ou GeoJSON do seu dispositivo para importar para o iMap.</p>
                 
-                <!-- Import Zone -->
                 <div class="import-zone" id="importZone" onclick="triggerFileInput()">
                     <i class="fas fa-cloud-upload-alt"></i>
                     <div class="import-title">Toque para selecionar ficheiro(s)</div>
@@ -1901,7 +2350,6 @@
                 
                 <input type="file" id="fileInput" accept=".kml,.kmz,.gpx,.geojson,.json,application/vnd.google-earth.kml+xml,application/vnd.google-earth.kmz,application/gpx+xml,application/geo+json,application/json" style="display:none" onchange="handleFileImport(this)" multiple>
                 
-                <!-- Import Progress -->
                 <div class="import-progress" id="importProgress">
                     <div class="import-progress-bar">
                         <div class="import-progress-fill" id="importProgressFill"></div>
@@ -1909,7 +2357,6 @@
                     <div class="import-progress-text" id="importProgressText">A processar...</div>
                 </div>
                 
-                <!-- Imported Files List -->
                 <div class="imported-files-list" id="importedFilesList"></div>
             </div>
             <div class="modal-actions">
@@ -2018,10 +2465,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
         // ============================================================
-        // iMAP - APLICAÇÃO COMPLETA COM IMPORTAÇÃO FUNCIONAL
+        // iMAP - APLICAÇÃO COMPLETA
         // ============================================================
 
-        // ===== STATE =====
         const AppState = {
             isRecording: false,
             isMeasuring: false,
@@ -2039,6 +2485,22 @@
             importedFiles: [],
             importedLayers: [],
             fileCount: 12,
+            // Tool toggles state
+            toolToggles: {
+                measure: false,
+                gps: false,
+                photo: false,
+                wms: false,
+                marker: false
+            },
+            // Marker mode
+            markerMode: false,
+            markers: [],
+            currentEditingMarker: null,
+            tempMarkerData: {
+                icon: 'fa-map-marker-alt',
+                color: '#C62828'
+            },
             permissions: {
                 location: 'prompt',
                 orientation: 'prompt',
@@ -2048,6 +2510,35 @@
                 storage: 'granted'
             }
         };
+
+        // ===== ICONS LIST =====
+        const availableIcons = [
+            'fa-map-marker-alt', 'fa-map-pin', 'fa-location-dot', 'fa-location-arrow',
+            'fa-flag', 'fa-star', 'fa-heart', 'fa-home',
+            'fa-building', 'fa-tree', 'fa-mountain', 'fa-water',
+            'fa-utensils', 'fa-coffee', 'fa-gas-pump', 'fa-hospital',
+            'fa-school', 'fa-church', 'fa-store', 'fa-hotel',
+            'fa-camera', 'fa-binoculars', 'fa-hiking', 'fa-biking',
+            'fa-car', 'fa-bus', 'fa-plane', 'fa-ship',
+            'fa-wifi', 'fa-bolt', 'fa-sun', 'fa-cloud',
+            'fa-user', 'fa-users', 'fa-briefcase', 'fa-book',
+            'fa-phone', 'fa-envelope', 'fa-globe', 'fa-anchor',
+            'fa-fish', 'fa-leaf', 'fa-seedling', 'fa-tractor'
+        ];
+
+        // ===== COLORS LIST =====
+        const availableColors = [
+            '#C62828', '#D32F2F', '#E53935', '#F44336', '#EF5350',
+            '#6A1B9A', '#7B1FA2', '#8E24AA', '#9C27B0', '#AB47BC',
+            '#1565C0', '#1976D2', '#1E88E5', '#2196F3', '#42A5F5',
+            '#00838F', '#0097A7', '#00ACC1', '#00BCD4', '#26C6DA',
+            '#00695C', '#00796B', '#00897B', '#009688', '#26A69A',
+            '#2E7D32', '#388E3C', '#43A047', '#4CAF50', '#66BB6A',
+            '#F57F17', '#F9A825', '#FBC02D', '#FFEB3B', '#FFEE58',
+            '#E65100', '#EF6C00', '#F57C00', '#FF9800', '#FFA726',
+            '#37474F', '#455A64', '#546E7A', '#607D8B', '#78909C',
+            '#212121', '#424242', '#616161', '#757575', '#9E9E9E'
+        ];
 
         // ===== MAP INITIALIZATION =====
         const map = L.map('map', {
@@ -2123,6 +2614,286 @@
         L.polyline(highway116, { color: '#5C6BC0', weight: 8, opacity: 0.5 }).addTo(map);
 
         // ============================================================
+        // TOOL TOGGLES - Ligar/Desligar ferramentas
+        // ============================================================
+        function handleToolToggle(tool, enabled) {
+            AppState.toolToggles[tool] = enabled;
+            updateFloatingButtons();
+            
+            const toolNames = {
+                measure: 'Medir Distância/Área',
+                gps: 'Gravar Percurso GPS',
+                photo: 'Mapear Fotografias',
+                wms: 'WMS / OpenData',
+                marker: 'Marcador'
+            };
+            
+            if (enabled) {
+                showToast(`✅ ${toolNames[tool]} ativado`);
+                vibrate(50);
+            } else {
+                showToast(`${toolNames[tool]} desativado`);
+                
+                // Se desativar o marker mode, esconder botão central
+                if (tool === 'marker') {
+                    AppState.markerMode = false;
+                    document.getElementById('addMarkerBtn').classList.remove('visible');
+                }
+                
+                // Se desativar measure, fechar panel
+                if (tool === 'measure' && AppState.isMeasuring) {
+                    toggleMeasure();
+                }
+            }
+        }
+
+        function updateFloatingButtons() {
+            document.getElementById('ftMeasure').classList.toggle('visible', AppState.toolToggles.measure);
+            document.getElementById('ftGps').classList.toggle('visible', AppState.toolToggles.gps);
+            document.getElementById('ftPhoto').classList.toggle('visible', AppState.toolToggles.photo);
+            document.getElementById('ftWms').classList.toggle('visible', AppState.toolToggles.wms);
+            document.getElementById('ftMarker').classList.toggle('visible', AppState.toolToggles.marker);
+        }
+
+        // ============================================================
+        // MARKER SYSTEM
+        // ============================================================
+        function toggleMarkerMode() {
+            AppState.markerMode = !AppState.markerMode;
+            const btn = document.getElementById('addMarkerBtn');
+            
+            if (AppState.markerMode) {
+                btn.classList.add('visible');
+                showToast('📍 Modo Marcador ativo - Toque no + para criar');
+                vibrate(100);
+            } else {
+                btn.classList.remove('visible');
+                showToast('Modo Marcador desativado');
+            }
+        }
+
+        function addMarkerAtCenter() {
+            const center = map.getCenter();
+            const lat = center.lat;
+            const lng = center.lng;
+            
+            const markerId = 'marker_' + Date.now();
+            const markerData = {
+                id: markerId,
+                lat: lat,
+                lng: lng,
+                name: 'Marcador ' + (AppState.markers.length + 1),
+                icon: 'fa-map-marker-alt',
+                color: '#C62828',
+                date: new Date().toISOString()
+            };
+            
+            AppState.markers.push(markerData);
+            createMarkerOnMap(markerData);
+            
+            // Abrir editor automaticamente
+            openMarkerEdit(markerData);
+            
+            showToast('📍 Marcador criado!');
+            vibrate([50, 50, 50]);
+        }
+
+        function createMarkerOnMap(markerData) {
+            const icon = L.divIcon({
+                className: 'custom-marker-icon',
+                html: `<div style="
+                    background: ${markerData.color};
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50% 50% 50% 0;
+                    transform: rotate(-45deg);
+                    border: 3px solid white;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                "><i class="fas ${markerData.icon}" style="transform: rotate(45deg); color: white; font-size: 16px;"></i></div>`,
+                iconSize: [40, 40],
+                iconAnchor: [20, 40]
+            });
+            
+            const marker = L.marker([markerData.lat, markerData.lng], { icon: icon })
+                .addTo(map)
+                .on('click', () => {
+                    openMarkerEdit(markerData);
+                });
+            
+            markerData.leafletMarker = marker;
+            marker.bindPopup(`<b>${markerData.name}</b>`);
+        }
+
+        function openMarkerEdit(markerData) {
+            AppState.currentEditingMarker = markerData;
+            AppState.tempMarkerData = {
+                icon: markerData.icon,
+                color: markerData.color
+            };
+            
+            document.getElementById('markerNameInput').value = markerData.name;
+            updateIconDisplay();
+            updateColorDisplay();
+            
+            document.getElementById('markerEditSheet').classList.add('open');
+            document.getElementById('markerEditOverlay').classList.add('open');
+        }
+
+        function closeMarkerEdit() {
+            document.getElementById('markerEditSheet').classList.remove('open');
+            document.getElementById('markerEditOverlay').classList.remove('open');
+            AppState.currentEditingMarker = null;
+        }
+
+        function saveMarker() {
+            if (!AppState.currentEditingMarker) return;
+            
+            const name = document.getElementById('markerNameInput').value.trim();
+            if (!name) {
+                showToast('⚠️ Insira um nome para o marcador');
+                return;
+            }
+            
+            AppState.currentEditingMarker.name = name;
+            AppState.currentEditingMarker.icon = AppState.tempMarkerData.icon;
+            AppState.currentEditingMarker.color = AppState.tempMarkerData.color;
+            
+            // Atualizar marcador no mapa
+            if (AppState.currentEditingMarker.leafletMarker) {
+                map.removeLayer(AppState.currentEditingMarker.leafletMarker);
+                createMarkerOnMap(AppState.currentEditingMarker);
+            }
+            
+            closeMarkerEdit();
+            showToast('✅ Marcador guardado!');
+            vibrate(100);
+        }
+
+        function deleteCurrentMarker() {
+            if (!AppState.currentEditingMarker) return;
+            
+            if (confirm('Eliminar este marcador?')) {
+                const marker = AppState.currentEditingMarker;
+                if (marker.leafletMarker) {
+                    map.removeLayer(marker.leafletMarker);
+                }
+                AppState.markers = AppState.markers.filter(m => m.id !== marker.id);
+                closeMarkerEdit();
+                showToast('️ Marcador eliminado');
+                vibrate([100, 50, 100]);
+            }
+        }
+
+        // ===== ICON SELECTOR =====
+        function openIconSelector() {
+            const grid = document.getElementById('iconGrid');
+            grid.innerHTML = '';
+            
+            availableIcons.forEach(icon => {
+                const div = document.createElement('div');
+                div.className = 'icon-option' + (icon === AppState.tempMarkerData.icon ? ' selected' : '');
+                div.innerHTML = `<i class="fas ${icon}"></i>`;
+                div.onclick = () => selectIcon(icon, div);
+                grid.appendChild(div);
+            });
+            
+            document.getElementById('iconSelectorModal').classList.add('open');
+        }
+
+        function selectIcon(icon, element) {
+            AppState.tempMarkerData.icon = icon;
+            document.querySelectorAll('.icon-option').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        function closeIconSelector() {
+            document.getElementById('iconSelectorModal').classList.remove('open');
+        }
+
+        function confirmIconSelection() {
+            closeIconSelector();
+            updateIconDisplay();
+            showToast('Ícone selecionado');
+            vibrate(50);
+        }
+
+        function updateIconDisplay() {
+            const display = document.getElementById('currentIconDisplay');
+            display.className = 'fas ' + AppState.tempMarkerData.icon;
+        }
+
+        // ===== COLOR SELECTOR =====
+        function openColorSelector() {
+            const grid = document.getElementById('colorGrid');
+            grid.innerHTML = '';
+            
+            availableColors.forEach(color => {
+                const div = document.createElement('div');
+                div.className = 'color-option' + (color === AppState.tempMarkerData.color ? ' selected' : '');
+                div.style.background = color;
+                div.onclick = () => selectColor(color, div);
+                grid.appendChild(div);
+            });
+            
+            document.getElementById('colorSelectorModal').classList.add('open');
+        }
+
+        function selectColor(color, element) {
+            AppState.tempMarkerData.color = color;
+            document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        function closeColorSelector() {
+            document.getElementById('colorSelectorModal').classList.remove('open');
+        }
+
+        function confirmColorSelection() {
+            closeColorSelector();
+            updateColorDisplay();
+            showToast('Cor selecionada');
+            vibrate(50);
+        }
+
+        function updateColorDisplay() {
+            const display = document.getElementById('currentColorDisplay');
+            display.style.color = AppState.tempMarkerData.color;
+        }
+
+        // ===== NAVIGATE TO GOOGLE MAPS =====
+        function navigateToGoogleMaps() {
+            if (!AppState.currentEditingMarker) return;
+            
+            const { lat, lng, name } = AppState.currentEditingMarker;
+            
+            // URL do Google Maps com coordenadas
+            const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`;
+            
+            // Tentar abrir no app nativo
+            const appUrl = `google.navigation:q=${lat},${lng}`;
+            
+            // Detectar plataforma
+            const isAndroid = /android/i.test(navigator.userAgent);
+            const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+            
+            let urlToOpen = googleMapsUrl;
+            if (isAndroid) {
+                urlToOpen = `geo:${lat},${lng}?q=${encodeURIComponent(name)}`;
+            } else if (isIOS) {
+                urlToOpen = `http://maps.apple.com/?daddr=${lat},${lng}&dirflg=d`;
+            }
+            
+            // Abrir URL
+            window.open(urlToOpen, '_blank');
+            
+            showToast('🗺️ A abrir Google Maps...');
+            vibrate(100);
+        }
+
+        // ============================================================
         // INDEXEDDB
         // ============================================================
         function initDB() {
@@ -2162,28 +2933,19 @@
         }
 
         // ============================================================
-        // IMPORTAÇÃO FUNCIONAL - BOTÃO DO MENU
+        // IMPORTAÇÃO
         // ============================================================
-        
-        // Abre o modal de importação a partir do menu
         function openImportFromMenu() {
-            toggleMenu(); // Fecha o menu
-            setTimeout(() => {
-                openImportModal();
-            }, 350);
+            toggleMenu();
+            setTimeout(() => openImportModal(), 350);
         }
 
         function openImportModal() {
-            // Reset do estado do modal
             document.getElementById('importedFilesList').innerHTML = '';
             document.getElementById('importProgress').classList.remove('visible');
             document.getElementById('btnImportAll').style.display = 'none';
             document.getElementById('fileInput').value = '';
-            
-            const modal = document.getElementById('importModal');
-            modal.classList.add('open');
-            
-            // Setup drag & drop
+            document.getElementById('importModal').classList.add('open');
             setupDragDrop();
         }
 
@@ -2195,42 +2957,24 @@
             document.getElementById('fileInput').click();
         }
 
-        // Setup Drag & Drop
         function setupDragDrop() {
             const zone = document.getElementById('importZone');
-            
             ['dragenter', 'dragover'].forEach(evt => {
-                zone.addEventListener(evt, (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    zone.classList.add('dragover');
-                });
+                zone.addEventListener(evt, (e) => { e.preventDefault(); e.stopPropagation(); zone.classList.add('dragover'); });
             });
-            
             ['dragleave', 'drop'].forEach(evt => {
-                zone.addEventListener(evt, (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    zone.classList.remove('dragover');
-                });
+                zone.addEventListener(evt, (e) => { e.preventDefault(); e.stopPropagation(); zone.classList.remove('dragover'); });
             });
-            
             zone.addEventListener('drop', (e) => {
                 const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    processFiles(Array.from(files));
-                }
+                if (files.length > 0) processFiles(Array.from(files));
             });
         }
 
-        // Handler do input file
         function handleFileImport(input) {
-            if (input.files && input.files.length > 0) {
-                processFiles(Array.from(input.files));
-            }
+            if (input.files && input.files.length > 0) processFiles(Array.from(input.files));
         }
 
-        // Processa múltiplos ficheiros
         async function processFiles(files) {
             const progress = document.getElementById('importProgress');
             const progressFill = document.getElementById('importProgressFill');
@@ -2253,7 +2997,6 @@
                 
                 const result = await processSingleFile(file);
                 
-                // Adiciona à lista visual
                 const item = document.createElement('div');
                 item.className = 'imported-file-item ' + (result.success ? 'success' : 'error');
                 
@@ -2277,7 +3020,6 @@
                 if (result.success) successCount++;
                 else errorCount++;
                 
-                // Pequeno delay para animação
                 await new Promise(r => setTimeout(r, 200));
             }
             
@@ -2291,7 +3033,6 @@
             
             btnImportAll.style.display = 'block';
             
-            // Auto fecha após 3s se todos sucesso
             if (errorCount === 0 && successCount > 0) {
                 setTimeout(() => {
                     closeImport();
@@ -2300,32 +3041,23 @@
             }
         }
 
-        // Processa um único ficheiro
         async function processSingleFile(file) {
             const ext = file.name.split('.').pop().toLowerCase();
             const validExts = ['kml', 'kmz', 'gpx', 'geojson', 'json'];
             
-            if (!validExts.includes(ext)) {
-                return { success: false, message: 'Formato não suportado', points: 0 };
-            }
+            if (!validExts.includes(ext)) return { success: false, message: 'Formato não suportado', points: 0 };
             
             try {
                 let content = null;
                 let points = [];
                 
                 if (ext === 'kmz') {
-                    // KMZ é um ZIP - usar JSZip
                     const arrayBuffer = await file.arrayBuffer();
                     const zip = await JSZip.loadAsync(arrayBuffer);
-                    
-                    // Procurar ficheiro KML dentro do ZIP
                     let kmlFile = null;
                     zip.forEach((relativePath, zipEntry) => {
-                        if (relativePath.toLowerCase().endsWith('.kml') && !kmlFile) {
-                            kmlFile = zipEntry;
-                        }
+                        if (relativePath.toLowerCase().endsWith('.kml') && !kmlFile) kmlFile = zipEntry;
                     });
-                    
                     if (kmlFile) {
                         content = await kmlFile.async('text');
                         points = parseKML(content);
@@ -2334,107 +3066,58 @@
                     }
                 } else {
                     content = await file.text();
-                    
-                    if (ext === 'kml') {
-                        points = parseKML(content);
-                    } else if (ext === 'gpx') {
-                        points = parseGPX(content);
-                    } else if (ext === 'geojson' || ext === 'json') {
-                        points = parseGeoJSON(content);
-                    }
+                    if (ext === 'kml') points = parseKML(content);
+                    else if (ext === 'gpx') points = parseGPX(content);
+                    else if (ext === 'geojson' || ext === 'json') points = parseGeoJSON(content);
                 }
                 
-                if (points.length === 0) {
-                    return { success: false, message: 'Nenhum ponto encontrado', points: 0 };
-                }
+                if (points.length === 0) return { success: false, message: 'Nenhum ponto encontrado', points: 0 };
                 
-                // Determinar cor baseada no tipo
-                const colors = {
-                    kml: '#1976D2',
-                    kmz: '#7B1FA2',
-                    gpx: '#388E3C',
-                    geojson: '#E65100',
-                    json: '#E65100'
-                };
-                
+                const colors = { kml: '#1976D2', kmz: '#7B1FA2', gpx: '#388E3C', geojson: '#E65100', json: '#E65100' };
                 const color = colors[ext] || '#26A69A';
                 
-                // Adicionar ao mapa
-                const layer = L.polyline(points, {
-                    color: color,
-                    weight: 4,
-                    opacity: 0.85,
-                    lineJoin: 'round'
-                }).addTo(map);
+                const layer = L.polyline(points, { color: color, weight: 4, opacity: 0.85, lineJoin: 'round' }).addTo(map);
                 
-                // Adicionar marcadores nos pontos extremos
                 if (points.length > 0) {
                     const firstPoint = points[0];
                     const lastPoint = points[points.length - 1];
-                    
                     const startIcon = L.divIcon({
                         className: 'track-marker',
                         html: `<div style="width: 16px; height: 16px; background: #4CAF50; border: 3px solid white; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.3);"></div>`,
                         iconSize: [16, 16], iconAnchor: [8, 8]
                     });
-                    
                     const endIcon = L.divIcon({
                         className: 'track-marker',
                         html: `<div style="width: 16px; height: 16px; background: #f44336; border: 3px solid white; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.3);"></div>`,
                         iconSize: [16, 16], iconAnchor: [8, 8]
                     });
-                    
                     L.marker(firstPoint, { icon: startIcon }).addTo(map).bindPopup(`<b>Início</b><br>${file.name}`);
                     L.marker(lastPoint, { icon: endIcon }).addTo(map).bindPopup(`<b>Fim</b><br>${file.name}`);
                 }
                 
-                // Calcular distância total
                 let totalDist = 0;
                 for (let i = 1; i < points.length; i++) {
                     totalDist += haversineDistance(points[i-1][0], points[i-1][1], points[i][0], points[i][1]);
                 }
                 
-                // Ajustar vista do mapa
                 map.fitBounds(layer.getBounds(), { padding: [60, 60], maxZoom: 17 });
                 
-                // Guardar referência da camada
-                AppState.importedLayers.push({
-                    name: file.name,
-                    layer: layer,
-                    points: points,
-                    color: color,
-                    distance: totalDist
-                });
+                AppState.importedLayers.push({ name: file.name, layer: layer, points: points, color: color, distance: totalDist });
+                saveImportedFile({ name: file.name, ext: ext, points: points, distance: totalDist, date: new Date().toISOString(), size: file.size });
                 
-                // Guardar no IndexedDB
-                saveImportedFile({
-                    name: file.name,
-                    ext: ext,
-                    points: points,
-                    distance: totalDist,
-                    date: new Date().toISOString(),
-                    size: file.size
-                });
-                
-                return { 
-                    success: true, 
-                    message: `${points.length} pontos · ${formatDistance(totalDist)}`, 
-                    points: points.length 
-                };
-                
+                return { success: true, message: `${points.length} pontos · ${formatDistance(totalDist)}`, points: points.length };
             } catch (error) {
                 console.error('Erro ao processar ' + file.name, error);
                 return { success: false, message: 'Erro: ' + error.message, points: 0 };
             }
         }
 
-        // Importar mais ficheiros (botão no modal)
         function importAllFromPicker() {
             document.getElementById('fileInput').click();
         }
 
         // ============================================================
-        // GEOLOCATION API - GPS FUNCIONAL
+        // GEOLOCATION API
         // ============================================================
         let gpsMarker = null;
         let gpsAccuracyCircle = null;
@@ -2553,11 +3236,13 @@
             AppState.isRecording = !AppState.isRecording;
             const btn = document.getElementById('gpsBtn');
             const overlay = document.getElementById('recordingOverlay');
+            const mainIndicator = document.getElementById('recordingIndicatorMain');
 
             if (AppState.isRecording) {
                 btn.classList.add('recording');
                 btn.innerHTML = '<i class="fas fa-stop"></i>';
                 overlay.classList.add('visible');
+                mainIndicator.classList.add('visible');
                 AppState.recordStartTime = Date.now();
                 AppState.trackPoints = [];
                 AppState.totalDistance = 0;
@@ -2573,6 +3258,7 @@
                 btn.classList.remove('recording');
                 btn.innerHTML = '<i class="fas fa-route"></i>';
                 overlay.classList.remove('visible');
+                mainIndicator.classList.remove('visible');
                 clearInterval(recordInterval);
                 releaseWakeLock();
 
@@ -2752,8 +3438,8 @@
         // ============================================================
         function initNetworkStatus() {
             updateNetworkUI();
-            window.addEventListener('online', () => { AppState.isOnline = true; updateNetworkUI(); showToast('🌐 Conexão restaurada'); });
-            window.addEventListener('offline', () => { AppState.isOnline = false; updateNetworkUI(); showToast(' Modo Offline ativado'); });
+            window.addEventListener('online', () => { AppState.isOnline = true; updateNetworkUI(); showToast(' Conexão restaurada'); });
+            window.addEventListener('offline', () => { AppState.isOnline = false; updateNetworkUI(); showToast('📡 Modo Offline ativado'); });
             if (navigator.connection) navigator.connection.addEventListener('change', updateNetworkUI);
         }
 
@@ -2901,7 +3587,7 @@
             if (AppState.isMeasuring) {
                 panel.classList.add('visible');
                 map.on('click', onMeasureClick);
-                showToast('📏 Toque no mapa para medir');
+                showToast(' Toque no mapa para medir');
             } else {
                 panel.classList.remove('visible');
                 map.off('click', onMeasureClick);
@@ -3115,11 +3801,8 @@
             const trkpts = doc.querySelectorAll('trkpt');
             const latlngs = [];
             trkpts.forEach(pt => latlngs.push([parseFloat(pt.getAttribute('lat')), parseFloat(pt.getAttribute('lon'))]));
-            
-            // Também procurar waypoints
             const wpts = doc.querySelectorAll('wpt');
             wpts.forEach(pt => latlngs.push([parseFloat(pt.getAttribute('lat')), parseFloat(pt.getAttribute('lon'))]));
-            
             return latlngs;
         }
 
@@ -3196,11 +3879,12 @@
             initNetworkStatus();
             initBattery();
             checkPermissions();
+            updateFloatingButtons();
             
             const tracks = await loadTracks();
             if (tracks.length > 0) console.log(`${tracks.length} percursos carregados`);
 
-            setTimeout(() => showToast('️ iMap - Bem-vindo! Sem anúncios.'), 1000);
+            setTimeout(() => showToast('🗺️ iMap - Bem-vindo! Sem anúncios.'), 1000);
         }
 
         initApp();
