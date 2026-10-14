@@ -3281,39 +3281,46 @@
             try {
                 let content = null;
                 let points = [];
+                let kmlFeatures = null;
                 
                 if (ext === 'kmz') {
                     const arrayBuffer = await file.arrayBuffer();
                     const zip = await JSZip.loadAsync(arrayBuffer);
                     let kmlFile = null;
                     zip.forEach((relativePath, zipEntry) => {
-                        if (relativePath.toLowerCase().endsWith('.kml') && !kmlFile) kmlFile = zipEntry;
+                        if (relativePath.toLowerCase().endsWith('.kml') && !zipEntry.dir && !kmlFile) kmlFile = zipEntry;
                     });
                     if (kmlFile) {
                         content = await kmlFile.async('text');
-                        points = parseKML(content);
+                        kmlFeatures = parseKMLFeatures(content);
+                        points = kmlFeatures.flatMap(kmlFeatureLatLngs);
                     } else {
                         return { success: false, message: 'Nenhum KML encontrado no KMZ', points: 0 };
                     }
                 } else {
                     content = await file.text();
-                    if (ext === 'kml') points = parseKML(content);
-                    else if (ext === 'gpx') points = parseGPX(content);
+                    if (ext === 'kml') {
+                        kmlFeatures = parseKMLFeatures(content);
+                        points = kmlFeatures.flatMap(kmlFeatureLatLngs);
+                    } else if (ext === 'gpx') points = parseGPX(content);
                     else if (ext === 'geojson' || ext === 'json') points = parseGeoJSON(content);
                 }
                 
-                if (points.length === 0) return { success: false, message: 'Nenhum ponto encontrado', points: 0 };
+                if (points.length === 0) return { success: false, message: 'Nenhuma geometria encontrada', points: 0 };
                 
                 const colors = { kml: '#1976D2', kmz: '#7B1FA2', gpx: '#388E3C', geojson: '#E65100', json: '#E65100' };
                 const color = colors[ext] || '#26A69A';
                 
-                // Cria a camada mas NÃO adiciona ao mapa ainda (será controlado pelo toggle)
-                const layer = L.polyline(points, { color: color, weight: 4, opacity: 0.85, lineJoin: 'round' });
+                // KML/KMZ mantém cada ponto, linha, polígono e pasta como geometria separada.
+                // Outros formatos continuam usando a camada de percurso existente.
+                const layer = kmlFeatures
+                    ? buildKMLLayer(kmlFeatures, color, file.name)
+                    : L.polyline(points, { color: color, weight: 4, opacity: 0.85, lineJoin: 'round' });
                 
                 let startMarker = null;
                 let endMarker = null;
                 
-                if (points.length > 0) {
+                if (!kmlFeatures && points.length > 0) {
                     const firstPoint = points[0];
                     const lastPoint = points[points.length - 1];
                     const startIcon = L.divIcon({
@@ -3331,8 +3338,20 @@
                 }
                 
                 let totalDist = 0;
-                for (let i = 1; i < points.length; i++) {
-                    totalDist += haversineDistance(points[i-1][0], points[i-1][1], points[i][0], points[i][1]);
+                if (kmlFeatures) {
+                    kmlFeatures.forEach(feature => {
+                        const sequences = feature.type === 'Polygon' ? feature.coordinates :
+                            (feature.type === 'LineString' ? [feature.coordinates] : []);
+                        sequences.forEach(sequence => {
+                            for (let i = 1; i < sequence.length; i++) {
+                                totalDist += haversineDistance(sequence[i-1][1], sequence[i-1][0], sequence[i][1], sequence[i][0]);
+                            }
+                        });
+                    });
+                } else {
+                    for (let i = 1; i < points.length; i++) {
+                        totalDist += haversineDistance(points[i-1][0], points[i-1][1], points[i][0], points[i][1]);
+                    }
                 }
                 
                 // Regista o ficheiro importado
@@ -3345,6 +3364,7 @@
                     startMarker: startMarker,
                     endMarker: endMarker,
                     points: points,
+                    featureCount: kmlFeatures ? kmlFeatures.length : points.length,
                     color: color,
                     distance: totalDist,
                     visible: true,
@@ -3366,7 +3386,10 @@
                 
                 saveImportedFile({ name: file.name, ext: ext, points: points, distance: totalDist, date: new Date().toISOString(), size: file.size });
                 
-                return { success: true, message: `${points.length} pontos · ${formatDistance(totalDist)}`, points: points.length };
+                const summary = kmlFeatures
+                    ? `${kmlFeatures.length} elementos · ${kmlFeatures.filter(f => f.type === 'Point').length} pontos · ${kmlFeatures.filter(f => f.type === 'LineString').length} linhas · ${formatDistance(totalDist)}`
+                    : `${points.length} pontos · ${formatDistance(totalDist)}`;
+                return { success: true, message: summary, points: points.length };
             } catch (error) {
                 console.error('Erro ao processar ' + file.name, error);
                 return { success: false, message: 'Erro: ' + error.message, points: 0 };
@@ -3412,7 +3435,7 @@
                     </div>
                     <div class="imported-info">
                         <h4>${escapeHtml(file.name)}</h4>
-                        <p>${file.points.length} pontos · ${formatDistance(file.distance)} · 
+                        <p>${file.featureCount ? `${file.featureCount} elementos` : `${file.points.length} pontos`} · ${formatDistance(file.distance)} · 
                            <span class="${file.visible ? 'status-on' : 'status-off'}">${file.visible ? 'Visível no mapa' : 'Oculto'}</span>
                         </p>
                     </div>
@@ -4188,15 +4211,136 @@
         // ============================================================
         // PARSERS
         // ============================================================
+        function kmlElements(parent, localName) {
+            return Array.from(parent.getElementsByTagNameNS('*', localName));
+        }
+
+        function kmlDirectChild(parent, localName) {
+            return Array.from(parent.children || []).find(el => el.localName === localName) || null;
+        }
+
+        function kmlCoordinates(text) {
+            return (text || '').trim().split(/\s+/).filter(Boolean).map(token => {
+                const parts = token.split(',').map(Number);
+                return parts.length >= 2 && Number.isFinite(parts[0]) && Number.isFinite(parts[1])
+                    ? [parts[0], parts[1]] : null; // KML order is longitude, latitude, altitude.
+            }).filter(Boolean);
+        }
+
+        function parseKMLColor(value, fallback) {
+            const raw = (value || '').trim();
+            if (!/^[0-9a-fA-F]{8}$/.test(raw)) return { color: fallback, opacity: 0.85 };
+            // KML color order is AABBGGRR; CSS uses RRGGBB.
+            return {
+                color: '#' + raw.slice(6, 8) + raw.slice(4, 6) + raw.slice(2, 4),
+                opacity: parseInt(raw.slice(0, 2), 16) / 255
+            };
+        }
+
+        function parseKMLFeatures(kmlText) {
+            const doc = new DOMParser().parseFromString(kmlText, 'application/xml');
+            if (doc.querySelector('parsererror')) throw new Error('KML inválido ou malformado');
+            const styles = new Map();
+            kmlElements(doc, 'Style').forEach(styleEl => {
+                const id = styleEl.getAttribute('id');
+                if (!id) return;
+                const line = kmlElements(styleEl, 'LineStyle')[0];
+                const poly = kmlElements(styleEl, 'PolyStyle')[0];
+                const icon = kmlElements(styleEl, 'IconStyle')[0];
+                styles.set(id, {
+                    lineColor: line ? kmlElements(line, 'color')[0]?.textContent : null,
+                    lineWidth: line ? Number(kmlElements(line, 'width')[0]?.textContent) : null,
+                    fillColor: poly ? kmlElements(poly, 'color')[0]?.textContent : null,
+                    iconColor: icon ? kmlElements(icon, 'color')[0]?.textContent : null
+                });
+            });
+
+            const placemarks = kmlElements(doc, 'Placemark');
+            const features = [];
+            placemarks.forEach(placemark => {
+                const nameEl = kmlDirectChild(placemark, 'name');
+                const name = nameEl ? nameEl.textContent.trim() : '';
+                const folderPath = [];
+                let ancestor = placemark.parentElement;
+                while (ancestor) {
+                    if (ancestor.localName === 'Folder') {
+                        const folderName = kmlDirectChild(ancestor, 'name');
+                        if (folderName && folderName.textContent.trim()) folderPath.unshift(folderName.textContent.trim());
+                    }
+                    ancestor = ancestor.parentElement;
+                }
+                const styleUrl = kmlDirectChild(placemark, 'styleUrl')?.textContent.trim().replace(/^#/, '') || '';
+                const style = styles.get(styleUrl) || {};
+
+                // Parsing is per Placemark, so folders, labels and unrelated line segments stay separate.
+                kmlElements(placemark, 'Point').forEach(geometry => {
+                    const coordEl = kmlElements(geometry, 'coordinates')[0];
+                    const coords = coordEl ? kmlCoordinates(coordEl.textContent) : [];
+                    if (coords.length) features.push({ type: 'Point', coordinates: coords[0], name, folderPath, style });
+                });
+                kmlElements(placemark, 'LineString').forEach(geometry => {
+                    const coordEl = kmlElements(geometry, 'coordinates')[0];
+                    const coords = coordEl ? kmlCoordinates(coordEl.textContent) : [];
+                    if (coords.length) features.push({ type: 'LineString', coordinates: coords, name, folderPath, style });
+                });
+                kmlElements(placemark, 'Polygon').forEach(geometry => {
+                    const rings = kmlElements(geometry, 'LinearRing').map(ring => {
+                        const coordEl = kmlElements(ring, 'coordinates')[0];
+                        return coordEl ? kmlCoordinates(coordEl.textContent) : [];
+                    }).filter(ring => ring.length >= 3);
+                    if (rings.length) features.push({ type: 'Polygon', coordinates: rings, name, folderPath, style });
+                });
+            });
+            return features;
+        }
+
+        function kmlFeatureLatLngs(feature) {
+            if (feature.type === 'Point') return [[feature.coordinates[1], feature.coordinates[0]]];
+            const sequences = feature.type === 'Polygon' ? feature.coordinates : [feature.coordinates];
+            return sequences.flat().map(coord => [coord[1], coord[0]]);
+        }
+
+        function buildKMLLayer(features, defaultColor, fileName) {
+            const root = L.featureGroup();
+            const folderGroups = new Map();
+            features.forEach(feature => {
+                const folderKey = feature.folderPath.join(' / ') || 'Sem pasta';
+                let folderLayer = folderGroups.get(folderKey);
+                if (!folderLayer) {
+                    folderLayer = L.featureGroup();
+                    folderLayer._kmlFolderName = folderKey;
+                    folderGroups.set(folderKey, folderLayer);
+                    root.addLayer(folderLayer);
+                }
+                const lineStyle = parseKMLColor(feature.style.lineColor, defaultColor);
+                const fillStyle = parseKMLColor(feature.style.fillColor, lineStyle.color);
+                const iconStyle = parseKMLColor(feature.style.iconColor, lineStyle.color);
+                const popup = `<b>${escapeHtml(feature.name || fileName)}</b><br><small>${escapeHtml(folderKey)}</small>`;
+                let item;
+                if (feature.type === 'Point') {
+                    item = L.circleMarker([feature.coordinates[1], feature.coordinates[0]], {
+                        radius: 4, color: iconStyle.color, fillColor: iconStyle.color,
+                        weight: 1, opacity: iconStyle.opacity, fillOpacity: iconStyle.opacity
+                    }).bindPopup(popup);
+                } else if (feature.type === 'LineString') {
+                    const width = Number(feature.style.lineWidth);
+                    item = L.polyline(feature.coordinates.map(c => [c[1], c[0]]), {
+                        color: lineStyle.color, weight: Number.isFinite(width) && width > 0 ? Math.min(width, 8) : 3,
+                        opacity: lineStyle.opacity, lineJoin: 'round'
+                    }).bindPopup(popup);
+                } else {
+                    item = L.polygon(feature.coordinates.map(ring => ring.map(c => [c[1], c[0]])), {
+                        color: lineStyle.color, weight: 2, opacity: lineStyle.opacity,
+                        fillColor: fillStyle.color, fillOpacity: fillStyle.opacity * 0.5
+                    }).bindPopup(popup);
+                }
+                folderLayer.addLayer(item);
+            });
+            return root;
+        }
+
         function parseKML(kmlText) {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(kmlText, 'text/xml');
-            const coordinates = doc.querySelector('coordinates');
-            if (coordinates) {
-                const coords = coordinates.textContent.trim().split(/\s+/);
-                return coords.map(c => { const [lng, lat] = c.split(','); return [parseFloat(lat), parseFloat(lng)]; });
-            }
-            return [];
+            return parseKMLFeatures(kmlText).flatMap(kmlFeatureLatLngs);
         }
 
         function parseGPX(gpxText) {
